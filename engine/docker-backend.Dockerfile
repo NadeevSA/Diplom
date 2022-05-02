@@ -1,6 +1,6 @@
 FROM golang:1.18 AS build_base
 
-COPY go.mod go.sum /app/
+COPY engine/go.mod engine/go.sum /app/
 WORKDIR /app/
 RUN go mod download
 COPY . /app/

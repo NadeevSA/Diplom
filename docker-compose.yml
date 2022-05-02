@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+    Postgras:
+        container_name: Postgras
+        image: postgres:alpine
+        restart: always
+        environment:
+          - POSTGRES_DB=postgres
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+        ports:
+          - "5432:5432"
+    backend:
+       container_name: backend
+       image: backend
+       ports: 
+        - "8084:8084"     
+    frontend:
+       container_name: frontend
+       image: frontend
+       volumes:
+        - '.:/app'
+        - '/app/node_modules'
+       ports: 
+        - "81:80"
