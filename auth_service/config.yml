@@ -1,0 +1,6 @@
+port: "8080"
+
+auth:
+  signing_key: "your_signing_key"
+  hash_salt: "your_hash_salt"
+  token_ttl: 86400
