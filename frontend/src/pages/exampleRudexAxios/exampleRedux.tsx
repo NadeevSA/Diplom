@@ -6,6 +6,10 @@ import { selectProducts, fetchProducts, decrement, increment } from './createSli
 export function Counter() {
   const count = useSelector((state: RootState) => state.counter.value)
   const dispatch = useDispatch()
+  const { name } = useSelector(selectProducts);
+  const { currentState } = useSelector(selectProducts);
+  console.log("1" + name);
+  console.log("2" + currentState);
   React.useEffect(() => {
     store.dispatch(fetchProducts());
   }, [dispatch]); 
@@ -13,6 +17,7 @@ export function Counter() {
   return (
     <div>
       <div>
+        {currentState === 200 ? <span>{name}</span> : <span>Пусто</span>}
         <button
           aria-label="Increment value"
           onClick={() => dispatch(increment())}
