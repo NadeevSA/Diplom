@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"net/http"
 	"strings"
@@ -117,4 +118,29 @@ func (b *Builder) HandleBuild(projectConfig model.ProjectConfig, writer http.Res
 	}
 
 	writer.Write([]byte("build completed"))
+}
+
+func (b *Builder) FindContainer(tag string) (*types.Container, error) {
+	opts := types.ContainerListOptions{All: true}
+	opts.Filters = filters.NewArgs(filters.KeyValuePair{
+		Key:   "name",
+		Value: tag,
+	})
+	cont, err := b.Cli.ContainerList(b.Ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+	return &cont[0], nil
+}
+
+func (b *Builder) CheckIfContainerWorking(tag string) (bool, error) {
+	cont, err := b.FindContainer(tag)
+	if err != nil {
+		return false, err
+	}
+	status := strings.Split(cont.Status, " ")[0]
+	if status != "Up" {
+		return false, nil
+	}
+	return true, nil
 }

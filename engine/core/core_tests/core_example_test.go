@@ -101,3 +101,12 @@ func Test_CanDeletePackage(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func Test_CanFindContainer(t *testing.T) {
+	isWorking, err := builder.CheckIfContainerWorking("my_app16")
+	if err != nil {
+		t.Fatal(err)
+		return
+	}
+	log.Println(isWorking)
+}

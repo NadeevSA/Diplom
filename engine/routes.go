@@ -19,6 +19,8 @@ func AddRoutes(app *controllers.App) *mux.Router {
 	router.HandleFunc("/project_doc", app.ProjectConfigController.AddProjectConfig).Methods("POST")
 	router.HandleFunc("/project_doc", app.ProjectConfigController.PutProjectConfig).Methods("PUT")
 	router.HandleFunc("/project_doc", app.ProjectConfigController.DeleteProjectConfig).Methods("DELETE")
+	router.HandleFunc("/project_doc/filter", app.ProjectConfigController.GetFilteredProjectConfig).Methods("GET")
+	router.HandleFunc("/project_doc/status", app.ProjectConfigController.GetStatusProjectConfig).Methods("GET")
 
 	router.HandleFunc("/project_doc/file", app.ProjectConfigController.AddProjectConfigFiles).Methods("POST")
 	router.HandleFunc("/project_doc/build", app.BuilderController.BuildProjectDoc).Methods("POST")

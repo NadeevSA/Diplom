@@ -33,6 +33,13 @@ func (b *BuilderController) BuildProjectDoc(
 
 	projectConfig := projectConfigs[0]
 	b.Builder.HandleBuild(projectConfig, writer)
+	projectConfig.Status = model.Status(1)
+	err = b.Provider.UpdateStatement(projectConfig)
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(500)
+		return
+	}
 }
 
 func (b *BuilderController) RunProjectDoc(
@@ -66,11 +73,18 @@ func (b *BuilderController) RunProjectDoc(
 		writer.WriteHeader(500)
 		return
 	}
+	projectConfig.Status = model.Status(2)
+	err = b.Provider.UpdateStatement(projectConfig)
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(500)
+		return
+	}
 	writer.Write([]byte("Container started"))
 	writer.WriteHeader(200)
 }
 
-type BuildIntent struct {
+type AttachIntent struct {
 	Name  string `json:"name"`
 	Input string `json:"input"`
 }
@@ -78,21 +92,26 @@ type BuildIntent struct {
 func (b *BuilderController) AttachProjectDoc(
 	writer http.ResponseWriter,
 	request *http.Request) {
-	var buildIntent BuildIntent
-	Decode(request, &buildIntent, writer)
-	waiter, err := b.Builder.ContainerAttach(buildIntent.Name)
+	var attachIntent AttachIntent
+	Decode(request, &attachIntent, writer)
+	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
 		writer.WriteHeader(500)
+		return
 	}
-	inputBytes := []byte(buildIntent.Input)
+	inputBytes := []byte(attachIntent.Input)
 	_, err = waiter.Conn.Write(inputBytes)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
 		writer.WriteHeader(500)
+		return
 	}
+
 	defer waiter.Close()
 	defer waiter.CloseWrite()
+	defer b.CheckIfWorking(attachIntent, writer)
+
 	var c1 = make(chan bool)
 	go func() {
 		res := WriteToWriter(&writer, &waiter)
@@ -102,7 +121,7 @@ func (b *BuilderController) AttachProjectDoc(
 	select {
 	case <-c1:
 		return
-	case <-time.After(1 * time.Second):
+	case <-time.After(100 * time.Millisecond):
 		return
 	}
 }
@@ -110,4 +129,34 @@ func (b *BuilderController) AttachProjectDoc(
 func WriteToWriter(writer *http.ResponseWriter, waiter *types.HijackedResponse) bool {
 	waiter.Reader.WriteTo(*writer)
 	return true
+}
+
+func (b *BuilderController) CheckIfWorking(attachIntent AttachIntent, writer http.ResponseWriter) {
+	time.Sleep(1 * time.Second)
+	isWorking, err := b.Builder.CheckIfContainerWorking(attachIntent.Name)
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(500)
+		return
+	}
+	if !isWorking {
+		var projectConfigs []model.ProjectConfig
+		filter := filters.FilterBy{
+			Field: "name",
+			Args:  []string{attachIntent.Name},
+		}
+		err = b.Provider.QueryListStatement(&projectConfigs, filter)
+		if err != nil {
+			writer.Write([]byte(err.Error()))
+			writer.WriteHeader(500)
+			return
+		}
+		projectConfigs[0].Status = model.Status(1)
+		err = b.Provider.UpdateStatement(projectConfigs[0])
+		if err != nil {
+			writer.Write([]byte(err.Error()))
+			writer.WriteHeader(500)
+			return
+		}
+	}
 }

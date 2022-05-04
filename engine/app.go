@@ -83,7 +83,7 @@ func main() {
 
 	log.Fatal(http.ListenAndServe(
 		":8084",
-		handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+		handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "id"}),
 			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
 			handlers.AllowedOrigins([]string{"*"}))(router)))
 }
