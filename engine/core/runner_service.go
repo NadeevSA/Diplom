@@ -17,14 +17,14 @@ type Builder struct {
 	Ctx context.Context
 }
 
-func (b *Builder) BuildImage(projectName, buildCommand, runFile, pathToEntry, dir string) error {
+func (b *Builder) BuildImage(projectName, buildCommand, runFile, pathToEntry, tempDir string) error {
 	err := b.ContainerDelete(projectName)
 	_, err = RemoveImage(b.Cli, b.Ctx, projectName)
 	var buildArgs = map[string]*string{
 		"BUILD_COMMAND": &buildCommand,
 		"RUN_FILE":      &runFile,
 	}
-	err = BuildImage(b.Cli, b.Ctx, "\\"+dir+"\\"+pathToEntry, projectName, buildArgs)
+	err = BuildImage(b.Cli, b.Ctx, "\\"+tempDir+"\\"+pathToEntry, projectName, buildArgs)
 	if err != nil {
 		return err
 	}
@@ -72,20 +72,28 @@ func (b *Builder) ContainerDelete(tag string) error {
 	})
 }
 
-func (b *Builder) HandleBuild(projectConfig model.ProjectConfig, writer http.ResponseWriter) {
-	err := CopyBytesFromProject(projectConfig.File, projectConfig.ProjectFile, "temp")
+func (b *Builder) HandleBuild(
+	projectConfig model.ProjectConfig,
+	writer http.ResponseWriter,
+	tempDir string) {
+
+	/*step 1: create file*/
+	err := CopyBytesToFile(projectConfig.File, projectConfig.ProjectFile, tempDir)
 	if err != nil {
 		writer.Write([]byte("can not preload project"))
 		writer.WriteHeader(500)
 		return
 	}
 
-	err = UnzipSource("temp\\"+projectConfig.ProjectFile, "temp")
+	/*step 2: unzip*/
+	err = UnzipSource("temp\\"+projectConfig.ProjectFile, tempDir)
 	if err != nil {
 		writer.Write([]byte("can not unzip"))
 		writer.WriteHeader(500)
 		return
 	}
+
+	/*step 3: remove zip*/
 	err = RemoveFile("temp\\" + projectConfig.ProjectFile)
 	if err != nil {
 		writer.Write([]byte("clean space error"))
@@ -95,7 +103,7 @@ func (b *Builder) HandleBuild(projectConfig model.ProjectConfig, writer http.Res
 
 	defer func() {
 		projectDirName := strings.Split(projectConfig.ProjectFile, ".")[0]
-		err := RemoveDir("temp", projectDirName)
+		err := RemoveDir(tempDir, projectDirName)
 		if err != nil {
 			writer.Write([]byte("clean space error"))
 			writer.WriteHeader(500)
@@ -103,14 +111,16 @@ func (b *Builder) HandleBuild(projectConfig model.ProjectConfig, writer http.Res
 		}
 	}()
 
-	_, err = CopyFile("dockerfiles\\go.Dockerfile", "\\temp"+"\\"+projectConfig.PathToEntry, "Dockerfile", 20)
+	/*step 4: copy dockerfile*/
+	_, err = CopyFile("dockerfiles\\go.Dockerfile", "\\"+tempDir+"\\"+projectConfig.PathToEntry, "Dockerfile", 20)
 	if err != nil {
 		writer.Write([]byte("can not copy"))
 		writer.WriteHeader(500)
 		return
 	}
 
-	err = b.BuildImage(projectConfig.Name, projectConfig.BuildCommand, projectConfig.RunFile, projectConfig.PathToEntry, "temp")
+	/*step 5: build image*/
+	err = b.BuildImage(projectConfig.Name, projectConfig.BuildCommand, projectConfig.RunFile, projectConfig.PathToEntry, tempDir)
 	if err != nil {
 		writer.Write([]byte("error building project"))
 		writer.WriteHeader(500)

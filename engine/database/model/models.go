@@ -1,9 +1,5 @@
 package model
 
-import (
-	"gorm.io/gorm"
-)
-
 type Status uint
 
 const (
@@ -20,28 +16,41 @@ const (
 )
 
 type User struct {
-	gorm.Model
-	Name     string
-	Email    string    `gorm:"uniqueIndex"`
-	Projects []Project `gorm:"many2many:user_projects;"`
+	ID    uint `gorm:"primaryKey"`
+	Name  string
+	Email string `gorm:"uniqueIndex"`
 }
 
 type ProjectConfig struct {
-	gorm.Model
-	BuildCommand      string
-	Name              string `gorm:"uniqueIndex"`
-	RunFile           string
-	PathToEntry       string
-	ProjectFile       string
-	File              []byte
+	ID           uint `gorm:"primaryKey"`
+	BuildCommand string
+	Name         string `gorm:"uniqueIndex"`
+	RunFile      string
+	PathToEntry  string
+	ProjectFile  string
+	File         []byte
+
+	ProjectId int
+	Project   Project
+
 	ConfigurationType ConfigurationType
 	Status            Status
 }
 
 type Project struct {
-	gorm.Model
-	ProjectDocId int
-	ProjectDoc   ProjectConfig
-	Name         string `gorm:"uniqueIndex"`
-	Description  string
+	ID   uint   `gorm:"primaryKey"`
+	Name string `gorm:"uniqueIndex"`
+
+	UserId int
+	User   User
+
+	Description string
+}
+
+type Data struct {
+	ID          uint `gorm:"primaryKey"`
+	Description string
+	File        []byte
+
+	ProjectConfig []ProjectConfig `gorm:"many2many:project_config_data;"`
 }

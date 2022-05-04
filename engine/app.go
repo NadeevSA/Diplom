@@ -48,13 +48,13 @@ func main() {
 	err = migrator.MigrateAll()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Migration error: ", err)
 	}
 	provider := &providers.Provider{
 		Db: db,
 	}
 	injection := controllers.AppInjection{
-		provider,
+		Provider: provider,
 	}
 
 	ctx := context.Background()
@@ -70,12 +70,14 @@ func main() {
 	projectConfigController := controllers.ProjectConfigController{BaseCrudController: &baseCrudController}
 	builderController := controllers.BuilderController{Provider: provider, Builder: builder}
 	projectController := controllers.ProjectController{BaseCrudController: &baseCrudController}
+	datafileController := controllers.DataFileController{BaseCrudController: &baseCrudController}
 
 	app := controllers.App{
 		ProjectConfigController: projectConfigController,
 		UserController:          userController,
 		BuilderController:       builderController,
 		ProjectController:       projectController,
+		DataFileController:      datafileController,
 		AppInjection:            &injection,
 		UseAuth:                 useAuth,
 	}

@@ -107,7 +107,7 @@ func Test_CanUnzipFromModel(t *testing.T) {
 	}
 	bytes := projectConfigs[0].File
 	name := projectConfigs[0].Name
-	err = core.CopyBytesFromProject(bytes, name, "temp")
+	err = core.CopyBytesToFile(bytes, name, "temp")
 	if err != nil {
 		t.Fatal(err)
 	}

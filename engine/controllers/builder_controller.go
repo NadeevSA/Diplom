@@ -32,7 +32,7 @@ func (b *BuilderController) BuildProjectDoc(
 	}
 
 	projectConfig := projectConfigs[0]
-	b.Builder.HandleBuild(projectConfig, writer)
+	b.Builder.HandleBuild(projectConfig, writer, "temp")
 	projectConfig.Status = model.Status(1)
 	err = b.Provider.UpdateStatement(projectConfig)
 	if err != nil {

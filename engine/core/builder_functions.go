@@ -212,7 +212,7 @@ func CreateDirIfNotExist(dir string) {
 	}
 }
 
-func CopyBytesFromProject(bytes []byte, name string, dirName string) error {
+func CopyBytesToFile(bytes []byte, name string, dirName string) error {
 	cureDir, _ := os.Getwd()
 	if _, err := os.Stat(cureDir + "\\" + dirName); os.IsNotExist(err) {
 		os.Mkdir(dirName, os.ModePerm)
