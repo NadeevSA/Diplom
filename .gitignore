@@ -107,3 +107,11 @@ fabric.properties
 /frontentd/.idea/vcs.xml
 /frontentd/.idea/modules.xml
 /frontentd/.idea/frontentd.iml
+/frontend/.idea/vcs.xml
+/.idea/sqldialects.xml
+/frontend/.idea/inspectionProfiles/Project_Default.xml
+/frontend/.idea/modules.xml
+/.idea/dataSources.xml
+/frontend/.idea/frontend.iml
+/frontend/.idea/.gitignore
+/.idea/.gitignore

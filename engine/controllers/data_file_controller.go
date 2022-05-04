@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"bytes"
 	"engine_app/database/model"
+	"io"
+	"log"
 	"net/http"
 )
 
@@ -12,8 +15,19 @@ type DataFileController struct {
 func (c *DataFileController) AddDataFile(
 	writer http.ResponseWriter,
 	request *http.Request) {
-	var dataFile model.Data
-	Decode(request, &dataFile, writer)
+	dataFile := model.Data{}
+
+	file, header, _ := request.FormFile("File")
+	dataFile.Description = request.MultipartForm.Value["Description"][0]
+
+	dataFile.FileName = header.Filename
+	var buf bytes.Buffer
+	_, err := io.Copy(&buf, file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	dataFile.File = buf.Bytes()
+
 	c.Add(&dataFile, request, writer)
 }
 
@@ -23,14 +37,6 @@ func (c *DataFileController) DeleteDataFile(
 	var Projects model.Project
 	Decode(request, &Projects, writer)
 	c.Delete(&Projects, request, writer)
-}
-
-func (c *DataFileController) PutDataFile(
-	writer http.ResponseWriter,
-	request *http.Request) {
-	var dataFile model.Data
-	Decode(request, &dataFile, writer)
-	c.Put(&dataFile, request, writer)
 }
 
 func (c *DataFileController) GetAllDataFile(

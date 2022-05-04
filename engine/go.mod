@@ -7,6 +7,7 @@ require (
 	github.com/docker/docker v20.10.14+incompatible
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
+	github.com/lib/pq v1.10.2
 	github.com/spf13/viper v1.7.0
 	gorm.io/driver/postgres v1.3.1
 	gorm.io/gorm v1.23.4

@@ -32,7 +32,7 @@ func init() {
 		dbName,
 		sslMode)
 
-	db, _ = database.InitDataBase(connectionString)
+	db, _ = database.InitOrmDataBaseConnection(connectionString)
 
 	migrator = database.MakeMigrator(db)
 	provider = providers.Provider{Db: db}

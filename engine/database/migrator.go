@@ -12,6 +12,7 @@ type IMigrator interface {
 	//MigrateConfiguration() error
 	//MigrateLanguage() error
 	//MigrateBuilder() error
+	MigrateData() error
 	MigrateAll() error
 }
 
@@ -31,6 +32,11 @@ func (m *Migrator) MigrateAll() error {
 	}
 
 	err = m.MigrateProjectDescription()
+	if err != nil {
+		return err
+	}
+
+	err = m.MigrateData()
 	if err != nil {
 		return err
 	}
@@ -59,6 +65,14 @@ func (m *Migrator) MigrateProjectDoc() error {
 
 func (m *Migrator) MigrateProjectDescription() error {
 	err := m.db.AutoMigrate(&model.Project{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Migrator) MigrateData() error {
+	err := m.db.AutoMigrate(&model.Data{})
 	if err != nil {
 		return err
 	}

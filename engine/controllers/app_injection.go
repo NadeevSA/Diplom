@@ -11,6 +11,7 @@ type App struct {
 	BuilderController       BuilderController
 	ProjectController       ProjectController
 	DataFileController      DataFileController
+	DataProjectController   DataProjectController
 	UseAuth                 bool
 	AppInjection            *AppInjection
 	Builder                 *core.Builder

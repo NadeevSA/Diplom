@@ -60,13 +60,13 @@ func (c *ProjectConfigController) AddProjectConfigFiles(
 		log.Fatal(err)
 		return
 	}
-	var buf bytes.Buffer
+
 	file, header, err := request.FormFile("file")
 	defer file.Close()
 	if err != nil {
 		panic(err)
 	}
-
+	var buf bytes.Buffer
 	_, err = io.Copy(&buf, file)
 	if err != nil {
 		log.Fatal(err)

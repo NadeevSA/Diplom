@@ -35,6 +35,8 @@ type ProjectConfig struct {
 
 	ConfigurationType ConfigurationType
 	Status            Status
+
+	Data []Data `gorm:"many2many:project_config_data;"`
 }
 
 type Project struct {
@@ -50,6 +52,7 @@ type Project struct {
 type Data struct {
 	ID          uint `gorm:"primaryKey"`
 	Description string
+	FileName    string
 	File        []byte
 
 	ProjectConfig []ProjectConfig `gorm:"many2many:project_config_data;"`

@@ -39,11 +39,17 @@ func main() {
 		log.Fatal("No config")
 	}
 
-	db, err := database.InitDataBase(connectionString)
+	dbOrm, err := database.InitOrmDataBaseConnection(connectionString)
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	migrator := database.MakeMigrator(db)
+
+	db, err := database.InitDataBaseConnection(connectionString)
+	if err != nil {
+		log.Fatal(err)
+	}
+	migrator := database.MakeMigrator(dbOrm)
 
 	err = migrator.MigrateAll()
 
@@ -51,7 +57,7 @@ func main() {
 		log.Fatal("Migration error: ", err)
 	}
 	provider := &providers.Provider{
-		Db: db,
+		Db: dbOrm,
 	}
 	injection := controllers.AppInjection{
 		Provider: provider,
@@ -71,6 +77,7 @@ func main() {
 	builderController := controllers.BuilderController{Provider: provider, Builder: builder}
 	projectController := controllers.ProjectController{BaseCrudController: &baseCrudController}
 	datafileController := controllers.DataFileController{BaseCrudController: &baseCrudController}
+	dataProjectController := controllers.DataProjectController{Db: db}
 
 	app := controllers.App{
 		ProjectConfigController: projectConfigController,
@@ -78,6 +85,7 @@ func main() {
 		BuilderController:       builderController,
 		ProjectController:       projectController,
 		DataFileController:      datafileController,
+		DataProjectController:   dataProjectController,
 		AppInjection:            &injection,
 		UseAuth:                 useAuth,
 	}
