@@ -10,6 +10,16 @@ import (
 	"time"
 )
 
+type AttachIntent struct {
+	Name  string `json:"name"`
+	Input string `json:"input"`
+}
+
+type AttachIntentData struct {
+	Name   string `json:"name"`
+	DataId string `json:"data_id"`
+}
+
 type BuilderController struct {
 	Provider *providers.Provider
 	Builder  *core.Builder
@@ -84,11 +94,6 @@ func (b *BuilderController) RunProjectDoc(
 	writer.WriteHeader(200)
 }
 
-type AttachIntent struct {
-	Name  string `json:"name"`
-	Input string `json:"input"`
-}
-
 func (b *BuilderController) AttachProjectDoc(
 	writer http.ResponseWriter,
 	request *http.Request) {
@@ -110,7 +115,55 @@ func (b *BuilderController) AttachProjectDoc(
 
 	defer waiter.Close()
 	defer waiter.CloseWrite()
-	defer b.CheckIfWorking(attachIntent, writer)
+	defer b.CheckIfWorking(attachIntent.Name, writer)
+
+	var c1 = make(chan bool)
+	go func() {
+		res := WriteToWriter(&writer, &waiter)
+		c1 <- res
+	}()
+
+	select {
+	case <-c1:
+		return
+	case <-time.After(100 * time.Millisecond):
+		return
+	}
+}
+
+func (b *BuilderController) AttachProjectDocData(
+	writer http.ResponseWriter,
+	request *http.Request) {
+	var attachIntent AttachIntentData
+	Decode(request, &attachIntent, writer)
+	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(500)
+		return
+	}
+
+	data := model.Data{}
+	err = b.Provider.QueryListStatement(&data, filters.FilterBy{
+		Field: "id",
+		Args:  []string{attachIntent.DataId},
+	})
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(500)
+		return
+	}
+	inputBytes := data.File
+	_, err = waiter.Conn.Write(inputBytes)
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(500)
+		return
+	}
+
+	defer waiter.Close()
+	defer waiter.CloseWrite()
+	defer b.CheckIfWorking(attachIntent.Name, writer)
 
 	var c1 = make(chan bool)
 	go func() {
@@ -131,9 +184,9 @@ func WriteToWriter(writer *http.ResponseWriter, waiter *types.HijackedResponse) 
 	return true
 }
 
-func (b *BuilderController) CheckIfWorking(attachIntent AttachIntent, writer http.ResponseWriter) {
+func (b *BuilderController) CheckIfWorking(name string, writer http.ResponseWriter) {
 	time.Sleep(1 * time.Second)
-	isWorking, err := b.Builder.CheckIfContainerWorking(attachIntent.Name)
+	isWorking, err := b.Builder.CheckIfContainerWorking(name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
 		writer.WriteHeader(500)
@@ -143,7 +196,7 @@ func (b *BuilderController) CheckIfWorking(attachIntent AttachIntent, writer htt
 		var projectConfigs []model.ProjectConfig
 		filter := filters.FilterBy{
 			Field: "name",
-			Args:  []string{attachIntent.Name},
+			Args:  []string{name},
 		}
 		err = b.Provider.QueryListStatement(&projectConfigs, filter)
 		if err != nil {
