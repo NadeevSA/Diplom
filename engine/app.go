@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"engine_app/controllers"
 	"engine_app/core"
 	"engine_app/database"
+	controllers2 "engine_app/injection/controllers"
 	"engine_app/providers"
 	"fmt"
 	"github.com/docker/docker/client"
@@ -30,7 +30,7 @@ func main() {
 		dbName,
 		sslMode)
 
-	var useAuth = false
+	var useAuth = true
 
 	viper.AddConfigPath(".")
 	viper.SetConfigName("config")
@@ -59,7 +59,7 @@ func main() {
 	provider := &providers.Provider{
 		Db: dbOrm,
 	}
-	injection := controllers.AppInjection{
+	injection := controllers2.AppInjection{
 		Provider: provider,
 	}
 
@@ -70,22 +70,24 @@ func main() {
 		Ctx: ctx,
 	}
 
-	baseCrudController := controllers.BaseCrudController{AppInjection: &injection}
+	baseCrudController := controllers2.BaseCrudController{AppInjection: &injection}
 
-	userController := controllers.UserController{BaseCrudController: &baseCrudController}
-	projectConfigController := controllers.ProjectConfigController{BaseCrudController: &baseCrudController}
-	builderController := controllers.BuilderController{Provider: provider, Builder: builder}
-	projectController := controllers.ProjectController{BaseCrudController: &baseCrudController}
-	datafileController := controllers.DataFileController{BaseCrudController: &baseCrudController}
-	dataProjectController := controllers.DataProjectController{Db: db}
+	authService := controllers2.AuthService{AppInjection: &injection}
+	userController := controllers2.UserController{BaseCrudController: &baseCrudController}
+	projectConfigController := controllers2.ProjectConfigController{BaseCrudController: &baseCrudController}
+	builderController := controllers2.BuilderController{Provider: provider, Builder: builder}
+	projectController := controllers2.ProjectController{BaseCrudController: &baseCrudController}
+	datafileController := controllers2.DataFileController{BaseCrudController: &baseCrudController}
+	dataProjectController := controllers2.DataProjectController{Db: db}
 
-	app := controllers.App{
+	app := controllers2.App{
 		ProjectConfigController: projectConfigController,
 		UserController:          userController,
 		BuilderController:       builderController,
 		ProjectController:       projectController,
 		DataFileController:      datafileController,
 		DataProjectController:   dataProjectController,
+		AuthService:             authService,
 		AppInjection:            &injection,
 		UseAuth:                 useAuth,
 	}

@@ -1,10 +1,10 @@
 package provider_tests
 
 import (
-	"engine_app/controllers/filters"
 	"engine_app/core"
 	"engine_app/database"
 	"engine_app/database/model"
+	"engine_app/filters"
 	"engine_app/providers"
 	"fmt"
 	"gorm.io/gorm"

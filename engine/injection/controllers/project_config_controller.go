@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"bytes"
-	"engine_app/controllers/filters"
 	"engine_app/database/model"
+	"engine_app/filters"
 	"fmt"
 	"io"
 	"log"

@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
-	"engine_app/controllers/filters"
+	"engine_app/filters"
 	"net/http"
 )
 
@@ -86,12 +86,5 @@ func (bc *BaseCrudController) Add(
 	} else {
 		writer.WriteHeader(200)
 		json.NewEncoder(writer).Encode(obj)
-	}
-}
-
-func Decode(request *http.Request, obj interface{}, writer http.ResponseWriter) {
-	err := json.NewDecoder(request.Body).Decode(obj)
-	if err != nil {
-		writer.Write([]byte("Decode error"))
 	}
 }

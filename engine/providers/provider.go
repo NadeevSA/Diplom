@@ -1,7 +1,7 @@
 package providers
 
 import (
-	"engine_app/controllers/filters"
+	"engine_app/filters"
 	"fmt"
 	"gorm.io/gorm"
 	"time"

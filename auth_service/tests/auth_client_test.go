@@ -24,8 +24,8 @@ func init() {
 }
 func Test_Auth(t *testing.T) {
 
-	usernamePtr := flag.String("username", "test_user6", "username")
-	passwordPtr := flag.String("pass", "qwerty", "password")
+	usernamePtr := flag.String("username", "West", "username")
+	passwordPtr := flag.String("pass", "1234", "password")
 
 	flag.Parse()
 

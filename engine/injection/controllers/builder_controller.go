@@ -1,13 +1,14 @@
 package controllers
 
 import (
-	"engine_app/controllers/filters"
 	"engine_app/core"
 	"engine_app/database/model"
+	"engine_app/filters"
 	"engine_app/providers"
-	"github.com/docker/docker/api/types"
 	"net/http"
 	"time"
+
+	"github.com/docker/docker/api/types"
 )
 
 type AttachIntent struct {
