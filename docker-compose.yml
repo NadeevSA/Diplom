@@ -23,3 +23,18 @@ services:
         - '/app/node_modules'
        ports: 
         - "81:80"
+    engine_database:
+      volumes:
+        - ./site/app/database/migrations/.:/docker-entrypoint-initdb.d
+      image: postgres:alpine
+      restart: always
+      environment:
+        - POSTGRES_DB=postgres
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+      ports:
+        - "5432:5432"
+    redis:
+      image: redis
+      ports:
+        - "127.0.0.1:6379:6379"

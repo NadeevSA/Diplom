@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 	"engine_app/database/model"
+	"engine_app/filters"
 	"io"
 	"log"
 	"net/http"
@@ -18,7 +19,7 @@ func (c *DataFileController) AddDataFile(
 	dataFile := model.Data{}
 
 	file, header, _ := request.FormFile("File")
-	dataFile.Description = request.MultipartForm.Value["Description"][0]
+	dataFile.Label = request.MultipartForm.Value["Label"][0]
 
 	dataFile.FileName = header.Filename
 	var buf bytes.Buffer
@@ -42,7 +43,7 @@ func (c *DataFileController) DeleteDataFile(
 func (c *DataFileController) GetAllDataFile(
 	writer http.ResponseWriter,
 	request *http.Request) {
-	var dataFile model.Data
+	var dataFile []model.Data
 	c.GetAll(&dataFile, request, writer)
 }
 
@@ -51,4 +52,25 @@ func (c *DataFileController) GetFilteredDataFile(
 	request *http.Request) {
 	var datafiles []model.Data
 	c.GetFilteredBy(datafiles, request, writer)
+}
+
+func (c *DataFileController) GetDataFileContent(
+	writer http.ResponseWriter,
+	request *http.Request) {
+	ids, _ := request.URL.Query()["id"]
+	id := ids[0]
+	var data model.Data
+	filter := filters.FilterBy{
+		Field: "id",
+		Args:  []string{id},
+	}
+	err := c.AppInjection.Provider.QueryListStatement(&data, filter)
+	if err != nil {
+		writer.WriteHeader(500)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+	str := string(data.File)
+	writer.Write([]byte(str))
+	writer.WriteHeader(200)
 }

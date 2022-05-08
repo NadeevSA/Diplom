@@ -38,6 +38,7 @@ func AddRoutes(app *controllers.App) *mux.Router {
 	router.HandleFunc("/data", app.DataFileController.AddDataFile).Methods("POST")
 	router.HandleFunc("/data", app.DataFileController.DeleteDataFile).Methods("DELETE")
 	router.HandleFunc("/data/filter", app.DataFileController.GetFilteredDataFile).Methods("GET")
+	router.HandleFunc("/data/content", app.DataFileController.GetDataFileContent).Methods("GET")
 
 	router.HandleFunc("/project_data", app.DataProjectController.AddDataProject).Methods("POST")
 	router.HandleFunc("/project_data", app.DataProjectController.DeleteDataProject).Methods("DELETE")

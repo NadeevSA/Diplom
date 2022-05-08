@@ -50,10 +50,10 @@ type Project struct {
 }
 
 type Data struct {
-	ID          uint `gorm:"primaryKey"`
-	Description string
-	FileName    string
-	File        []byte
+	ID       uint `gorm:"primaryKey"`
+	Label    string
+	FileName string
+	File     []byte
 
 	ProjectConfig []ProjectConfig `gorm:"many2many:project_config_data;"`
 }
