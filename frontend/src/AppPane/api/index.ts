@@ -7,6 +7,3 @@ export function api<T>(url: string): Promise<T> {
             return response.json();
         });
 }
-
-
-

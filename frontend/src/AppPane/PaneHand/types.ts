@@ -1,7 +1,5 @@
-import {Status} from "../types";
-
 export interface IPanelHand {
-    status: Status
+    isRunning: boolean
     input: string
     output: string
     // eslint-disable-next-line no-unused-vars

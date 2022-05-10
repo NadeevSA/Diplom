@@ -3,6 +3,7 @@ export interface IPane {
     fileContentUrl: string
     buildUrl: string
     runUrl: string
+    isRunningUrl: string
     attachUrl: string
     attachUrlFileUrl: string
     dataFileUrl: string
@@ -15,7 +16,6 @@ export interface IPane {
 export enum Status {
     Default,
     Build,
-    Running,
 }
 
 export enum ConfigurationType {
@@ -25,6 +25,11 @@ export enum ConfigurationType {
 export interface AttachIntentInput {
     Name: string
     Input: string
+}
+
+export interface RunIntent {
+    id: string
+    container_name: string
 }
 
 export interface AttachIntentFile {

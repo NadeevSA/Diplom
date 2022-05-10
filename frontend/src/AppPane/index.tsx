@@ -1,5 +1,5 @@
 import React, {FC, useLayoutEffect, useState} from 'react';
-import {AttachIntentFile, AttachIntentInput, IPane, Status} from './types';
+import {AttachIntentFile, AttachIntentInput, IPane, RunIntent, Status} from './types';
 import {Button} from '@consta/uikit/Button';
 import './index.css';
 import {Loader} from "@consta/uikit/Loader";
@@ -9,28 +9,41 @@ import {PanelFile} from "./PaneFile";
 import {IDataFile} from "./PaneFile/types";
 import {api} from "./api";
 
-
-
-
 export const AppPane: FC<IPane> = ({
                                        attachUrlFileUrl,
                                        dataFileUrl,
                                        runUrl,
                                        buildUrl,
                                        attachUrl,
+                                       isRunningUrl,
                                        projectId,
                                        currentStatus,
                                        projectName,
-                                       statusCheckUrl,
                                        fileContentUrl
                                    }) => {
+
     const [isUseFile, setIsUseFile] = useState(false)
+    const [isRunning, setIsRunning] = useState(false)
     const [status, setStatus] = useState(currentStatus);
     const [isWaiting, setWaiting] = useState(false);
     const [input, setInput] = useState<string | null>(null);
     const [output, setOutput] = useState<string | null>(null)
     const [selectedFile, setSelectedFile] = useState<IDataFile | null | undefined>()
     const [dataFiles, setDataFiles] = useState<IDataFile[]>([])
+    let projectContainerReplicaName : string
+
+    if (!sessionStorage.getItem(`${projectName}`)){
+        const myuuid:string = crypto.randomUUID();
+        sessionStorage.setItem(projectName,myuuid)
+        projectContainerReplicaName = `${projectName}_${myuuid}`
+    } else {
+        projectContainerReplicaName = sessionStorage.getItem(projectName) || ""
+    }
+
+    useLayoutEffect(()=>{
+        getProjectData()
+        getIsRunning()
+    },[])
 
     const getProjectData = () => {
         api<IDataFile[]>(dataFileUrl)
@@ -39,7 +52,9 @@ export const AppPane: FC<IPane> = ({
             })
     }
 
-    const onSelectDataFile = (dataFile: IDataFile) => {setSelectedFile(dataFile)}
+    const onSelectDataFile = (dataFile: IDataFile) => {
+        setSelectedFile(dataFile)
+    }
 
     const handleChange = ({value}: { value: string | null }) => setInput(value);
 
@@ -66,27 +81,32 @@ export const AppPane: FC<IPane> = ({
     };
 
     const runProject = () => {
+        const intent: RunIntent = {
+            id: projectId,
+            container_name:projectContainerReplicaName
+        }
         setWaiting(true);
         fetch(runUrl, {
             method: 'POST',
-            headers: {
-                'id': projectId,
-            }
+            body: JSON.stringify(intent)
         })
             .then((response) => {
                 setWaiting(false);
                 if (!response.ok) {
                     throw new Error(response.statusText);
                 }
-                setStatus(Status.Running);
-                setOutput("")
+                response.text().then(t => {
+                    console.log(t)
+                    getIsRunning()
+                    setOutput("")
+                })
             });
     };
 
     const attachInput = () => {
         if (!input) return
         const intent: AttachIntentInput = {
-            Name: projectName,
+            Name: projectContainerReplicaName,
             Input: input
         }
         fetch(attachUrl, {
@@ -99,7 +119,7 @@ export const AppPane: FC<IPane> = ({
                 }
                 response.text().then(text => {
                     setOutput(text)
-                    getStatus()
+                    getIsRunning()
                     setInput("")
                 })
             });
@@ -108,7 +128,7 @@ export const AppPane: FC<IPane> = ({
     const attachFile = () => {
         if (!selectedFile) return
         const intent: AttachIntentFile = {
-            Name: projectName,
+            Name: projectContainerReplicaName,
             Data_id: selectedFile.ID.toString()
         }
         fetch(attachUrlFileUrl, {
@@ -121,14 +141,13 @@ export const AppPane: FC<IPane> = ({
                 }
                 response.text().then(text => {
                     setOutput(text)
-                    getStatus()
+                    getIsRunning()
                 })
             });
     }
 
-    const getStatus = () => {
-
-        fetch(`${statusCheckUrl}?field=id&val=${projectId}`, {})
+    const getIsRunning = () => {
+        fetch(`${isRunningUrl}?container_name=${projectContainerReplicaName}`, {})
             .then((response) => {
 
                 if (!response.ok) {
@@ -136,7 +155,12 @@ export const AppPane: FC<IPane> = ({
                 }
                 console.log(response)
                 response.text().then(text => {
-                    setStatus(Number(text))
+                    if (text == "true"){
+                        setIsRunning(true)
+                    } else {
+                        setIsRunning(false)
+                        sessionStorage.removeItem(projectName)
+                    }
                 })
             });
     }
@@ -144,11 +168,6 @@ export const AppPane: FC<IPane> = ({
     const setChecked = () => {
         setIsUseFile(!isUseFile)
     }
-
-
-    useLayoutEffect(()=> {
-        getProjectData()
-    },[])
 
     const content = () => {
         return (
@@ -166,7 +185,7 @@ export const AppPane: FC<IPane> = ({
                         handleChange={handleChange}
                         input={input || ""}
                         output={output || ""}
-                        status={status}/>
+                        isRunning={isRunning}/>
                     :
                     <PanelFile
                         fileContentUrl={fileContentUrl}
@@ -188,13 +207,13 @@ export const AppPane: FC<IPane> = ({
                             size='s'
                             label={'Run'}
                             onClick={runProject}
-                            disabled={status === Status.Default}
+                            disabled={status == Status.Default}
                             className={"button_action"}/>
                         <Button
                             size='s'
                             label={'Attach'}
                             onClick={isUseFile ? attachFile : attachInput}
-                            disabled={status !== Status.Running}
+                            disabled={!isRunning}
                             className={"button_action"}/>
                     </div>
                     <div className={"button_pane_right"}>
@@ -212,47 +231,6 @@ export const AppPane: FC<IPane> = ({
     const waiting = () => {
         return (<Loader className={"loader"}/>);
     };
+
     return isWaiting ? waiting() : content();
 };
-
-
-
-/* Использовать так
-*
-*
-* const [config, setConfig] = useState<ProjectConfig>()
-
-    const getProjectDocStatus = () => {
-        api<ProjectConfig[]>("http://localhost:8084/project_config/filter?field=id&val=4")
-            .then(projectsConfigs => {
-                setConfig(projectsConfigs[0])
-            })
-    }
-
-    useLayoutEffect(()=>{
-        getProjectDocStatus()
-    },[])
-
-
-    if (config) {
-        return (
-            <Theme preset={presetGpnDefault}>
-                <AppPane buildUrl={'http://localhost:8084/project_config/build'}
-                         dataFileUrl={"http://localhost:8084/data"}
-                         runUrl={'http://localhost:8084/project_config/run'}
-                         attachUrl={"http://localhost:8084/project_config/attach"}
-                         attachUrlFileUrl={"http://localhost:8084/project_config/attach/data"}
-                         statusCheckUrl={"http://localhost:8084/project_config/status"}
-                         fileContentUrl={"http://localhost:8084/data/content"}
-                         projectId={config.ID.toString()}
-                         projectName={config.Name}
-                         currentStatus={config.Status}
-                 />
-            </Theme>
-        )
-    } else {
-        return <div>Load</div>
-    }
-    *
-    *
-    * */

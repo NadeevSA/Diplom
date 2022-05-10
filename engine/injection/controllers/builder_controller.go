@@ -1,31 +1,14 @@
 package controllers
 
 import (
-	"engine_app/core"
 	"engine_app/database/model"
 	"engine_app/filters"
-	"engine_app/providers"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/docker/docker/api/types"
 )
-
-type AttachIntent struct {
-	Name  string `json:"name"`
-	Input string `json:"input"`
-}
-
-type AttachIntentData struct {
-	Name   string `json:"name"`
-	DataId string `json:"data_id"`
-}
-
-type BuilderController struct {
-	Provider *providers.Provider
-	Builder  *core.Builder
-}
 
 func (b *BuilderController) BuildProjectDoc(
 	writer http.ResponseWriter,
@@ -57,11 +40,6 @@ func (b *BuilderController) BuildProjectDoc(
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-}
-
-type RunProjectIntent struct {
-	Id            string `json:"id"`
-	ContainerName string `json:"container_name"`
 }
 
 func (b *BuilderController) RunProjectDoc(
