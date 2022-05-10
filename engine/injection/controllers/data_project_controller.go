@@ -27,7 +27,7 @@ func (c *DataProjectController) AddDataProject(
 		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 	} else {
-		writer.WriteHeader(200)
+		writer.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -68,6 +68,6 @@ func (c *DataProjectController) DeleteDataProject(
 		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 	} else {
-		writer.WriteHeader(200)
+		writer.WriteHeader(http.StatusOK)
 	}
 }

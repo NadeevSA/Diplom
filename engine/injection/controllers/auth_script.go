@@ -24,13 +24,13 @@ func (a *AuthService) Auth(next http.HandlerFunc, useAuth bool) http.HandlerFunc
 		reqToken := r.Header.Get("Authorization")
 		splitToken := strings.Split(reqToken, "Bearer ")
 		if len(splitToken) == 1 {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 		reqToken = splitToken[1]
 		_, err := ParseToken(reqToken, signingKey)
 		if err != nil {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -57,13 +57,13 @@ func (a *AuthService) AuthCheckUserProjectBody(next http.HandlerFunc, useAuth bo
 		err := a.AppInjection.Provider.QueryListStatement(&users, filter)
 
 		if err != nil {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte(err.Error()))
 			return
 		}
 
 		if len(users) == 0 {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("No such user"))
 			return
 		}
@@ -72,14 +72,14 @@ func (a *AuthService) AuthCheckUserProjectBody(next http.HandlerFunc, useAuth bo
 		reqToken := r.Header.Get("Authorization")
 		splitToken := strings.Split(reqToken, "Bearer ")
 		if len(splitToken) == 1 {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 		reqToken = splitToken[1]
 		userNameFromToken, err := ParseToken(reqToken, signingKey)
 
 		if err != nil || user.Email != userNameFromToken {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -116,12 +116,12 @@ func (a *AuthService) AuthServiceUserProjectConfig(next http.HandlerFunc, useAut
 		err = a.AppInjection.Provider.QueryListStatement(&users, filter)
 
 		if err != nil {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte(err.Error()))
 			return
 		}
 		if len(users) == 0 {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("No such user"))
 			return
 		}
@@ -130,14 +130,14 @@ func (a *AuthService) AuthServiceUserProjectConfig(next http.HandlerFunc, useAut
 		reqToken := r.Header.Get("Authorization")
 		splitToken := strings.Split(reqToken, "Bearer ")
 		if len(splitToken) == 1 {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 		reqToken = splitToken[1]
 		userNameFromToken, err := ParseToken(reqToken, signingKey)
 
 		if err != nil || user.Email != userNameFromToken {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -163,7 +163,7 @@ func (a *AuthService) AuthCheckUserProjectGet(next http.HandlerFunc, useAuth boo
 
 		err := a.AppInjection.Provider.QueryListStatement(&project, filter)
 		if err != nil {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -177,13 +177,13 @@ func (a *AuthService) AuthCheckUserProjectGet(next http.HandlerFunc, useAuth boo
 		err = a.AppInjection.Provider.QueryListStatement(&users, filter)
 
 		if err != nil {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))
 			return
 		}
 
 		if len(users) == 0 {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("No such user"))
 			return
 		}
@@ -192,14 +192,14 @@ func (a *AuthService) AuthCheckUserProjectGet(next http.HandlerFunc, useAuth boo
 		reqToken := r.Header.Get("Authorization")
 		splitToken := strings.Split(reqToken, "Bearer ")
 		if len(splitToken) == 1 {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 		reqToken = splitToken[1]
 		userNameFromToken, err := ParseToken(reqToken, signingKey)
 
 		if err != nil || user.Email != userNameFromToken {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -227,7 +227,7 @@ func (a *AuthService) AuthCheckUserProjectConfigGet(next http.HandlerFunc, useAu
 
 		err := a.AppInjection.Provider.QueryListStatement(&projectConfig, filter)
 		if err != nil {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -239,7 +239,7 @@ func (a *AuthService) AuthCheckUserProjectConfigGet(next http.HandlerFunc, useAu
 
 		err = a.AppInjection.Provider.QueryListStatement(&project, filter)
 		if err != nil {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte(err.Error()))
 			return
 		}
@@ -252,13 +252,13 @@ func (a *AuthService) AuthCheckUserProjectConfigGet(next http.HandlerFunc, useAu
 		err = a.AppInjection.Provider.QueryListStatement(&users, filter)
 
 		if err != nil {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))
 			return
 		}
 
 		if len(users) == 0 {
-			w.WriteHeader(500)
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("No such user"))
 			return
 		}
@@ -267,14 +267,14 @@ func (a *AuthService) AuthCheckUserProjectConfigGet(next http.HandlerFunc, useAu
 		reqToken := r.Header.Get("Authorization")
 		splitToken := strings.Split(reqToken, "Bearer ")
 		if len(splitToken) == 1 {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 		reqToken = splitToken[1]
 		userNameFromToken, err := ParseToken(reqToken, signingKey)
 
 		if err != nil || user.Email != userNameFromToken {
-			w.WriteHeader(403)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte(err.Error()))
 			return
 		}

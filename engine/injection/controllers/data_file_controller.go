@@ -66,11 +66,11 @@ func (c *DataFileController) GetDataFileContent(
 	}
 	err := c.AppInjection.Provider.QueryListStatement(&data, filter)
 	if err != nil {
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 		return
 	}
 	str := string(data.File)
 	writer.Write([]byte(str))
-	writer.WriteHeader(200)
+	writer.WriteHeader(http.StatusOK)
 }

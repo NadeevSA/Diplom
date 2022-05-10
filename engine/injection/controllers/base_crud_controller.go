@@ -15,15 +15,15 @@ func (bc *BaseCrudController) Delete(obj interface{}, request *http.Request, wri
 	var deleteIntent filters.IdsFilter
 	var err = json.NewDecoder(request.Body).Decode(&deleteIntent)
 	if err != nil {
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 	} else {
 		err = bc.AppInjection.Provider.DeleteStatement(obj, deleteIntent.Ids)
 		if err != nil {
-			writer.WriteHeader(500)
+			writer.WriteHeader(http.StatusBadRequest)
 			writer.Write([]byte(err.Error()))
 		} else {
-			writer.WriteHeader(200)
+			writer.WriteHeader(http.StatusOK)
 		}
 	}
 }
@@ -42,10 +42,10 @@ func (bc *BaseCrudController) GetFilteredBy(
 	}
 
 	if err := bc.AppInjection.Provider.QueryListStatement(obj, filter); err != nil {
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 	} else {
-		writer.WriteHeader(200)
+		writer.WriteHeader(http.StatusOK)
 		json.NewEncoder(writer).Encode(obj)
 	}
 }
@@ -55,10 +55,10 @@ func (bc *BaseCrudController) GetAll(
 	_ *http.Request,
 	writer http.ResponseWriter) {
 	if err := bc.AppInjection.Provider.QueryListStatementAll(obj); err != nil {
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 	} else {
-		writer.WriteHeader(200)
+		writer.WriteHeader(http.StatusOK)
 		json.NewEncoder(writer).Encode(obj)
 	}
 }
@@ -68,10 +68,10 @@ func (bc *BaseCrudController) Put(
 	_ *http.Request,
 	writer http.ResponseWriter) {
 	if err := bc.AppInjection.Provider.UpdateStatement(obj); err != nil {
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 	} else {
-		writer.WriteHeader(200)
+		writer.WriteHeader(http.StatusOK)
 		json.NewEncoder(writer).Encode(obj)
 	}
 }
@@ -81,10 +81,10 @@ func (bc *BaseCrudController) Add(
 	_ *http.Request,
 	writer http.ResponseWriter) {
 	if err := bc.AppInjection.Provider.AddStatement(obj); err != nil {
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 	} else {
-		writer.WriteHeader(200)
+		writer.WriteHeader(http.StatusOK)
 		json.NewEncoder(writer).Encode(obj)
 	}
 }

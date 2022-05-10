@@ -37,13 +37,13 @@ func Decode(request *http.Request, obj interface{}, writer http.ResponseWriter) 
 	if err = json.Unmarshal(body, obj); err != nil {
 		panic(err)
 		writer.Write([]byte("Decode error"))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	if err != nil {
 		writer.Write([]byte("Decode error"))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 }
