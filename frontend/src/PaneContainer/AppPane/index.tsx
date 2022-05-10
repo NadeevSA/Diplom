@@ -1,4 +1,4 @@
-import React, {FC, useLayoutEffect, useState} from 'react';
+import React, {FC, useEffect, useLayoutEffect, useState} from 'react';
 import {AttachIntentFile, AttachIntentInput, IPane, RunIntent, Status} from './types';
 import {Button} from '@consta/uikit/Button';
 import './index.css';
@@ -7,9 +7,10 @@ import {Switch} from "@consta/uikit/Switch";
 import {PanelHand} from "./PaneHand";
 import {PanelFile} from "./PaneFile";
 import {IDataFile} from "./PaneFile/types";
-import {api} from "./api";
+import {api, getIsRunning} from "./api";
 
 export const AppPane: FC<IPane> = ({
+                                       defaultOutput,
                                        attachUrlFileUrl,
                                        dataFileUrl,
                                        runUrl,
@@ -18,32 +19,29 @@ export const AppPane: FC<IPane> = ({
                                        isRunningUrl,
                                        projectId,
                                        currentStatus,
-                                       projectName,
+                                       projectContainerReplicaName,
                                        fileContentUrl
                                    }) => {
-
+    const [outPut, setOutput] = useState<string>(defaultOutput)
     const [isUseFile, setIsUseFile] = useState(false)
     const [isRunning, setIsRunning] = useState(false)
     const [status, setStatus] = useState(currentStatus);
     const [isWaiting, setWaiting] = useState(false);
     const [input, setInput] = useState<string | null>(null);
-    const [output, setOutput] = useState<string | null>(null)
     const [selectedFile, setSelectedFile] = useState<IDataFile | null | undefined>()
     const [dataFiles, setDataFiles] = useState<IDataFile[]>([])
-    let projectContainerReplicaName : string
 
-    if (!sessionStorage.getItem(`${projectName}`)){
-        const myuuid:string = crypto.randomUUID();
-        sessionStorage.setItem(projectName,myuuid)
-        projectContainerReplicaName = `${projectName}_${myuuid}`
-    } else {
-        projectContainerReplicaName = sessionStorage.getItem(projectName) || ""
-    }
-
-    useLayoutEffect(()=>{
+    useLayoutEffect(() => {
         getProjectData()
-        getIsRunning()
-    },[])
+        getIsRunningApp()
+    }, [])
+
+    useEffect(() => {
+        if (!isRunning) {
+            console.log("not_running")
+            sessionStorage.removeItem(`${projectContainerReplicaName}_data`)
+        }
+    }, [isRunning])
 
     const getProjectData = () => {
         api<IDataFile[]>(dataFileUrl)
@@ -83,7 +81,7 @@ export const AppPane: FC<IPane> = ({
     const runProject = () => {
         const intent: RunIntent = {
             id: projectId,
-            container_name:projectContainerReplicaName
+            container_name: projectContainerReplicaName
         }
         setWaiting(true);
         fetch(runUrl, {
@@ -97,7 +95,7 @@ export const AppPane: FC<IPane> = ({
                 }
                 response.text().then(t => {
                     console.log(t)
-                    getIsRunning()
+                    getIsRunningApp()
                     setOutput("")
                 })
             });
@@ -119,7 +117,8 @@ export const AppPane: FC<IPane> = ({
                 }
                 response.text().then(text => {
                     setOutput(text)
-                    getIsRunning()
+                    sessionStorage.setItem(`${projectContainerReplicaName}_data`,text)
+                    getIsRunningApp()
                     setInput("")
                 })
             });
@@ -141,28 +140,14 @@ export const AppPane: FC<IPane> = ({
                 }
                 response.text().then(text => {
                     setOutput(text)
-                    getIsRunning()
+                    getIsRunningApp()
                 })
             });
     }
 
-    const getIsRunning = () => {
-        fetch(`${isRunningUrl}?container_name=${projectContainerReplicaName}`, {})
-            .then((response) => {
-
-                if (!response.ok) {
-                    throw new Error(response.statusText);
-                }
-                console.log(response)
-                response.text().then(text => {
-                    if (text == "true"){
-                        setIsRunning(true)
-                    } else {
-                        setIsRunning(false)
-                        sessionStorage.removeItem(projectName)
-                    }
-                })
-            });
+    const getIsRunningApp = () => {
+        getIsRunning(isRunningUrl, projectContainerReplicaName)
+            .then(res => setIsRunning(res))
     }
 
     const setChecked = () => {
@@ -184,7 +169,7 @@ export const AppPane: FC<IPane> = ({
                     <PanelHand
                         handleChange={handleChange}
                         input={input || ""}
-                        output={output || ""}
+                        output={outPut || ""}
                         isRunning={isRunning}/>
                     :
                     <PanelFile
@@ -192,7 +177,7 @@ export const AppPane: FC<IPane> = ({
                         dataFile={selectedFile}
                         dataFiles={dataFiles}
                         onSetDataFile={onSelectDataFile}
-                        output={output || ""}
+                        output={outPut || ""}
                         attachFileUrl={attachUrlFileUrl}
                         status={status}/>
                 }

@@ -225,6 +225,7 @@ func CopyBytesToFile(bytes []byte, name string, dirName string) error {
 			log.Fatal(err)
 		}
 	}(destination)
+
 	_, err := destination.Write(bytes)
 	return err
 }

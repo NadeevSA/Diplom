@@ -30,7 +30,7 @@ func main() {
 		dbName,
 		sslMode)
 
-	var useAuth = true
+	var useAuth = false
 
 	viper.AddConfigPath(".")
 	viper.SetConfigName("config")

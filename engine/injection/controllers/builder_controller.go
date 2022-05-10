@@ -33,6 +33,11 @@ func (b *BuilderController) BuildProjectDoc(
 	}
 
 	projectConfig := projectConfigs[0]
+	if projectConfig.File == nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	b.Builder.HandleBuild(projectConfig, writer, "temp")
 	err = b.Provider.UpdateStatement(projectConfig)
 	if err != nil {

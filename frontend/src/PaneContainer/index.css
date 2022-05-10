@@ -1,0 +1,11 @@
+.loader {
+    margin-top: 4rem;
+}
+
+.buttons_open_close{
+    display: flex;
+    flex-direction: row;
+    padding-left: 0.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}

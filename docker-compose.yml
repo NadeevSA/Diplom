@@ -1,7 +1,7 @@
 version: '3.9'
 services:
-    Postgras:
-        container_name: Postgras
+    postgres:
+        container_name: postgres
         image: postgres:alpine
         restart: always
         environment:
