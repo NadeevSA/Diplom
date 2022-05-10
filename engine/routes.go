@@ -20,13 +20,14 @@ func AddRoutes(app *controllers.App) *mux.Router {
 	router.HandleFunc("/project_config", auth.AuthServiceUserProjectConfig(app.ProjectConfigController.PutProjectConfig, app.UseAuth)).Methods("PUT")
 	router.HandleFunc("/project_config", auth.AuthServiceUserProjectConfig(app.ProjectConfigController.DeleteProjectConfig, app.UseAuth)).Methods("DELETE")
 	router.HandleFunc("/project_config/filter", app.ProjectConfigController.GetFilteredProjectConfig).Methods("GET")
-	router.HandleFunc("/project_config/status", app.ProjectConfigController.GetStatusProjectConfig).Methods("GET")
-
 	router.HandleFunc("/project_config/file", app.ProjectConfigController.AddProjectConfigFiles).Methods("POST")
-	router.HandleFunc("/project_config/build", app.BuilderController.BuildProjectDoc).Methods("POST")
-	router.HandleFunc("/project_config/run", app.BuilderController.RunProjectDoc).Methods("POST")
-	router.HandleFunc("/project_config/attach", app.BuilderController.AttachProjectDoc).Methods("POST")
-	router.HandleFunc("/project_config/attach/data", app.BuilderController.AttachProjectDocData).Methods("POST")
+
+	router.HandleFunc("/builder/build", app.BuilderController.BuildProjectDoc).Methods("POST")
+	router.HandleFunc("/builder/run", app.BuilderController.RunProjectDoc).Methods("POST")
+	router.HandleFunc("/builder/attach", app.BuilderController.AttachProjectDoc).Methods("POST")
+	router.HandleFunc("/builder/attach/data", app.BuilderController.AttachProjectDocData).Methods("POST")
+	router.HandleFunc("/builder/status", app.BuilderController.GetStatusProjectConfig).Methods("GET")
+	router.HandleFunc("/builder/is_running", app.BuilderController.GetProjectConfigRunned).Methods("GET")
 
 	router.HandleFunc("/project", app.ProjectController.GetAllProject).Methods("GET")
 	router.HandleFunc("/project", auth.AuthCheckUserProjectBody(app.ProjectController.AddProject, app.UseAuth)).Methods("POST")

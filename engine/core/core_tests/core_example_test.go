@@ -48,7 +48,7 @@ func Test_BuildImage(t *testing.T) {
 }
 
 func Test_CanCreateContainer(t *testing.T) {
-	resp, err := builder.ContainerCreate("summer", runFile)
+	resp, err := builder.ContainerCreate("summer", runFile, "summer")
 	if err != nil {
 		t.Fatal(err)
 	} else {

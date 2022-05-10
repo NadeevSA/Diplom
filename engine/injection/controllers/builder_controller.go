@@ -5,6 +5,7 @@ import (
 	"engine_app/database/model"
 	"engine_app/filters"
 	"engine_app/providers"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -36,63 +37,68 @@ func (b *BuilderController) BuildProjectDoc(
 		Field: "id",
 		Args:  []string{id},
 	}
+
 	err := b.Provider.QueryListStatement(&projectConfigs, filter)
 	if err != nil {
 		writer.Write([]byte("can not find file"))
+		return
+	}
+
+	if len(projectConfigs) == 0 {
+		writer.Write([]byte("No such config"))
 		return
 	}
 
 	projectConfig := projectConfigs[0]
 	b.Builder.HandleBuild(projectConfig, writer, "temp")
-	projectConfig.Status = model.Status(1)
 	err = b.Provider.UpdateStatement(projectConfig)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
+}
+
+type RunProjectIntent struct {
+	Id            string `json:"id"`
+	ContainerName string `json:"container_name"`
 }
 
 func (b *BuilderController) RunProjectDoc(
 	writer http.ResponseWriter,
 	request *http.Request) {
-	id := request.Header.Get("id")
-
+	var runProjectIntent RunProjectIntent
+	Decode(request, &runProjectIntent, writer)
+	containerName := runProjectIntent.ContainerName
 	var projectConfigs []model.ProjectConfig
 	filter := filters.FilterBy{
 		Field: "id",
-		Args:  []string{id},
+		Args:  []string{runProjectIntent.Id},
 	}
 	err := b.Provider.QueryListStatement(&projectConfigs, filter)
 	if err != nil {
-		writer.Write([]byte("can not find file"))
-		writer.WriteHeader(500)
+		writer.Write([]byte("can not find project"))
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	projectConfig := projectConfigs[0]
-	err = b.Builder.ContainerDelete(projectConfig.Name)
-	_, err = b.Builder.ContainerCreate(projectConfig.Name, projectConfig.RunFile)
+
+	_, err = b.Builder.ContainerCreate(projectConfig.Name, projectConfig.RunFile, containerName)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = b.Builder.ContainerRun(projectConfig.Name)
+	err = b.Builder.ContainerRun(containerName)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	projectConfig.Status = model.Status(2)
-	err = b.Provider.UpdateStatement(projectConfig)
-	if err != nil {
-		writer.Write([]byte(err.Error()))
-		writer.WriteHeader(500)
-		return
-	}
-	writer.Write([]byte("Container started"))
-	writer.WriteHeader(200)
+
+	writer.Write([]byte("container created"))
+	writer.WriteHeader(http.StatusOK)
 }
 
 func (b *BuilderController) AttachProjectDoc(
@@ -103,20 +109,20 @@ func (b *BuilderController) AttachProjectDoc(
 	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	inputBytes := []byte(attachIntent.Input)
 	_, err = waiter.Conn.Write(inputBytes)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	defer waiter.Close()
 	defer waiter.CloseWrite()
-	defer b.CheckIfWorking(attachIntent.Name, writer)
+	defer b.HandleContainerWorking(attachIntent.Name, writer)
 
 	var c1 = make(chan bool)
 	go func() {
@@ -140,7 +146,7 @@ func (b *BuilderController) AttachProjectDocData(
 	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -151,20 +157,20 @@ func (b *BuilderController) AttachProjectDocData(
 	})
 	if err != nil {
 		writer.Write([]byte(err.Error()))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	inputBytes := data.File
 	_, err = waiter.Conn.Write(inputBytes)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	defer waiter.Close()
 	defer waiter.CloseWrite()
-	defer b.CheckIfWorking(attachIntent.Name, writer)
+	defer b.HandleContainerWorking(attachIntent.Name, writer)
 
 	var c1 = make(chan bool)
 	go func() {
@@ -185,32 +191,55 @@ func WriteToWriter(writer *http.ResponseWriter, waiter *types.HijackedResponse) 
 	return true
 }
 
-func (b *BuilderController) CheckIfWorking(name string, writer http.ResponseWriter) {
+func (b *BuilderController) HandleContainerWorking(name string, writer http.ResponseWriter) {
 	time.Sleep(1 * time.Second)
 	isWorking, err := b.Builder.CheckIfContainerWorking(name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	if !isWorking {
-		var projectConfigs []model.ProjectConfig
-		filter := filters.FilterBy{
-			Field: "name",
-			Args:  []string{name},
-		}
-		err = b.Provider.QueryListStatement(&projectConfigs, filter)
+		err = b.Builder.ContainerDelete(name)
 		if err != nil {
 			writer.Write([]byte(err.Error()))
-			writer.WriteHeader(500)
-			return
-		}
-		projectConfigs[0].Status = model.Status(1)
-		err = b.Provider.UpdateStatement(projectConfigs[0])
-		if err != nil {
-			writer.Write([]byte(err.Error()))
-			writer.WriteHeader(500)
-			return
+			writer.WriteHeader(http.StatusBadRequest)
 		}
 	}
+}
+
+func (c *BuilderController) GetStatusProjectConfig(
+	writer http.ResponseWriter,
+	request *http.Request) {
+	field, _ := request.URL.Query()["field"]
+	args, _ := request.URL.Query()["val"]
+	filter := filters.FilterBy{
+		Field: field[0],
+		Args:  args,
+	}
+	var projectConfigs []model.ProjectConfig
+
+	err := c.Provider.QueryListStatement(&projectConfigs, filter)
+	if err != nil {
+		writer.Write([]byte("Can not get project ids"))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	str := fmt.Sprintf("%d", projectConfigs[0].Status)
+	writer.Write([]byte(str))
+}
+
+func (c *BuilderController) GetProjectConfigRunned(
+	writer http.ResponseWriter,
+	request *http.Request) {
+	field, _ := request.URL.Query()["container_name"]
+	name := field[0]
+	isWorking, err := c.Builder.CheckIfContainerWorking(name)
+	if !isWorking || err != nil {
+		writer.Write([]byte("false"))
+	} else {
+		writer.Write([]byte("true"))
+	}
+	writer.WriteHeader(http.StatusOK)
 }

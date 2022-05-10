@@ -5,7 +5,6 @@ type Status uint
 const (
 	Loaded Status = 0
 	Build  Status = 1
-	Runned Status = 2
 )
 
 type ConfigurationType uint

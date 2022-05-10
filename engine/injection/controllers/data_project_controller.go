@@ -24,7 +24,7 @@ func (c *DataProjectController) AddDataProject(
 
 	_, err := c.Db.Exec("insert into project_config_data (data_id, project_config_id)values ($1, $2)", intent.DataId, intent.ProjectConfigId)
 	if err != nil {
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 	} else {
 		writer.WriteHeader(200)
@@ -65,7 +65,7 @@ func (c *DataProjectController) DeleteDataProject(
 
 	_, err := c.Db.Exec("delete from project_config_data where (data_id = $1 AND project_config_id = $2)", intent.DataId, intent.ProjectConfigId)
 	if err != nil {
-		writer.WriteHeader(500)
+		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 	} else {
 		writer.WriteHeader(200)

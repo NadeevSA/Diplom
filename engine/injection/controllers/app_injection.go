@@ -38,10 +38,12 @@ func Decode(request *http.Request, obj interface{}, writer http.ResponseWriter) 
 		panic(err)
 		writer.Write([]byte("Decode error"))
 		writer.WriteHeader(500)
+		return
 	}
 	request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	if err != nil {
 		writer.Write([]byte("Decode error"))
 		writer.WriteHeader(500)
+		return
 	}
 }

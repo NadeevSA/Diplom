@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"bytes"
+	"engine_app/core"
 	"engine_app/database/model"
 	"engine_app/filters"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -12,6 +12,7 @@ import (
 
 type ProjectConfigController struct {
 	*BaseCrudController
+	B *core.Builder
 }
 
 func (c *ProjectConfigController) AddProjectConfig(
@@ -98,25 +99,4 @@ func (c *ProjectConfigController) AddProjectConfigFiles(
 	writer.WriteHeader(200)
 	writer.Write([]byte("file attached"))
 
-}
-
-func (c *ProjectConfigController) GetStatusProjectConfig(
-	writer http.ResponseWriter,
-	request *http.Request) {
-	field, _ := request.URL.Query()["field"]
-	args, _ := request.URL.Query()["val"]
-	filter := filters.FilterBy{
-		Field: field[0],
-		Args:  args,
-	}
-	var projectConfigs []model.ProjectConfig
-
-	err := c.AppInjection.Provider.QueryListStatement(&projectConfigs, filter)
-	if err != nil {
-		writer.Write([]byte("Can not get project ids"))
-		writer.WriteHeader(500)
-		return
-	}
-	str := fmt.Sprintf("%d", projectConfigs[0].Status)
-	writer.Write([]byte(str))
 }

@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"engine_app/database/model"
+	"errors"
 	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -31,7 +32,7 @@ func (b *Builder) BuildImage(projectName, buildCommand, runFile, pathToEntry, te
 	return nil
 }
 
-func (b *Builder) ContainerCreate(imageName, executableFile string) (container.ContainerCreateCreatedBody, error) {
+func (b *Builder) ContainerCreate(imageName, executableFile, containerName string) (container.ContainerCreateCreatedBody, error) {
 	cmd := fmt.Sprintf("/app/%s", executableFile)
 	resp, err := b.Cli.ContainerCreate(b.Ctx, &container.Config{
 		Image:        imageName,
@@ -41,7 +42,7 @@ func (b *Builder) ContainerCreate(imageName, executableFile string) (container.C
 		Tty:          true,
 		AttachStdout: true,
 		OpenStdin:    true,
-	}, nil, nil, nil, imageName)
+	}, nil, nil, nil, containerName)
 	return resp, err
 }
 
@@ -130,6 +131,8 @@ func (b *Builder) HandleBuild(
 	writer.Write([]byte("build completed"))
 }
 
+var errNoContainer = errors.New("no such container")
+
 func (b *Builder) FindContainer(tag string) (*types.Container, error) {
 	opts := types.ContainerListOptions{All: true}
 	opts.Filters = filters.NewArgs(filters.KeyValuePair{
@@ -140,6 +143,10 @@ func (b *Builder) FindContainer(tag string) (*types.Container, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(cont) == 0 {
+		return nil, errNoContainer
+	}
+
 	return &cont[0], nil
 }
 
@@ -148,6 +155,7 @@ func (b *Builder) CheckIfContainerWorking(tag string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
 	status := strings.Split(cont.Status, " ")[0]
 	if status != "Up" {
 		return false, nil
