@@ -1,20 +1,13 @@
 import './main.module.css';
 import { Table, TableColumn } from '@consta/uikit/Table';
 import { Text } from '@consta/uikit/Text';
+import { GetProject, Project} from '../exampleRudexAxios/createSlice';
+import { useSelector, useDispatch } from 'react-redux'
 
 interface Props {}
 
 export const rows = [
-  { id: "1", name: 'Проект1', author: 'Антон', createData: "13.04.2022",  conf: "Java", status: "В работе"},
-  { id: "2", name: 'Проект2', author: 'Антон', createData: "13.04.2022",  conf: "Java", status: "В работе"},
-  { id: "3", name: 'Проект3', author: 'Антон', createData: "13.04.2022",  conf: "Java", status: "В работе"},
-  { id: "4", name: 'Проект4', author: 'Антон', createData: "13.04.2022",  conf: "Java", status: "В работе"},
-  { id: "5", name: 'Проект5', author: 'Антон', createData: "13.04.2022",  conf: "Java", status: "В работе"},
-  { id: "1", name: 'Проект1', author: 'Антон', createData: "13.04.2022",  conf: "Java", status: "В работе"},
-  { id: "2", name: 'Проект2', author: 'Антон', createData: "13.04.2022",  conf: "Java", status: "В работе"},
-  { id: "3", name: 'Проект3', author: 'Антон', createData: "13.04.2022",  conf: "Java", status: "В работе"},
-  { id: "4", name: 'Проект4', author: 'Антон', createData: "13.04.2022",  conf: "Java", status: "В работе"},
-  { id: "5", name: 'Проект5', author: 'Антон', createData: "13.04.2022",  conf: "Java", status: "В работе"},
+  { id: "2", name: 'Проект1', UserId: 1, Description: "Description"},
 ];
 
 export const columns: TableColumn<typeof rows[number]>[] = [
@@ -30,29 +23,31 @@ export const columns: TableColumn<typeof rows[number]>[] = [
   },
   {
     title: 'Автор',
-    accessor: 'author',
+    accessor: 'UserId',
     align: 'center',
   },
   {
-    title: 'Дата создания',
-    accessor: 'createData',
-    align: 'center',
-  },
-  {
-    title: 'Конфигурация',
-    accessor: 'conf',
-    align: 'center',
-  },
-  {
-    title: 'Статус',
-    accessor: 'status',
+    title: 'Описание',
+    accessor: 'Description',
     align: 'center',
   },
 ];
 
+function MyTable() {
+  const projects = useSelector(GetProject);
+  console.log("projects", projects);
+  projects.then(response => {
+    console.log("project", response);
+    rows.push(response)
+  })
+  return rows;
+}
+
 export const main = (props: Props) => {
+  const newRows = MyTable();
+  console.log("row", newRows)
   return (
-  <Table rows={rows} columns={columns} 
+  <Table rows={newRows} columns={columns} 
   borderBetweenColumns 
   stickyHeader 
   isResizable
