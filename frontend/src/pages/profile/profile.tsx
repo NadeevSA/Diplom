@@ -7,6 +7,7 @@ import { Text } from '@consta/uikit/Text';
 import { Table } from '@consta/uikit/Table';
 import { rows, columns } from '../main/main'
 import { CheckboxGroup } from '@consta/uikit/CheckboxGroup';
+import { ModalExampleCenter } from '../../pages/addProject/addProject';
 
 interface Props {}
 
@@ -76,6 +77,7 @@ function Projects() {
 export const profile = (props: Props) => {
     return (
         <Grid gap="xl" cols="4">
+            <GridItem><ModalExampleCenter></ModalExampleCenter></GridItem>
             <GridItem><Info></Info></GridItem>
             <GridItem rowStart="2"><Filter></Filter></GridItem>
             <GridItem colStart="2" col="3" row="2"><Projects></Projects></GridItem>

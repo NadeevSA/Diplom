@@ -7,9 +7,11 @@ export interface CounterState {
   name: string;
 }
 
-export interface User {
-  Id: number,
-  Email: string
+export interface Project {
+  id: string,
+  name: string,
+  UserId: number,
+  Description: string,
 }
 
 const initialState: CounterState = {
@@ -27,6 +29,56 @@ export const fetchProducts = createAsyncThunk<string>(
     console.log("name " + response.data[0].Name)
     return response.data[0].Name;
 });
+
+export const PostProject1 = (name: string | null) => createAsyncThunk<Project>(
+  "project", async (_, thunkAPI) => {
+    const { data } = await instance.post<Project>(
+      'project',
+      { Name: name, UserId: 1, Description: "desc"},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+    console.log("Post", data);
+    return data;
+});
+
+export async function PostProject(name: string | null, desc: string | null) {
+  const { data } = await instance.post<Project>(
+    'project',
+    { Name: name, Description: desc, UserId: 1},
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTIzNjc0NDUuODE3NzM0LCJpYXQiOjE2NTIyODEwNDUuODE3NzM0LCJ1c2VybmFtZSI6Ildlc3QxIn0.S0mN5EgR11_MnbvO7n0DDzEMGVleYPgUzkbhAehfDDQ",
+      },
+    },
+  );
+  console.log("Post", data);
+  return data;
+}
+
+export async function GetProject() {
+  const { data } = await instance.get<Project>(
+    'project',
+    {headers: {Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTIzNjc0NDUuODE3NzM0LCJpYXQiOjE2NTIyODEwNDUuODE3NzM0LCJ1c2VybmFtZSI6Ildlc3QxIn0.S0mN5EgR11_MnbvO7n0DDzEMGVleYPgUzkbhAehfDDQ"}},
+  );
+  console.log("Get", data);
+  return data;
+}
+
+export async function getUsers() {
+  const { data } = await instance.get<Project>(
+    'user',
+    {headers: {Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTIzNjc0NDUuODE3NzM0LCJpYXQiOjE2NTIyODEwNDUuODE3NzM0LCJ1c2VybmFtZSI6Ildlc3QxIn0.S0mN5EgR11_MnbvO7n0DDzEMGVleYPgUzkbhAehfDDQ"}},
+  );
+  console.log("Get", data);
+  return data;
+}
 
 export const counterSlice = createSlice({
   name: 'counter',
