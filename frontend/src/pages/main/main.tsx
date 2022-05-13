@@ -3,11 +3,12 @@ import { Table, TableColumn } from '@consta/uikit/Table';
 import { Text } from '@consta/uikit/Text';
 import { GetProject, Project} from '../exampleRudexAxios/createSlice';
 import { useSelector, useDispatch } from 'react-redux'
+import axios, { AxiosInstance } from 'axios';
 
 interface Props {}
 
 export const rows = [
-  { id: "2", name: 'Проект1', UserId: 1, Description: "Description"},
+  { id: "2", Name: 'Проект1', UserId: 1, Description: "Description"},
 ];
 
 export const columns: TableColumn<typeof rows[number]>[] = [
@@ -18,7 +19,7 @@ export const columns: TableColumn<typeof rows[number]>[] = [
   },
   {
     title: 'Название',
-    accessor: 'name',
+    accessor: 'Name',
     align: 'center',
   },
   {
@@ -33,25 +34,31 @@ export const columns: TableColumn<typeof rows[number]>[] = [
   },
 ];
 
+const instance = axios.create({
+  baseURL: "http://localhost:8084"
+});
+
 function MyTable() {
-  const projects = useSelector(GetProject);
-  console.log("projects", projects);
-  projects.then(response => {
-    console.log("project", response);
-    rows.push(response)
-  })
-  return rows;
+  const projects = GetProject();
+  instance.get(
+    'project',
+    {headers: {Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTIzNjc0NDUuODE3NzM0LCJpYXQiOjE2NTIyODEwNDUuODE3NzM0LCJ1c2VybmFtZSI6Ildlc3QxIn0.S0mN5EgR11_MnbvO7n0DDzEMGVleYPgUzkbhAehfDDQ"}},
+  ).then(response => {
+    console.log("response1", response);
+    console.log("Description1", response.data);
+    return response.data;
+  }).then(value => 
+    value.map((d: Project) => rows.push(d)));
+  return (
+    <Table rows={rows} columns={columns} 
+    borderBetweenColumns 
+    stickyHeader
+    isResizable
+    zebraStriped="even"
+    emptyRowsPlaceholder={<Text>Пусто</Text>}
+    lazyLoad={{ maxVisibleRows: 210, scrollableEl: window }} />)
 }
 
 export const main = (props: Props) => {
-  const newRows = MyTable();
-  console.log("row", newRows)
-  return (
-  <Table rows={newRows} columns={columns} 
-  borderBetweenColumns 
-  stickyHeader 
-  isResizable
-  zebraStriped="even"
-  emptyRowsPlaceholder={<Text>Пусто</Text>}
-  lazyLoad={{ maxVisibleRows: 210, scrollableEl: window }} />)
+  return MyTable();
 }

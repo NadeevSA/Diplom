@@ -9,7 +9,7 @@ export interface CounterState {
 
 export interface Project {
   id: string,
-  name: string,
+  Name: string,
   UserId: number,
   Description: string,
 }
