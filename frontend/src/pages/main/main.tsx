@@ -4,18 +4,25 @@ import { Text } from '@consta/uikit/Text';
 import { GetProject, Project} from '../exampleRudexAxios/createSlice';
 import { useSelector, useDispatch } from 'react-redux'
 import axios, { AxiosInstance } from 'axios';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { setOriginalNode } from 'typescript';
 
 interface Props {}
 
-export const rows = [
-  { id: "2", Name: 'Проект1', UserId: 1, Description: "Description"},
-];
+ export let rows: {
+    id: string;
+    Name: string;
+    UserId: number;
+    Avtor?: string;
+    Description: string;
+}[]
 
 export const columns: TableColumn<typeof rows[number]>[] = [
   {
     title: '№',
     accessor: 'id',
     align: 'center',
+    hidden: true,
   },
   {
     title: 'Название',
@@ -25,6 +32,12 @@ export const columns: TableColumn<typeof rows[number]>[] = [
   {
     title: 'Автор',
     accessor: 'UserId',
+    align: 'center',
+    hidden: true,
+  },
+  {
+    title: 'Автор',
+    accessor: 'Avtor',
     align: 'center',
   },
   {
@@ -38,25 +51,43 @@ const instance = axios.create({
   baseURL: "http://localhost:8084"
 });
 
-function MyTable() {
-  const projects = GetProject();
-  instance.get(
-    'project',
-    {headers: {Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTIzNjc0NDUuODE3NzM0LCJpYXQiOjE2NTIyODEwNDUuODE3NzM0LCJ1c2VybmFtZSI6Ildlc3QxIn0.S0mN5EgR11_MnbvO7n0DDzEMGVleYPgUzkbhAehfDDQ"}},
+function GetNameAvtor(val: number) {
+  let name = null;
+  return instance.get( `user/filter?field=id&val=${val}`,
+    {headers: {
+      Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc"
+    }},
   ).then(response => {
-    console.log("response1", response);
-    console.log("Description1", response.data);
-    return response.data;
-  }).then(value => 
-    value.map((d: Project) => rows.push(d)));
+    name = response.data.map((d: Project) => d.Name)[0];
+    console.log("nmae1", name);
+    return name;
+  });
+}
+
+function MyTable() {
+  const [data, setData] = useState<typeof rows>([]);
+  useEffect(() => {
+    instance.get( 'project',
+      {headers: {
+        Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc"
+      }},
+    ).then(response => {
+      let id = response.data.map((d: Project) => d.UserId)[0];
+      console.log("id", id);
+      let name;
+      GetNameAvtor(id).then((value : string) =>{
+        (response.data as (typeof rows)).map(a => a.Avtor = value);
+      });
+      setData(response.data);
+    });
+  }, [useDispatch()]);
   return (
-    <Table rows={rows} columns={columns} 
+    <Table rows={data} columns={columns} 
     borderBetweenColumns 
     stickyHeader
     isResizable
     zebraStriped="even"
-    emptyRowsPlaceholder={<Text>Пусто</Text>}
-    lazyLoad={{ maxVisibleRows: 210, scrollableEl: window }} />)
+    emptyRowsPlaceholder={<Text>Нет проектов</Text>}/>)
 }
 
 export const main = (props: Props) => {

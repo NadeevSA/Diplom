@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import style from './profile.module.css';
 import { Card } from '@consta/uikit/Card';
 import { Button } from '@consta/uikit/Button';
@@ -7,20 +7,29 @@ import { Text } from '@consta/uikit/Text';
 import { Table } from '@consta/uikit/Table';
 import { rows, columns } from '../main/main'
 import { CheckboxGroup } from '@consta/uikit/CheckboxGroup';
-import { ModalExampleCenter } from '../../pages/addProject/addProject';
+import { ModelAddProjectData } from '../../pages/addProject/addProject';
+import { Modal } from '@consta/uikit/Modal';
+import { Layout } from '@consta/uikit/LayoutCanary';
+import { TextField } from '@consta/uikit/TextField';
+import { PostProject } from '../exampleRudexAxios/createSlice';
 
 interface Props {}
 
 function Info() {
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const [value, setValue] = useState<string | null>(null);
+    const handleChange = ({ value }: { value: string | null }) => setValue(value);
+    const [desc, setDesc] = useState<string | null>(null);
+    const handleChangeDesc = ({ value }: { value: string | null }) => setDesc(value);
     return (
         <Card>
             <Text truncate view="primary">Имя фамилия</Text>
             <Text view="secondary">Дополнительная информация, которая очень длинная, чтобы уместиться на одной строчке</Text>
             <Button
-            className={style.button}
-            size="s"
-            view="secondary"
-            label="Изменить"/>
+                className={style.button}
+                size="s"
+                view="secondary"
+                label="Изменить"/>
         </Card>
     )
 }
@@ -31,10 +40,10 @@ function Filter() {
             <Text truncate view="primary">Фильтр</Text>
             <CheckboxGroupExampleRow></CheckboxGroupExampleRow>
             <Button
-            className={style.button}
-            size="s"
-            view="secondary"
-            label="Применить"/>
+                className={style.button}
+                size="s"
+                view="secondary"
+                label="Применить"/>
         </Card>
     )
 }
@@ -68,18 +77,15 @@ function Projects() {
     return (
     <Card>
         <Text weight="black" view="primary" size="2xl">Тут надо придумать название</Text>
-        <Table rows={rows} columns={columns} 
-        borderBetweenColumns
-        zebraStriped="even"/>
     </Card>)
 }
 
 export const profile = (props: Props) => {
     return (
         <Grid gap="xl" cols="4">
-            <GridItem><ModalExampleCenter></ModalExampleCenter></GridItem>
             <GridItem><Info></Info></GridItem>
-            <GridItem rowStart="2"><Filter></Filter></GridItem>
+            <GridItem rowStart="2"><ModelAddProjectData></ModelAddProjectData></GridItem>
+            <GridItem rowStart="3"><Filter></Filter></GridItem>
             <GridItem colStart="2" col="3" row="2"><Projects></Projects></GridItem>
         </Grid>
     )
