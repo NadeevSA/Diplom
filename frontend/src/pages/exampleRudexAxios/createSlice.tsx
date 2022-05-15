@@ -62,6 +62,26 @@ export async function PostProject(name: string | null, desc: string | null) {
   return data;
 }
 
+export interface Data {
+  File: File,
+  Label: string,
+}
+
+export async function PostData(file: File | null, desc: string | null) {
+  const { data } = await instance.post<Data>(
+    'data',
+    { File: file, Label: desc},
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Accept: '*/*',
+        Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc",
+      },
+    },
+  );
+  console.log("PostData", data);
+}
+
 export async function GetProject() {
   const { data } = await instance.get<Project>(
     'project',

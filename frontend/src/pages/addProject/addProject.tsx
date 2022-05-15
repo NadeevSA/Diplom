@@ -7,9 +7,11 @@ import { TextField } from '@consta/uikit/TextField';
 import { Select } from '@consta/uikit/Select';
 import { Modal } from '@consta/uikit/Modal';
 import { Text } from '@consta/uikit/Text';
-import { getUsers, PostProject } from '../exampleRudexAxios/createSlice';
+import { getUsers, PostData, PostProject } from '../exampleRudexAxios/createSlice';
 import { useSelector, useDispatch } from 'react-redux'
 import { Card } from '@consta/uikit/Card';
+import { File } from '@consta/uikit/File';
+import { Attachment } from '@consta/uikit/Attachment';
 
 interface Props {}
 
@@ -23,20 +25,26 @@ export function ModelAddProjectData() {
     const handleChange = ({ value }: { value: string | null }) => setValue(value);
     const [desc, setDesc] = useState<string | null>(null);
     const handleChangeDesc = ({ value }: { value: string | null }) => setDesc(value);
+
+    const [isModalOpenData, setIsModalOpenData] = React.useState(false);
+    const [descData, setDescData] = useState<string | null>(null);
+    const [fileData, setFileData] = useState<File | null>(null);
+    const handleChangeDescData = ({ value }: { value: string | null }) => setDescData(value);
     return (
       <Card>
         <Button
-          size="s"
+          size="l"
           view="secondary"
           label="Загрузить проект"
-          width="default"
+          className={style.button}
           onClick={() => setIsModalOpen(true)}
         />
         <Button
-          size="s"
+          size="l"
           view="secondary"
           label="Загрузить данные"
-          width="default"
+          className={style.button}
+          onClick={() => setIsModalOpenData(true)}
         />
         <Modal
           isOpen={isModalOpen}
@@ -61,7 +69,49 @@ export function ModelAddProjectData() {
             value={desc}/>
           </Layout>
           <Layout flex={2}>
-              <Button view="secondary" label="Добавить" className={style.button} onClick={() => {PostProject(value, desc); setIsModalOpen(false)}}/> 
+              <Button view="secondary" label="Добавить" className={style.buttonModel} onClick={() => {PostProject(value, desc); setIsModalOpen(false); window.location.reload()}}/> 
+          </Layout>
+        </Layout>
+        </Modal>
+
+        <Modal
+          isOpen={isModalOpenData}
+          hasOverlay
+          onClickOutside={() => setIsModalOpenData(false)}
+          onEsc={() => setIsModalOpenData(false)}>
+        <Layout direction="column">
+          <Layout flex={1}>
+            <Text className={style.title} weight="black" view="primary" size="2xl">Загрузить данные</Text>
+          </Layout>
+          <Layout flex={1}>
+          <TextField
+            className={style.form}
+            type="textarea"
+            rows={7}
+            cols={45}
+            onChange={handleChangeDescData} 
+            placeholder = "Описание для данных"
+            value={descData}/>
+          </Layout>
+          <Layout flex={1} className={style.form}>
+            <DragNDropField onDropFiles={function (files: File[]): void {
+                setFileData(files[0]);
+              } }></DragNDropField>
+          </Layout>
+          <Layout flex={1} className={style.form}>
+            {fileData?  
+              <Attachment
+                key={fileData?.name}
+                fileName={fileData?.name}
+                fileExtension={fileData?.name.match(/\.(?!.*\.)(\w*)/)?.[1]}
+                fileDescription={fileData?.type}/>
+                :
+                <Text>Выберите файл</Text>}
+          </Layout>
+          <Layout flex={2}>
+              <Button view="secondary" label="Добавить" className={style.buttonModel} onClick={() => {
+              PostData(fileData, descData); setIsModalOpen(false);
+              window.location.reload()}}/> 
           </Layout>
         </Layout>
         </Modal>

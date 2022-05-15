@@ -32,8 +32,8 @@ function CollapseExampleHover() {
   return (
     <div>
       <User
-          name="Nadeev.SA"
-          info="ПРО-421"
+          name="Nadeev Sergey"
+          size="l"
           view ="ghost"
           ref={ref}
           onClick={() => setIsOpen(!isOpen)}
