@@ -5,7 +5,7 @@ import { Button } from '@consta/uikit/Button';
 import { Grid, GridItem } from '@consta/uikit/Grid';
 import { Text } from '@consta/uikit/Text';
 import { Table } from '@consta/uikit/Table';
-import { rows, columns } from '../main/main'
+import { rows, columns, MyTable, MyData } from '../main/main'
 import { CheckboxGroup } from '@consta/uikit/CheckboxGroup';
 import { ModelAddProjectData } from '../../pages/addProject/addProject';
 import { Modal } from '@consta/uikit/Modal';
@@ -23,13 +23,9 @@ function Info() {
     const handleChangeDesc = ({ value }: { value: string | null }) => setDesc(value);
     return (
         <Card>
-            <Text truncate view="primary">Имя фамилия</Text>
-            <Text view="secondary">Дополнительная информация, которая очень длинная, чтобы уместиться на одной строчке</Text>
-            <Button
-                className={style.button}
-                size="s"
-                view="secondary"
-                label="Изменить"/>
+            <Text truncate view="primary" size="2xl">Nadeev Sergey</Text>
+            <Text truncate view="secondary" size="l">nadeevSA@mail.ru</Text>
+            <Text view="secondary" size="l">Студент группы ПРО-421</Text>
         </Card>
     )
 }
@@ -76,17 +72,26 @@ function CheckboxGroupExampleRow() {
 function Projects() {
     return (
     <Card>
-        <Text weight="black" view="primary" size="2xl">Тут надо придумать название</Text>
+        <Text weight="black" view="primary" size="2xl">Мои проекты</Text>
+        <MyTable isHidden={true}></MyTable>
+    </Card>)
+}
+
+function Datas() {
+    return (
+    <Card>
+        <Text weight="black" view="primary" size="2xl">Мои данные</Text>
+        <MyData></MyData>
     </Card>)
 }
 
 export const profile = (props: Props) => {
     return (
-        <Grid gap="xl" cols="4">
+        <Grid gap="xl" cols="5" className={style.grid}>
             <GridItem><Info></Info></GridItem>
             <GridItem rowStart="2"><ModelAddProjectData></ModelAddProjectData></GridItem>
-            <GridItem rowStart="3"><Filter></Filter></GridItem>
-            <GridItem colStart="2" col="3" row="2"><Projects></Projects></GridItem>
+            <GridItem colStart="2" col="2" row="2"><Projects></Projects></GridItem>
+            <GridItem colStart="4" col="2" row="2"><Datas></Datas></GridItem>
         </Grid>
     )
 }
