@@ -14,6 +14,7 @@ func AddRoutes(app *controllers.App) *mux.Router {
 	router.HandleFunc("/user", auth.Auth(app.UserController.PutUser, app.UseAuth)).Methods("PUT")
 	router.HandleFunc("/user", auth.Auth(app.UserController.DeleteUser, app.UseAuth)).Methods("DELETE")
 	router.HandleFunc("/user/filter", auth.Auth(app.UserController.GetFilteredUser, app.UseAuth)).Methods("GET")
+	router.HandleFunc("/user/info", app.UserController.UserInfo).Methods("GET")
 
 	router.HandleFunc("/project_config", app.ProjectConfigController.GetAllProjectConfig).Methods("GET")
 	router.HandleFunc("/project_config", auth.AuthServiceUserProjectConfig(app.ProjectConfigController.AddProjectConfig, app.UseAuth)).Methods("POST")
