@@ -44,29 +44,20 @@ export const AppContent = () => {
             projectContainerReplicaName = `${name}_${replicaUuid}`
         }
 
-        const onOpen = () => setOpenPane(true)
-        const onClose = () => {
-            setOpenPane(false)
-        }
-
         return (
                 <div>
-                    <div className={"buttons_open_close"}>
-                        <Button label={"open"} size={"xs"} onClick={onOpen}/>
-                        <Button label={"close"} size={"xs"} onClick={onClose}/>
-                    </div>
-                    {isPaneOpened && <AppPane buildUrl={buildUrl}
-                                              defaultOutput={defaultOutput || ""}
-                                              dataFileUrl={dataFileUrl}
-                                              runUrl={runUrl}
-                                              attachUrl={attachUrl}
-                                              attachUrlFileUrl={attachUrl}
-                                              statusCheckUrl={statusCheckUrl}
-                                              fileContentUrl={fileContentUrl}
-                                              isRunningUrl={isRunningUrl}
-                                              projectId={config.ID.toString()}
-                                              projectContainerReplicaName={projectContainerReplicaName}
-                                              currentStatus={config.Status}
+                    {<AppPane buildUrl={buildUrl}
+                        defaultOutput={defaultOutput || ""}
+                        dataFileUrl={dataFileUrl}
+                        runUrl={runUrl}
+                        attachUrl={attachUrl}
+                        attachUrlFileUrl={attachUrl}
+                        statusCheckUrl={statusCheckUrl}
+                        fileContentUrl={fileContentUrl}
+                        isRunningUrl={isRunningUrl}
+                        projectId={config.ID.toString()}
+                        projectContainerReplicaName={projectContainerReplicaName}
+                        currentStatus={config.Status}
                     />}
                 </div>
         )

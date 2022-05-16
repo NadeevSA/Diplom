@@ -10,6 +10,7 @@ import { exp } from './pages/exampleRudexAxios/exp';
 import { header as Header} from './shared/header/header'
 import { store } from './store'
 import { Provider } from 'react-redux'
+import { ProjectPage } from './pages/Project/project';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/testing" exact component={testing}/>
             <Route path="/play" exact component={play}/>
             <Route path="/example" exact component={exp}/>
+            <Route path="/project" exact component={ProjectPage}/>
           </Switch>
         </Theme>
       </div>

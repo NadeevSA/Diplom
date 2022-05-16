@@ -5,3 +5,8 @@
 .combobox {
     margin-bottom: 5%;
 }
+
+.button {
+    margin: 5% auto;
+    display: block;
+}

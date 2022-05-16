@@ -5,3 +5,12 @@
 .user {
     margin-right: 5%;
 }
+
+.sideBar {
+    margin: 3%;
+}
+
+.button {
+    margin: 5% auto;
+    display: block;
+}

@@ -1,5 +1,5 @@
-import './main.module.css';
-import { Table, TableColumn } from '@consta/uikit/Table';
+import style from './main.module.css';
+import { Table, TableColumn, TableFilters } from '@consta/uikit/Table';
 import { Text } from '@consta/uikit/Text';
 import { Data, GetProject, Project} from '../exampleRudexAxios/createSlice';
 import { useSelector, useDispatch } from 'react-redux'
@@ -7,6 +7,8 @@ import axios, { AxiosInstance } from 'axios';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { setOriginalNode } from 'typescript';
 import { Loader } from '@consta/uikit/Loader';
+import { Button } from '@consta/uikit/Button';
+import { ProjectPage } from '../Project/project';
 
 interface Props {}
 
@@ -16,6 +18,7 @@ interface Props {}
     UserId: number;
     Avtor?: string;
     Description: string;
+    Action?: typeof Button;
 }[]
 
 export const columns: TableColumn<typeof rows[number]>[] = [
@@ -47,12 +50,19 @@ export const columns: TableColumn<typeof rows[number]>[] = [
     accessor: 'Description',
     align: 'center',
   },
+  {
+    title: 'Действие',
+    accessor: "Action",
+    align: 'center',
+    renderCell: (row) => <ProjectPage name={row.Name}></ProjectPage>
+  },
 ];
 
 export let rowsData: {
   id: string;
   FileName: string;
   Label: string;
+  Delete?: typeof Button;
 }[]
 
 export const columnsData: TableColumn<typeof rowsData[number]>[] = [
@@ -71,6 +81,12 @@ export const columnsData: TableColumn<typeof rowsData[number]>[] = [
   title: 'Описание',
   accessor: 'Label',
   align: 'center',
+},
+{
+  title: 'Действие',
+  accessor: 'Delete',
+  align: 'center',
+  renderCell: (row) => <Button view="secondary" label="Удалить" width="full" size="s"></Button>
 },
 ];
 
@@ -110,7 +126,8 @@ export function MyTable(props: { isHidden: boolean }) {
   }, [useDispatch()]);
   return (
     <Table rows={data} columns={columns} 
-    borderBetweenColumns 
+    borderBetweenColumns
+    className={style.table}
     stickyHeader
     isResizable
     zebraStriped="even"
@@ -132,6 +149,7 @@ export function MyData() {
     <Table rows={data} columns={columnsData} 
     borderBetweenColumns 
     stickyHeader
+    className={style.table}
     isResizable
     zebraStriped="even"
     emptyRowsPlaceholder={<Text>Нет данных</Text>}/>)

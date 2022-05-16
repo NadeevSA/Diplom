@@ -2,3 +2,7 @@
     font-size: 30px;
     color: black;
 }
+
+.table {
+    max-height: 10px;
+}

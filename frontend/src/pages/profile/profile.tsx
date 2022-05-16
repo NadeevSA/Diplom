@@ -12,6 +12,9 @@ import { Modal } from '@consta/uikit/Modal';
 import { Layout } from '@consta/uikit/LayoutCanary';
 import { TextField } from '@consta/uikit/TextField';
 import { PostProject } from '../exampleRudexAxios/createSlice';
+import { HeaderModule, HeaderSearchBar } from '@consta/uikit/Header';
+import { Select } from '@consta/uikit/Select';
+import { Combobox } from '@consta/uikit/Combobox';
 
 interface Props {}
 
@@ -30,45 +33,39 @@ function Info() {
     )
 }
 
-function Filter() {
-    return (
-        <Card>
-            <Text truncate view="primary">Фильтр</Text>
-            <CheckboxGroupExampleRow></CheckboxGroupExampleRow>
-            <Button
-                className={style.button}
-                size="s"
-                view="secondary"
-                label="Применить"/>
-        </Card>
-    )
-}
-
 type Item = {
-    name: string;
-};
- 
+    label: string;
+    id: number;
+  };
+  
 const items: Item[] = [
-    { name: 'Проекты' },
-    { name: 'Данные' },
-    { name: 'Результаты' },
+{
+    label: 'Первый',
+    id: 1,
+},
+{
+    label: 'Первыйппп',
+    id: 2,
+},
+{
+    label: 'Перррр',
+    id: 3,
+},
 ];
-
-function CheckboxGroupExampleRow() {
-    const [value, setValue] = React.useState<Item[] | null>(null);
-    return (
-      <CheckboxGroup
-        className = {style.checkbox}
-        value={value}
+  
+export function ComboboxExampleItems() {
+const [value, setValue] = useState<Item | null>();
+return (
+    <Card>
+        <Combobox
         items={items}
-        getLabel={(item) => item.name}
+        value={value}
         onChange={({ value }) => setValue(value)}
-        direction="column"
-        size="l"
-      />
-    );
-} 
-
+        placeholder="Поиск проекта"/>
+    </Card>
+);
+}
+  
 function Projects() {
     return (
     <Card>
@@ -87,11 +84,12 @@ function Datas() {
 
 export const profile = (props: Props) => {
     return (
-        <Grid gap="xl" cols="5" className={style.grid}>
+        <Grid gap="l" cols="5" className={style.grid}>
             <GridItem><Info></Info></GridItem>
             <GridItem rowStart="2"><ModelAddProjectData></ModelAddProjectData></GridItem>
-            <GridItem colStart="2" col="2" row="2"><Projects></Projects></GridItem>
-            <GridItem colStart="4" col="2" row="2"><Datas></Datas></GridItem>
+            <GridItem rowStart="3"><ComboboxExampleItems></ComboboxExampleItems></GridItem>
+            <GridItem colStart="2" col="2" row="4"><Projects></Projects></GridItem>
+            <GridItem colStart="4" col="2" row="4"><Datas></Datas></GridItem>
         </Grid>
     )
 }
