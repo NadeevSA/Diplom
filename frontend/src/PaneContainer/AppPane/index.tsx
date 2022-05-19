@@ -24,7 +24,7 @@ export const AppPane: FC<IPane> = ({
                                    }) => {
     const [outPut, setOutput] = useState<string>(defaultOutput)
     const [isUseFile, setIsUseFile] = useState(false)
-    const [isRunning, setIsRunning] = useState(false)
+    const [isRunning, setIsRunning] = useState(true)
     const [status, setStatus] = useState(currentStatus);
     const [isWaiting, setWaiting] = useState(false);
     const [input, setInput] = useState<string | null>(null);
@@ -65,7 +65,7 @@ export const AppPane: FC<IPane> = ({
         fetch(buildUrl, {
             method: 'POST',
             headers: {
-                'id': projectId,
+                'projectConfigId': projectId,
             }
         })
             .then((response) => {
@@ -192,7 +192,7 @@ export const AppPane: FC<IPane> = ({
                             size='s'
                             label={'Run'}
                             onClick={runProject}
-                            disabled={status == Status.Default}
+                            disabled={status != Status.Build}
                             className={"button_action"}/>
                         <Button
                             size='s'

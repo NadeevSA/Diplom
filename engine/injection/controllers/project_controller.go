@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"engine_app/database/model"
+	"github.com/spf13/viper"
 	"net/http"
+	"strings"
 )
 
 type ProjectController struct {
@@ -14,6 +16,20 @@ func (c *ProjectController) AddProject(
 	request *http.Request) {
 	var Project model.Project
 	Decode(request, &Project, writer)
+
+	signingKey := []byte(viper.GetString("auth.signing_key"))
+	reqToken := request.Header.Get("Authorization")
+	splitToken := strings.Split(reqToken, "Bearer ")
+	if len(splitToken) == 1 {
+		writer.WriteHeader(http.StatusForbidden)
+		return
+	}
+	reqToken = splitToken[1]
+	userNameFromToken, _ := ParseToken(reqToken, signingKey)
+	if Project.Author == "" {
+		Project.Author = userNameFromToken
+	}
+
 	c.Add(&Project, request, writer)
 }
 

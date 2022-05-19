@@ -30,7 +30,7 @@ func main() {
 		dbName,
 		sslMode)
 
-	var useAuth = true
+	var useAuth = false
 
 	viper.AddConfigPath(".")
 	viper.SetConfigName("config")
@@ -95,7 +95,7 @@ func main() {
 
 	log.Fatal(http.ListenAndServe(
 		":8084",
-		handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "id"}),
+		handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "projectConfigId"}),
 			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
 			handlers.AllowedOrigins([]string{"*"}))(router)))
 }

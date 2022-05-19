@@ -46,6 +46,7 @@ export interface ProjectConfig {
     PathToEntry: string
     ProjectFile: string
     File: string
+    Author: string
     Status: Status
     ConfigurationType: ConfigurationType
 }

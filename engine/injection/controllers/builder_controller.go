@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"engine_app/core"
 	"engine_app/database/model"
 	"engine_app/filters"
+	"engine_app/providers"
 	"fmt"
 	"net/http"
 	"time"
@@ -10,20 +12,25 @@ import (
 	"github.com/docker/docker/api/types"
 )
 
+type BuilderController struct {
+	Provider *providers.Provider
+	Builder  *core.Builder
+}
+
 func (b *BuilderController) BuildProjectDoc(
 	writer http.ResponseWriter,
 	request *http.Request) {
-	id := request.Header.Get("id")
+	projectConfigId := request.Header.Get("projectConfigId")
 
 	var projectConfigs []model.ProjectConfig
 	filter := filters.FilterBy{
 		Field: "id",
-		Args:  []string{id},
+		Args:  []string{projectConfigId},
 	}
 
 	err := b.Provider.QueryListStatement(&projectConfigs, filter)
 	if err != nil {
-		writer.Write([]byte("can not find file"))
+		writer.Write([]byte("can not find project config"))
 		return
 	}
 
@@ -39,7 +46,10 @@ func (b *BuilderController) BuildProjectDoc(
 		return
 	}
 	b.Builder.HandleBuild(projectConfig, writer, "temp")
+
+	projectConfig.Status = model.Status(1)
 	err = b.Provider.UpdateStatement(projectConfig)
+
 	if err != nil {
 		writer.Write([]byte(err.Error()))
 		writer.WriteHeader(http.StatusBadRequest)

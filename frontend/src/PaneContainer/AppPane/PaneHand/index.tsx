@@ -12,8 +12,7 @@ export const PanelHand: FC<IPanelHand> = ({input, isRunning, output, handleChang
             value={input}
             type="textarea"
             cols={200}
-            rows={20}
-            size="l"
+            rows={7}
             placeholder="Ввод параметров"
         />
 
@@ -22,9 +21,8 @@ export const PanelHand: FC<IPanelHand> = ({input, isRunning, output, handleChang
             disabled={true}
             value={output}
             type="textarea"
-            size="l"
             cols={200}
-            rows={20}
+            rows={7}
             placeholder="Результат"
         />
 

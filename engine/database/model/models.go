@@ -14,6 +14,14 @@ const (
 	Cpp ConfigurationType = 2
 )
 
+type DockerConfig struct {
+	ID          uint `gorm:"primaryKey"`
+	Config      ConfigurationType
+	Description string
+	Version     string
+	File        []byte
+}
+
 type User struct {
 	ID    uint `gorm:"primaryKey"`
 	Name  string
@@ -32,15 +40,17 @@ type ProjectConfig struct {
 	ProjectId int
 	Project   Project
 
-	ConfigurationType ConfigurationType
-	Status            Status
+	DockerConfigId int
+	DockerConfig   DockerConfig
+	Status         Status
 
 	Data []Data `gorm:"many2many:project_config_data;"`
 }
 
 type Project struct {
-	ID   uint   `gorm:"primaryKey"`
-	Name string `gorm:"uniqueIndex"`
+	ID     uint   `gorm:"primaryKey"`
+	Name   string `gorm:"uniqueIndex"`
+	Author string
 
 	UserId int
 	User   User

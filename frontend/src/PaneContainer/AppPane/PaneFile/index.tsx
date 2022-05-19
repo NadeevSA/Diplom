@@ -47,7 +47,7 @@ export const PanelFile: FC<IPanelFile> = ({output, dataFile, onSetDataFile,dataF
                 />
                 <TextField
                     className={"panel_file"}
-                    disabled={true}
+                    disabled={false}
                     value={output}
                     type="textarea"
                     cols={200}
