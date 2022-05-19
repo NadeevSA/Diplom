@@ -9,6 +9,7 @@ import { setOriginalNode } from 'typescript';
 import { Loader } from '@consta/uikit/Loader';
 import { Button } from '@consta/uikit/Button';
 import { ProjectPage } from '../Project/project';
+import authServer from '../../ServiceAuth/authServer';
 
 interface Props {}
 
@@ -154,6 +155,11 @@ export function MyData() {
     zebraStriped="even"
     emptyRowsPlaceholder={<Text>Нет данных</Text>}/>)
 }
+
+//authServer.logout();
+//authServer.register("userrаа", "123");
+authServer.login("userrаа", "123");
+console.log("user", authServer.getCurrentUser());
 
 export const main = (props: Props) => {
   return <MyTable isHidden={false}></MyTable>
