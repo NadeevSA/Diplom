@@ -23,7 +23,7 @@ func AddRoutes(app *controllers.App) *mux.Router {
 	router.HandleFunc("/project_config/filter", app.ProjectConfigController.GetFilteredProjectConfig).Methods("GET")
 	router.HandleFunc("/project_config/file", app.ProjectConfigController.AddProjectConfigFiles).Methods("POST")
 
-	router.HandleFunc("/builder/build", app.BuilderController.BuildProjectDoc).Methods("POST")
+	router.HandleFunc("/builder/build", app.AuthService.AuthCheckUseCanBuildProjectConfig(app.BuilderController.BuildProjectDoc, app.UseAuth)).Methods("POST")
 	router.HandleFunc("/builder/run", app.BuilderController.RunProjectDoc).Methods("POST")
 	router.HandleFunc("/builder/attach", app.BuilderController.AttachProjectDoc).Methods("POST")
 	router.HandleFunc("/builder/attach/data", app.BuilderController.AttachProjectDocData).Methods("POST")
@@ -36,10 +36,14 @@ func AddRoutes(app *controllers.App) *mux.Router {
 	router.HandleFunc("/project", auth.AuthCheckUserProjectBody(app.ProjectController.DeleteProject, app.UseAuth)).Methods("DELETE")
 	router.HandleFunc("/project/filter", app.ProjectController.GetFilteredProject).Methods("GET")
 
+	router.HandleFunc("/docker_config/all", app.DockerConfigController.GetAllDockerConfigs).Methods("GET")
+	router.HandleFunc("/docker_config", app.DockerConfigController.AddDockerConfig).Methods("POST")
+
 	router.HandleFunc("/data", app.DataFileController.GetAllDataFile).Methods("GET")
 	router.HandleFunc("/data", app.DataFileController.AddDataFile).Methods("POST")
 	router.HandleFunc("/data", app.DataFileController.DeleteDataFile).Methods("DELETE")
 	router.HandleFunc("/data/filter", app.DataFileController.GetFilteredDataFile).Methods("GET")
+	router.HandleFunc("/data/filter/project_config", app.DataFileController.GetFilteredDataFileByProjectId).Methods("GET")
 	router.HandleFunc("/data/content", app.DataFileController.GetDataFileContent).Methods("GET")
 
 	router.HandleFunc("/project_data", app.DataProjectController.AddDataProject).Methods("POST")

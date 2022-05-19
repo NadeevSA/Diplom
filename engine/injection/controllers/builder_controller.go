@@ -7,6 +7,7 @@ import (
 	"engine_app/providers"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -23,14 +24,31 @@ func (b *BuilderController) BuildProjectDoc(
 	projectConfigId := request.Header.Get("projectConfigId")
 
 	var projectConfigs []model.ProjectConfig
+	var dockerConfigs []model.DockerConfig
 	filter := filters.FilterBy{
 		Field: "id",
 		Args:  []string{projectConfigId},
 	}
 
 	err := b.Provider.QueryListStatement(&projectConfigs, filter)
-	if err != nil {
+	if err != nil || len(projectConfigs) == 0 {
 		writer.Write([]byte("can not find project config"))
+		return
+	}
+	projectConfig := projectConfigs[0]
+
+	filter = filters.FilterBy{
+		Field: "id",
+		Args:  []string{strconv.Itoa(projectConfig.DockerConfigId)},
+	}
+	err = b.Provider.QueryListStatement(&dockerConfigs, filter)
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	if len(dockerConfigs) == 0 {
+		writer.Write([]byte("no such docker config"))
 		return
 	}
 
@@ -39,13 +57,12 @@ func (b *BuilderController) BuildProjectDoc(
 		return
 	}
 
-	projectConfig := projectConfigs[0]
 	if projectConfig.File == nil {
 		writer.Write([]byte(err.Error()))
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	b.Builder.HandleBuild(projectConfig, writer, "temp")
+	b.Builder.HandleBuild(projectConfig, writer, dockerConfigs[0], "temp")
 
 	projectConfig.Status = model.Status(1)
 	err = b.Provider.UpdateStatement(projectConfig)

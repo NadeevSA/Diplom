@@ -2,11 +2,14 @@ package controllers
 
 import (
 	"bytes"
+	"encoding/json"
 	"engine_app/database/model"
 	"engine_app/filters"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type DataFileController struct {
@@ -52,6 +55,45 @@ func (c *DataFileController) GetFilteredDataFile(
 	request *http.Request) {
 	var datafiles []model.Data
 	c.GetFilteredBy(datafiles, request, writer)
+}
+
+func (c *DataFileController) GetFilteredDataFileByProjectId(
+	writer http.ResponseWriter,
+	request *http.Request) {
+	projectConfigId, _ := request.URL.Query()["project_config_id"]
+	queryStatement := fmt.Sprintf("select * from project_config_data where %s = %s", "project_config_id", projectConfigId[0])
+	rows, err := c.AppInjection.Db.Query(queryStatement)
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+	defer rows.Close()
+	var dataIds []string
+
+	for rows.Next() {
+		p := DataProject{}
+		err := rows.Scan(&p.DataId, &p.ProjectConfigId)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		dataIds = append(dataIds, strconv.Itoa(p.DataId))
+	}
+
+	var dataFiles []model.Data
+	var filter = filters.FilterBy{
+		Field: "id",
+		Args:  dataIds,
+	}
+
+	if err = c.AppInjection.Provider.QueryListStatement(&dataFiles, filter); err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		json.NewEncoder(writer).Encode(dataFiles)
+	}
 }
 
 func (c *DataFileController) GetDataFileContent(

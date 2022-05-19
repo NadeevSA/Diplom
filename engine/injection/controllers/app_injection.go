@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"engine_app/core"
 	"engine_app/providers"
@@ -17,6 +18,7 @@ type App struct {
 	ProjectController       ProjectController
 	DataFileController      DataFileController
 	DataProjectController   DataProjectController
+	DockerConfigController  DockerConfigController
 	AuthService             AuthService
 	UseAuth                 bool
 	AppInjection            *AppInjection
@@ -25,6 +27,7 @@ type App struct {
 
 type AppInjection struct {
 	Provider *providers.Provider
+	Db       *sql.DB
 }
 
 func Decode(request *http.Request, obj interface{}, writer http.ResponseWriter) {

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bytes"
+	"encoding/json"
 	"engine_app/database/model"
 	"io"
 	"log"
@@ -13,14 +14,13 @@ type DockerConfigController struct {
 	AppInjection *AppInjection
 }
 
-func (d *DockerConfigController) DockerConfig(
+func (d *DockerConfigController) AddDockerConfig(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var dockerConfig model.DockerConfig
 
 	file, _, _ := request.FormFile("File")
 	description := request.MultipartForm.Value["Description"][0]
-	version := request.MultipartForm.Value["Version"][0]
 	config := request.MultipartForm.Value["Config"][0]
 
 	var buf bytes.Buffer
@@ -32,6 +32,26 @@ func (d *DockerConfigController) DockerConfig(
 	conf, _ := strconv.Atoi(config)
 	dockerConfig.File = buf.Bytes()
 	dockerConfig.Description = description
-	dockerConfig.Version = version
 	dockerConfig.Config = model.ConfigurationType(conf)
+
+	if err = d.AppInjection.Provider.AddStatement(&dockerConfig); err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		json.NewEncoder(writer).Encode(dockerConfig)
+	}
+}
+
+func (d *DockerConfigController) GetAllDockerConfigs(
+	writer http.ResponseWriter,
+	request *http.Request) {
+	var dockerConfigs []model.DockerConfig
+	if err := d.AppInjection.Provider.QueryListStatementAll(&dockerConfigs); err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+	} else {
+		writer.WriteHeader(http.StatusOK)
+		json.NewEncoder(writer).Encode(dockerConfigs)
+	}
 }

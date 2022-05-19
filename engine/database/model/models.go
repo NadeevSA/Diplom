@@ -18,7 +18,6 @@ type DockerConfig struct {
 	ID          uint `gorm:"primaryKey"`
 	Config      ConfigurationType
 	Description string
-	Version     string
 	File        []byte
 }
 

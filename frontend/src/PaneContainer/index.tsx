@@ -19,16 +19,17 @@ export const AppContent = () => {
     const statusCheckUrl = "http://localhost:8084/builder/status"
     const fileContentUrl = "http://localhost:8084/data/content"
     const isRunningUrl = "http://localhost:8084/builder/is_running"
+    const projectConfigUrl = "http://localhost:8084/project_config"
 
-    const getProjectDocStatus = () => {
-        api<ProjectConfig[]>("http://localhost:8084/project_config/filter?field=id&val=1")
+    const getPrjectStatus = () => {
+        api<ProjectConfig[]>(`${projectConfigUrl}/filter?field=id&val=9`)
             .then(projectsConfigs => {
                 setConfig(projectsConfigs[0])
             })
     }
 
     useLayoutEffect(()=>{
-        getProjectDocStatus()
+        getPrjectStatus()
     },[])
 
 
@@ -53,25 +54,26 @@ export const AppContent = () => {
         }
 
         return (
-            <div>
-                <div className={"buttons_open_close"}>
-                    <Button label={"open"} size={"xs"} onClick={onOpen}/>
-                    <Button label={"close"} size={"xs"} onClick={onClose}/>
+                <div>
+                    <div className={"buttons_open_close"}>
+                        <Button label={"open"} size={"xs"} onClick={onOpen}/>
+                        <Button label={"close"} size={"xs"} onClick={onClose}/>
+                    </div>
+                    {isPaneOpened && <AppPane buildUrl={buildUrl}
+                                              projectConfigUrl={projectConfigUrl}
+                                              defaultOutput={defaultOutput || ""}
+                                              dataFileUrl={dataFileUrl}
+                                              runUrl={runUrl}
+                                              attachUrl={attachUrl}
+                                              attachUrlFileUrl={attachFileUrl}
+                                              statusCheckUrl={statusCheckUrl}
+                                              fileContentUrl={fileContentUrl}
+                                              isRunningUrl={isRunningUrl}
+                                              projectId={config.ID.toString()}
+                                              projectContainerReplicaName={projectContainerReplicaName}
+                                              currentStatus={config.Status}
+                    />}
                 </div>
-                {isPaneOpened && <AppPane buildUrl={buildUrl}
-                                          defaultOutput={defaultOutput || ""}
-                                          dataFileUrl={dataFileUrl}
-                                          runUrl={runUrl}
-                                          attachUrl={attachUrl}
-                                          attachUrlFileUrl={attachFileUrl}
-                                          statusCheckUrl={statusCheckUrl}
-                                          fileContentUrl={fileContentUrl}
-                                          isRunningUrl={isRunningUrl}
-                                          projectId={config.ID.toString()}
-                                          projectContainerReplicaName={projectContainerReplicaName}
-                                          currentStatus={config.Status}
-                />}
-            </div>
         )
     } else {
         return <Loader className={"loader"}/>

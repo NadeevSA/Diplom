@@ -188,9 +188,9 @@ func RemoveAllInDir(dirPath string) error {
 	return nil
 }
 
-func ReadZip(zipPath string) ([]byte, error) {
+func ReadFile(path string) ([]byte, error) {
 	curPath, _ := os.Getwd()
-	bytes, err := os.ReadFile(curPath + "\\" + zipPath)
+	bytes, err := os.ReadFile(curPath + "\\" + path)
 	if err != nil {
 		return nil, err
 	}
@@ -198,11 +198,9 @@ func ReadZip(zipPath string) ([]byte, error) {
 	return bytes, nil
 }
 
-func WriteZip(filepath string, resBytes []byte) error {
-	if _, err := os.Stat(filepath); os.IsNotExist(err) {
-		err = os.Mkdir(filepath, os.ModePerm)
-	}
-	err := ioutil.WriteFile(filepath, resBytes, os.ModePerm)
+func WriteFile(filepath string, resBytes []byte) error {
+	curPath, _ := os.Getwd()
+	err := ioutil.WriteFile(curPath+"\\"+filepath, resBytes, os.ModePerm)
 	return err
 }
 

@@ -76,6 +76,7 @@ func (b *Builder) ContainerDelete(tag string) error {
 func (b *Builder) HandleBuild(
 	projectConfig model.ProjectConfig,
 	writer http.ResponseWriter,
+	dockerConfig model.DockerConfig,
 	tempDir string) {
 
 	/*step 1: create file*/
@@ -112,10 +113,9 @@ func (b *Builder) HandleBuild(
 		}
 	}()
 
-	/*step 4: copy dockerfile*/
-	_, err = CopyFile("dockerfiles\\go.Dockerfile", "\\"+tempDir+"\\"+projectConfig.PathToEntry, "Dockerfile", 20)
+	err = WriteFile(tempDir+"\\"+projectConfig.PathToEntry+"\\"+"Dockerfile", dockerConfig.File)
 	if err != nil {
-		writer.Write([]byte("can not copy"))
+		writer.Write([]byte("can not write dockerfile"))
 		writer.WriteHeader(500)
 		return
 	}

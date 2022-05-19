@@ -281,3 +281,76 @@ func (a *AuthService) AuthCheckUserProjectConfigGet(next http.HandlerFunc, useAu
 		next.ServeHTTP(w, r)
 	}
 }
+
+func (a *AuthService) AuthCheckUseCanBuildProjectConfig(next http.HandlerFunc, useAuth bool) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !useAuth {
+			next.ServeHTTP(w, r)
+			return
+		}
+		projectConfigId := r.Header.Get("projectConfigId")
+		var projectConfig model.ProjectConfig
+		var project model.Project
+		var users []model.User
+
+		filter := filters.FilterBy{
+			Field: "id",
+			Args:  []string{projectConfigId},
+		}
+
+		err := a.AppInjection.Provider.QueryListStatement(&projectConfig, filter)
+		if err != nil {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		filter = filters.FilterBy{
+			Field: "id",
+			Args:  []string{strconv.Itoa(projectConfig.ProjectId)},
+		}
+
+		err = a.AppInjection.Provider.QueryListStatement(&project, filter)
+		if err != nil {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		str := strconv.Itoa(project.UserId)
+		filter = filters.FilterBy{
+			Field: "id",
+			Args:  []string{str},
+		}
+		err = a.AppInjection.Provider.QueryListStatement(&users, filter)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		if len(users) == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("No such user"))
+			return
+		}
+		user := users[0]
+		signingKey := []byte(viper.GetString("auth.signing_key"))
+		reqToken := r.Header.Get("Authorization")
+		splitToken := strings.Split(reqToken, "Bearer ")
+		if len(splitToken) == 1 {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+		reqToken = splitToken[1]
+		userNameFromToken, err := ParseToken(reqToken, signingKey)
+
+		if err != nil || user.Email != userNameFromToken {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(err.Error()))
+			return
+		}
+		next.ServeHTTP(w, r)
+	}
+}

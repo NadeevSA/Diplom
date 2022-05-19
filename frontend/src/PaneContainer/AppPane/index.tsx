@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useLayoutEffect, useState} from 'react';
-import {AttachIntentFile, AttachIntentInput, IPane, RunIntent, Status} from './types';
+import {AttachIntentFile, AttachIntentInput, IPane, ProjectConfig, RunIntent, Status} from './types';
 import {Button} from '@consta/uikit/Button';
 import './index.css';
 import {Loader} from "@consta/uikit/Loader";
@@ -16,16 +16,16 @@ export const AppPane: FC<IPane> = ({
                                        runUrl,
                                        buildUrl,
                                        attachUrl,
+                                       projectConfigUrl,
                                        isRunningUrl,
                                        projectId,
-                                       currentStatus,
                                        projectContainerReplicaName,
                                        fileContentUrl
                                    }) => {
     const [outPut, setOutput] = useState<string>(defaultOutput)
     const [isUseFile, setIsUseFile] = useState(false)
     const [isRunning, setIsRunning] = useState(true)
-    const [status, setStatus] = useState(currentStatus);
+    const [status, setStatus] = useState(0);
     const [isWaiting, setWaiting] = useState(false);
     const [input, setInput] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<IDataFile | null | undefined>()
@@ -34,6 +34,7 @@ export const AppPane: FC<IPane> = ({
     useLayoutEffect(() => {
         getProjectData()
         getIsRunningApp()
+        getProjectConfigStatus()
     }, [])
 
     useEffect(() => {
@@ -42,6 +43,13 @@ export const AppPane: FC<IPane> = ({
             sessionStorage.removeItem(`${projectContainerReplicaName}_data`)
         }
     }, [isRunning])
+
+    const getProjectConfigStatus = () => {
+        api<ProjectConfig[]>(`${projectConfigUrl}/filter?field=id&val=${projectId}`)
+            .then(projectsConfigs => {
+                setStatus(projectsConfigs[0].Status)
+            })
+    }
 
     const getProjectData = () => {
         api<IDataFile[]>(dataFileUrl)
@@ -117,7 +125,7 @@ export const AppPane: FC<IPane> = ({
                 }
                 response.text().then(text => {
                     setOutput(text)
-                    sessionStorage.setItem(`${projectContainerReplicaName}_data`,text)
+                    sessionStorage.setItem(`${projectContainerReplicaName}_data`, text)
                     getIsRunningApp()
                     setInput("")
                 })

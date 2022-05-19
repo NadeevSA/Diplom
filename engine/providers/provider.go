@@ -4,7 +4,6 @@ import (
 	"engine_app/filters"
 	"fmt"
 	"gorm.io/gorm"
-	"time"
 )
 
 type Provider struct {
@@ -33,7 +32,6 @@ func (p *Provider) UpdateStatement(obj interface{}) error {
 }
 
 func (p *Provider) DeleteStatement(obj interface{}, ids []int) error {
-	currentTime := time.Now()
-	res := p.Db.Model(obj).Where("id", ids).Update("deleted_at", currentTime)
+	res := p.Db.Delete(obj, ids)
 	return res.Error
 }

@@ -18,7 +18,7 @@ export const PanelHand: FC<IPanelHand> = ({input, isRunning, output, handleChang
 
         <TextField
             className={"panel_hand"}
-            disabled={true}
+            disabled={false}
             value={output}
             type="textarea"
             cols={200}

@@ -1,7 +1,8 @@
 /* eslint-disable */
 export interface IPane {
     fileContentUrl: string
-    defaultOutput: string,
+    defaultOutput: string
+    projectConfigUrl: string
     buildUrl: string
     runUrl: string
     isRunningUrl: string
