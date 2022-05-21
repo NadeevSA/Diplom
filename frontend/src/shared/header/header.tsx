@@ -47,7 +47,7 @@ function CollapseExampleHover() {
         onEsc={() => setIsSidebarOpen(false)}>
         <Sidebar.Content className={style.sideBar}>
           <HeaderLogo>
-            <img width={300} height={100} src="./logoAppRunner2.png" alt="Логотип" />
+            <img width={300} height={100} src="./logoAppRunner.png" alt="Логотип" />
           </HeaderLogo>
           <Button
             size="l"
@@ -87,7 +87,7 @@ export const header = (props: Props) => {
     <>
     <HeaderModule>
       <HeaderLogo>
-        <img width={150} height={50} src="./logoAppRunner2.png" alt="Логотип"/>
+        <img width={150} height={50} src="./logoAppRunner.png" alt="Логотип"/>
       </HeaderLogo>
     </HeaderModule>
       <HeaderModule indent="l">

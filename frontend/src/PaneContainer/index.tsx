@@ -8,9 +8,6 @@ import './index.css';
 
 export const AppContent = () => {
 
-    const [config, setConfig] = useState<ProjectConfig>()
-    const [isPaneOpened, setOpenPane] = useState(false)
-
     const buildUrl ='http://localhost:8084/builder/build'
     const dataFileUrl = "http://localhost:8084/data"
     const runUrl = 'http://localhost:8084/builder/run'
@@ -21,61 +18,14 @@ export const AppContent = () => {
     const isRunningUrl = "http://localhost:8084/builder/is_running"
     const projectConfigUrl = "http://localhost:8084/project_config"
 
-    const getPrjectStatus = () => {
-        api<ProjectConfig[]>(`${projectConfigUrl}/filter?field=id&val=9`)
-            .then(projectsConfigs => {
-                setConfig(projectsConfigs[0])
-            })
-    }
-
-    useLayoutEffect(()=>{
-        getPrjectStatus()
-    },[])
-
-
-    if (config) {
-        const name = config.Name
-        let projectContainerReplicaName : string
-        let defaultOutput: string = ""
-        let replicaUuid :string
-        if (!sessionStorage.getItem(`${name}`)){
-            replicaUuid = crypto.randomUUID();
-            sessionStorage.setItem(name,replicaUuid)
-            projectContainerReplicaName = `${name}_${replicaUuid}`
-        } else {
-            replicaUuid = sessionStorage.getItem(name) || ""
-            defaultOutput = sessionStorage.getItem(`${name}_${replicaUuid}_data`) || ""
-            projectContainerReplicaName = `${name}_${replicaUuid}`
-        }
-
-        const onOpen = () => setOpenPane(true)
-        const onClose = () => {
-            setOpenPane(false)
-        }
-
-        return (
-                <div>
-                    <div className={"buttons_open_close"}>
-                        <Button label={"open"} size={"xs"} onClick={onOpen}/>
-                        <Button label={"close"} size={"xs"} onClick={onClose}/>
-                    </div>
-                    {isPaneOpened && <AppPane buildUrl={buildUrl}
-                                              projectConfigUrl={projectConfigUrl}
-                                              defaultOutput={defaultOutput || ""}
-                                              dataFileUrl={dataFileUrl}
-                                              runUrl={runUrl}
-                                              attachUrl={attachUrl}
-                                              attachUrlFileUrl={attachFileUrl}
-                                              statusCheckUrl={statusCheckUrl}
-                                              fileContentUrl={fileContentUrl}
-                                              isRunningUrl={isRunningUrl}
-                                              projectId={config.ID.toString()}
-                                              projectContainerReplicaName={projectContainerReplicaName}
-                                              currentStatus={config.Status}
+    {return <AppPane buildUrl={buildUrl}
+                            projectConfigUrl={projectConfigUrl}
+                            dataFileUrl={dataFileUrl}
+                            runUrl={runUrl}
+                            attachUrl={attachUrl}
+                            attachUrlFileUrl={attachFileUrl}
+                            statusCheckUrl={statusCheckUrl}
+                            fileContentUrl={fileContentUrl}
+                            isRunningUrl={isRunningUrl}
                     />}
-                </div>
-        )
-    } else {
-        return <Loader className={"loader"}/>
-    }
 };

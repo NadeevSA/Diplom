@@ -2,9 +2,6 @@ import {Status} from "../types";
 
 export interface IPanelFile {
     status: Status
-    dataFiles: IDataFile[]
-    // eslint-disable-next-line no-unused-vars
-    onSetDataFile: (dataFile: IDataFile) => void
     output: string
     dataFile: IDataFile | null | undefined
     attachFileUrl: string
@@ -17,4 +14,9 @@ export interface IDataFile {
     Label: string
     FileName: string
     File: string
+}
+
+export interface IProjectConfig {
+    ID: number
+    Name: string
 }

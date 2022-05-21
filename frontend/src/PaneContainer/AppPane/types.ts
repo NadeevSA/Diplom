@@ -1,7 +1,6 @@
 /* eslint-disable */
 export interface IPane {
     fileContentUrl: string
-    defaultOutput: string
     projectConfigUrl: string
     buildUrl: string
     runUrl: string
@@ -10,9 +9,6 @@ export interface IPane {
     attachUrlFileUrl: string
     dataFileUrl: string
     statusCheckUrl: string
-    projectId: string
-    projectContainerReplicaName: string
-    currentStatus: Status
 }
 
 export enum Status {

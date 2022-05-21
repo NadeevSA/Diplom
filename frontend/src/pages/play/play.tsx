@@ -7,6 +7,7 @@ import { Combobox } from '@consta/uikit/Combobox';
 import { Button } from '@consta/uikit/Button';
 import { AppContent } from '../../PaneContainer';
 import { Switch } from '@consta/uikit/Switch';
+import { AppPane } from '../../PaneContainer/AppPane';
 
 interface Props {}
 
@@ -63,9 +64,6 @@ const Filter = () => {
 
 export const play = (props: Props) => {
     return (
-        <Grid gap="xl" cols="4">
-            <GridItem><Filter></Filter></GridItem>
-            <GridItem colStart="2" col="3"><Card><AppContent></AppContent></Card></GridItem>
-        </Grid>
+      <AppContent></AppContent>
     )
 }

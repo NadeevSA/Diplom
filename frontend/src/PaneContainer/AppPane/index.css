@@ -26,10 +26,19 @@
 }
 
 .loader {
-    margin-top: 4rem;
+    margin: auto;
 }
 
 .switcher {
     padding-bottom: 0.5rem;
     margin-left: 1rem;
+}
+
+.button {
+    margin: 3% auto;
+    display: block;
+}
+
+.card {
+    padding: 3%;
 }

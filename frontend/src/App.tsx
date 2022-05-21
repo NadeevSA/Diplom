@@ -11,6 +11,7 @@ import { header as Header} from './shared/header/header'
 import { store } from './store'
 import { Provider } from 'react-redux'
 import { ProjectPage } from './pages/Project/project';
+import { AppContent } from './PaneContainer';
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
             <Route path="/profile" exact component={profile}/>
             <Route path="/dashboard" exact component={dashboard}/>
             <Route path="/testing" exact component={testing}/>
-            <Route path="/play" exact component={play}/>
+            <Route path="/run" exact component={play}/>
             <Route path="/example" exact component={exp}/>
             <Route path="/project" exact component={ProjectPage}/>
           </Switch>

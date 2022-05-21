@@ -158,8 +158,8 @@ export function MyData() {
 
 //authServer.logout();
 //authServer.register("userrаа", "123");
-authServer.login("userrаа", "123");
-console.log("user", authServer.getCurrentUser());
+//authServer.login("Serega", "1235");
+//console.log("user", authServer.getCurrentUser());
 
 export const main = (props: Props) => {
   return <MyTable isHidden={false}></MyTable>
