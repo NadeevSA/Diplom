@@ -127,12 +127,12 @@ function ModalRegistration() {
   const [name, setName] = useState<string | null>("");
   const handleChangeName = ({ value }: { value: string | null }) => setName(value);
   return(
-    <div>
+    <Layout flex={2}>
       <Button
-          size="s"
+          size="l"
           view="secondary"
           label="Регистрация"
-          className={style.button}
+          className={style.buttonModel}
           onClick={() => setIsModalOpen(true)}
         />
       <Modal
@@ -154,14 +154,15 @@ function ModalRegistration() {
               <TextField value={password} onChange={handleChangePassword} width='full' className={style.form} type="text" placeholder="Пароль" />
             </Layout>
             <Layout flex={2}>
-                <Button view="secondary" label="Зарегистрироваться" className={style.buttonModel} onClick={() => {
+                <Button view="secondary" size="l"  label="Зарегистрироваться" className={style.buttonModel} onClick={() => {
                   authServer.register(login, password);
                   authServer.registerUser(name, login);
+                  setIsModalOpen(false)
                 }}/> 
             </Layout>
           </Layout>
       </Modal>
-    </div>
+    </Layout>
   )
 }
 
@@ -200,7 +201,7 @@ function ModalLogin(props: {
               <TextField width='full' className={style.form} value={password} onChange={handleChangePassword} type="text" placeholder="Пароль" />
             </Layout>
             <Layout flex={2}>
-                <Button view="secondary" label="Войти" className={style.buttonModel} onClick={() => {
+                <Button view="secondary" size="l" label="Войти" className={style.buttonModel} onClick={() => {
                     authServer.logout();
                     authServer.login(login, password)?.then(res => {
                       authServer.getUserName().then(res => {
@@ -210,9 +211,7 @@ function ModalLogin(props: {
                   });
                 }}/> 
             </Layout>
-            <Layout flex={1}>
-              <ModalRegistration></ModalRegistration>
-            </Layout>
+            <ModalRegistration></ModalRegistration>
           </Layout>
       </Modal>
     </div>

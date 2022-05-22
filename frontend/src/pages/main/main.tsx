@@ -61,6 +61,7 @@ export const columns: TableColumn<typeof rows[number]>[] = [
 ];
 
 export let rowsData: {
+  ID: string,
   id: string;
   FileName: string;
   Label: string;
@@ -83,8 +84,25 @@ export const columnsData: TableColumn<typeof rowsData[number]>[] = [
   title: 'Описание',
   accessor: 'Label',
   align: 'center',
+},
+{
+  title: 'Действие',
+  accessor: 'Delete',
+  align: 'center',
+  renderCell: (row) => <Button 
+  view="secondary"
+  width="full"
+  label={"Удалить"}
+  onClick={() => DeleteData(row.ID)}/>
 }
 ];
+
+function DeleteData(id: string) {
+  instance.delete(
+    'data',
+    //{ ID: id},
+  );
+}
 
 const instance = axios.create({
   baseURL: "http://localhost:8084"
