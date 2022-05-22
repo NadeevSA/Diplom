@@ -90,7 +90,6 @@ func (c *ProjectConfigController) DeleteProjectConfig(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var projectConfigs model.ProjectConfig
-	Decode(request, &projectConfigs, writer)
 	c.Delete(&projectConfigs, request, writer)
 }
 

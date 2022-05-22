@@ -54,7 +54,6 @@ func (c *UserController) DeleteUser(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var users model.User
-	Decode(request, &users, writer)
 	c.Delete(&users, request, writer)
 }
 

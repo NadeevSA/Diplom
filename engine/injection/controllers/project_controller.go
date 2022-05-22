@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"engine_app/database/model"
+	"engine_app/filters"
+	"fmt"
 	"github.com/spf13/viper"
 	"net/http"
 	"strings"
@@ -38,8 +40,20 @@ func (c *ProjectController) AddProject(
 func (c *ProjectController) DeleteProject(
 	writer http.ResponseWriter,
 	request *http.Request) {
+
 	var Projects model.Project
-	Decode(request, &Projects, writer)
+	var deleteIntent filters.IdsFilter
+	Decode(request, &deleteIntent, writer)
+	str := strings.Trim(strings.Replace(fmt.Sprint(deleteIntent.Ids), " ", ",", -1), "[]")
+	query := "delete from project_configs where project_id in ($1)"
+	query = strings.Replace(query, "$1", str, -1)
+	_, err := c.AppInjection.Db.Exec(query)
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
 	c.Delete(&Projects, request, writer)
 }
 

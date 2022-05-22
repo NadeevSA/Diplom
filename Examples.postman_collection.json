@@ -124,7 +124,7 @@
 						},
 						{
 							"key": "ProjectName",
-							"value": "my_app17",
+							"value": "my_app18",
 							"type": "text"
 						},
 						{
@@ -385,14 +385,25 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8084/data",
+					"raw": "http://localhost:8084/data/filter?field=author&val=West",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8084",
 					"path": [
-						"data"
+						"data",
+						"filter"
+					],
+					"query": [
+						{
+							"key": "field",
+							"value": "author"
+						},
+						{
+							"key": "val",
+							"value": "West"
+						}
 					]
 				}
 			},
@@ -546,7 +557,13 @@
 			"name": "http://localhost:8084/data",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTMzMjAzMjEuODAzMjEsImlhdCI6MTY1MzIzMzkyMS44MDMyMSwidXNlcm5hbWUiOiJXZXN0In0.vEFQdV3QCVzh_bqXks8fnHATXG2f1WFgPXE_0xcALpw",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "formdata",
 					"formdata": [
@@ -1016,6 +1033,92 @@
 						{
 							"key": "project_config_id",
 							"value": "14"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8084/project",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Ids\":[4,5]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8084/project",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8084",
+					"path": [
+						"project"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8084/data",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Ids\":[1,2]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8084/data",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8084",
+					"path": [
+						"data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8084/project_config/filter?field=project_id&val=4",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8084/project_config/filter?field=project_id&val=4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8084",
+					"path": [
+						"project_config",
+						"filter"
+					],
+					"query": [
+						{
+							"key": "field",
+							"value": "project_id"
+						},
+						{
+							"key": "val",
+							"value": "4"
 						}
 					]
 				}
