@@ -80,9 +80,61 @@ func (c *ProjectConfigController) DeleteProjectConfig(
 func (c *ProjectConfigController) PutProjectConfig(
 	writer http.ResponseWriter,
 	request *http.Request) {
-	var projectConfigs model.ProjectConfig
-	Decode(request, &projectConfigs, writer)
-	c.Put(&projectConfigs, request, writer)
+	var projectConfig model.ProjectConfig
+
+	err := request.ParseMultipartForm(32 << 20)
+	if err != nil {
+		log.Fatal(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	file, header, err := request.FormFile("File")
+
+	id := request.MultipartForm.Value["ID"][0]
+
+	dockerConfigId, err := strconv.Atoi(request.MultipartForm.Value["DockerConfigId"][0])
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	projectId, err := strconv.Atoi(request.MultipartForm.Value["ProjectId"][0])
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	var cnfs []model.ProjectConfig
+	c.AppInjection.Provider.QueryListStatement(&cnfs, filters.FilterBy{Field: "ID", Args: []string{id}})
+
+	selectedConfig := cnfs[0]
+
+	if file != nil {
+		defer file.Close()
+		var buf bytes.Buffer
+		_, err = io.Copy(&buf, file)
+		projectConfig.File = buf.Bytes()
+		projectConfig.ProjectFile = header.Filename
+	} else {
+		projectConfig.File = selectedConfig.File
+		projectConfig.ProjectFile = selectedConfig.ProjectFile
+	}
+
+	idInt, _ := strconv.Atoi(id)
+	projectConfig.ID = uint(idInt)
+	projectConfig.Status = model.Status(0)
+	projectConfig.DockerConfigId = dockerConfigId
+	projectConfig.Name = request.MultipartForm.Value["ProjectName"][0]
+	projectConfig.BuildCommand = request.MultipartForm.Value["BuildCommand"][0]
+	projectConfig.RunFile = request.MultipartForm.Value["RunFile"][0]
+	projectConfig.ProjectId = projectId
+	projectConfig.PathToEntry = request.MultipartForm.Value["PathToEntry"][0]
+
+	c.Put(&projectConfig, request, writer)
 }
 
 func (c *ProjectConfigController) GetAllProjectConfig(

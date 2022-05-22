@@ -6,10 +6,12 @@ import (
 	"engine_app/database/model"
 	"engine_app/filters"
 	"fmt"
+	"github.com/spf13/viper"
 	"io"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type DataFileController struct {
@@ -23,6 +25,21 @@ func (c *DataFileController) AddDataFile(
 
 	file, header, _ := request.FormFile("File")
 	dataFile.Label = request.MultipartForm.Value["Label"][0]
+
+	if c.AppInjection.UseAuth {
+		signingKey := []byte(viper.GetString("auth.signing_key"))
+		reqToken := request.Header.Get("Authorization")
+		splitToken := strings.Split(reqToken, "Bearer ")
+		if len(splitToken) == 1 {
+			writer.WriteHeader(http.StatusForbidden)
+			return
+		}
+		reqToken = splitToken[1]
+		userNameFromToken, _ := ParseToken(reqToken, signingKey)
+		if dataFile.Author == "" {
+			dataFile.Author = userNameFromToken
+		}
+	}
 
 	dataFile.FileName = header.Filename
 	var buf bytes.Buffer

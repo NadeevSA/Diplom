@@ -8,13 +8,14 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { setOriginalNode } from 'typescript';
 import { Loader } from '@consta/uikit/Loader';
 import { Button } from '@consta/uikit/Button';
-import { ProjectPage } from '../Project/project';
+import { ProjectPage } from '../ProjectConfig/project';
 import authServer from '../../ServiceAuth/authServer';
 
 interface Props {}
 
  export let rows: {
     id: string;
+    ID: string;
     Name: string;
     UserId: number;
     Avtor?: string;
@@ -55,7 +56,7 @@ export const columns: TableColumn<typeof rows[number]>[] = [
     title: 'Действие',
     accessor: "Action",
     align: 'center',
-    renderCell: (row) => <ProjectPage name={row.Name}></ProjectPage>
+    renderCell: (row) => <ProjectPage name={row.Name} id={row.ID}/>
   },
 ];
 

@@ -10,7 +10,7 @@ import { exp } from './pages/exampleRudexAxios/exp';
 import { header as Header} from './shared/header/header'
 import { store } from './store'
 import { Provider } from 'react-redux'
-import { ProjectPage } from './pages/Project/project';
+import { ProjectPage } from './pages/ProjectConfig/project';
 import { AppContent } from './PaneContainer';
 
 function App() {

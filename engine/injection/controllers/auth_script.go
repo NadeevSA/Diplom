@@ -89,29 +89,27 @@ func (a *AuthService) AuthCheckUserProjectBody(next http.HandlerFunc, useAuth bo
 
 func (a *AuthService) AuthServiceUserProjectConfig(next http.HandlerFunc, useAuth bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseMultipartForm(32 << 20)
 		if !useAuth {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		var projectConfig model.ProjectConfig
 		var project model.Project
 		var users []model.User
 
-		Decode(r, &projectConfig, w)
-
-		str := strconv.Itoa(projectConfig.ProjectId)
+		id := r.MultipartForm.Value["ProjectId"][0]
 
 		filter := filters.FilterBy{
 			Field: "id",
-			Args:  []string{str},
+			Args:  []string{id},
 		}
 		err := a.AppInjection.Provider.QueryListStatement(&project, filter)
 
-		str = strconv.Itoa(project.UserId)
+		id = strconv.Itoa(project.UserId)
 		filter = filters.FilterBy{
 			Field: "id",
-			Args:  []string{str},
+			Args:  []string{id},
 		}
 		err = a.AppInjection.Provider.QueryListStatement(&users, filter)
 

@@ -63,5 +63,6 @@ type Data struct {
 	FileName string
 	File     []byte
 
+	Author        string
 	ProjectConfig []ProjectConfig `gorm:"many2many:project_config_data;"`
 }
