@@ -18,7 +18,7 @@ interface Props {}
     ID: string;
     Name: string;
     UserId: number;
-    Avtor?: string;
+    Author: string;
     Description: string;
     Action?: typeof Button;
 }[]
@@ -43,7 +43,7 @@ export const columns: TableColumn<typeof rows[number]>[] = [
   },
   {
     title: 'Автор',
-    accessor: 'Avtor',
+    accessor: 'Author',
     align: 'center',
     hidden: true,
   },
@@ -83,34 +83,17 @@ export const columnsData: TableColumn<typeof rowsData[number]>[] = [
   title: 'Описание',
   accessor: 'Label',
   align: 'center',
-},
-{
-  title: 'Действие',
-  accessor: 'Delete',
-  align: 'center',
-  renderCell: (row) => <Button view="secondary" label="Удалить" width="full" size="s"></Button>
-},
+}
 ];
 
 const instance = axios.create({
   baseURL: "http://localhost:8084"
 });
 
-function GetNameAvtor(val: number) {
-  let name = null;
-  return instance.get( `user/filter?field=id&val=${val}`,
-    {headers: {
-      Authorization : `Bearer ${authServer.getToken()}`
-    }},
-  ).then(response => {
-    name = response.data.map((d: Project) => d.Name)[0];
-    return name;
-  });
-}
-
 export function MyTable(props: { isHidden: boolean }) {
   columns.map(v => {
     if(v.title == "Автор") v.hidden = props.isHidden;
+    if(v.title == "Действие") v.hidden = !props.isHidden;
   });
   const [data, setData] = useState<typeof rows>([]);
   useEffect(() => {
@@ -121,10 +104,6 @@ export function MyTable(props: { isHidden: boolean }) {
         Authorization : `Bearer ${authServer.getToken()}`
       }},
     ).then(response => {
-      let id = response.data.map((d: Project) => d.UserId)[0];
-      GetNameAvtor(id).then((value : string) =>{
-        (response.data as (typeof rows)).map(a => a.Avtor = value);
-      })
       setData(response.data);
     });
     })
@@ -142,13 +121,16 @@ export function MyTable(props: { isHidden: boolean }) {
 export function MyData() {
   const [data, setData] = useState<typeof rowsData>([]);
   useEffect(() => {
-    instance.get( 'data',
-      {headers: {
-        Authorization : `Bearer ${authServer.getToken()}`
-      }},
-    ).then(response => {
-      setData(response.data);
-    });
+    authServer.getUserName().then(res => {
+      debugger
+        instance.get( `data/filter?field=Author&val=${res.data.Email}`,
+        {headers: {
+          Authorization : `Bearer ${authServer.getToken()}`
+        }},
+      ).then(response => {
+        setData(response.data);
+      });
+    })
   }, [useDispatch()]);
   return (
     <Table rows={data} columns={columnsData} 

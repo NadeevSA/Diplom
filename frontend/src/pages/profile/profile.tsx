@@ -15,6 +15,7 @@ import { PostProject } from '../exampleRudexAxios/createSlice';
 import { HeaderModule, HeaderSearchBar } from '@consta/uikit/Header';
 import { Select } from '@consta/uikit/Select';
 import { Combobox } from '@consta/uikit/Combobox';
+import authServer from '../../ServiceAuth/authServer';
 
 interface Props {}
 
@@ -24,11 +25,16 @@ function Info() {
     const handleChange = ({ value }: { value: string | null }) => setValue(value);
     const [desc, setDesc] = useState<string | null>(null);
     const handleChangeDesc = ({ value }: { value: string | null }) => setDesc(value);
+    const [userName, setUserName] = useState<string | null>("");
+    const [userEmail, setUserEmail] = useState<string | null>("");
+    authServer.getUserName().then(res => {
+        setUserName(res.data.Name);
+        setUserEmail(res.data.Email);
+    })
     return (
         <Card>
-            <Text truncate view="primary" size="2xl">Nadeev Sergey</Text>
-            <Text truncate view="secondary" size="l">nadeevSA@mail.ru</Text>
-            <Text view="secondary" size="l">Студент группы ПРО-421</Text>
+            <Text truncate view="primary" size="2xl">{userName}</Text>
+            <Text truncate view="secondary" size="l">{userEmail}</Text>
         </Card>
     )
 }
