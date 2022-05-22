@@ -51,7 +51,6 @@ class AuthService {
   }
   getToken() {
     const userStr = sessionStorage.getItem("user");
-    console.log("userStr", userStr);
     if (userStr) return (JSON.parse(userStr) as string);
     return "";
   }
