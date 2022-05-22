@@ -49,17 +49,34 @@ func (c *ProjectConfigController) AddProjectConfig(
 		return
 	}
 
-	projectId, err := strconv.Atoi(request.MultipartForm.Value["ProjectId"][0])
+	var projectIdString = request.MultipartForm.Value["ProjectId"][0]
+	projectId, err := strconv.Atoi(projectIdString)
 	if err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 		return
 	}
 
+	var prs []model.Project
+	err = c.AppInjection.Provider.QueryListStatement(&prs, filters.FilterBy{Field: "id", Args: []string{projectIdString}})
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	if prs == nil || len(prs) == 0 {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte("Project does not exist"))
+		return
+	}
+
+	var project = prs[0]
+
 	projectConfig.ProjectFile = header.Filename
 	projectConfig.Status = model.Status(0)
 	projectConfig.DockerConfigId = dockerConfigId
-	projectConfig.Name = request.MultipartForm.Value["ProjectName"][0]
+	projectConfig.Name = project.Name
 	projectConfig.BuildCommand = request.MultipartForm.Value["BuildCommand"][0]
 	projectConfig.RunFile = request.MultipartForm.Value["RunFile"][0]
 	projectConfig.ProjectId = projectId
@@ -128,7 +145,7 @@ func (c *ProjectConfigController) PutProjectConfig(
 	projectConfig.ID = uint(idInt)
 	projectConfig.Status = model.Status(0)
 	projectConfig.DockerConfigId = dockerConfigId
-	projectConfig.Name = request.MultipartForm.Value["ProjectName"][0]
+	projectConfig.Name = selectedConfig.Name
 	projectConfig.BuildCommand = request.MultipartForm.Value["BuildCommand"][0]
 	projectConfig.RunFile = request.MultipartForm.Value["RunFile"][0]
 	projectConfig.ProjectId = projectId

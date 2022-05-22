@@ -47,12 +47,11 @@ export async function GetConfigurationFiltered(filter: string) {
 
 export async function AddProjectConfig(projectId: string,
                                        dockerConfigId: string,
-                                       projectName: string,
                                        projectCommandBuild: string,
                                        runFile: string,
                                        projectPathToEntry: string,
                                        file: File) {
-    await instance.post(
+    return instance.post(
         'project_config',
         {
             ProjectId: projectId,
@@ -60,7 +59,6 @@ export async function AddProjectConfig(projectId: string,
             BuildCommand: projectCommandBuild,
             RunFile: runFile,
             PathToEntry: projectPathToEntry,
-            ProjectName: projectName,
             File: file
         },
         {
@@ -78,12 +76,11 @@ export async function PutProjectConfig(
                                        id:string,
                                        projectId: string,
                                        dockerConfigId: string,
-                                       projectName: string,
                                        projectCommandBuild: string,
                                        runFile: string,
                                        projectPathToEntry: string,
                                        file?: File) {
-    await instance.put(
+    return instance.put(
         'project_config',
         {
             ID: id,
@@ -92,7 +89,6 @@ export async function PutProjectConfig(
             BuildCommand: projectCommandBuild,
             RunFile: runFile,
             PathToEntry: projectPathToEntry,
-            ProjectName: projectName,
             File: file
         },
         {

@@ -71,7 +71,7 @@ func (c *DataFileController) GetFilteredDataFile(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var datafiles []model.Data
-	c.GetFilteredBy(datafiles, request, writer)
+	c.GetFilteredBy(&datafiles, request, writer)
 }
 
 func (c *DataFileController) GetFilteredDataFileByProjectId(

@@ -21,9 +21,6 @@ export function ProjectPage(props: { name: string, id: string }) {
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [currentConfig, setCurrentConfig] = useState<IConfiguration | null>(null)
 
-    const [projectName, setProjectName] = useState<string | null>(null);
-    const handleProjectName = ({value}: { value: string | null }) => setProjectName(value);
-
     const [projectCommandBuild, setProjectCommandBuild] = useState<string | null>(null);
     const handleProjectCommandBuild = ({value}: { value: string | null }) => setProjectCommandBuild(value);
 
@@ -52,7 +49,6 @@ export function ProjectPage(props: { name: string, id: string }) {
 
     useEffect(() => {
         if (isModalOpen && currentConfig){
-            setProjectName(currentConfig.Name)
             setRunFile(currentConfig.ProjectFile)
             setProjectCommandBuild(currentConfig.BuildCommand)
             setPathToEntry(currentConfig.PathToEntry)
@@ -61,12 +57,26 @@ export function ProjectPage(props: { name: string, id: string }) {
     }, [isModalOpen])
 
     const onBtnClick = () => {
-        if (currentConfig && projectName && projectPathToEntry && projectCommandBuild && runFile && selectedDockerConfig){
-            PutProjectConfig(currentConfig?.ID,props.id, selectedDockerConfig.ID, projectName, projectCommandBuild, runFile, projectPathToEntry, file)
+        if (currentConfig  && projectPathToEntry && projectCommandBuild && runFile && selectedDockerConfig){
+            PutProjectConfig(currentConfig?.ID, props.id, selectedDockerConfig.ID, projectCommandBuild, runFile, projectPathToEntry, file)
+                .then((resp) => {
+                    if (resp.status === 200){
+                        setIsModalOpen(false)
+                    }else {
+                        alert(resp.statusText)
+                    }
+                })
             return
         }
-        if (projectName && projectPathToEntry && projectCommandBuild && runFile && file && selectedDockerConfig) {
-            AddProjectConfig(props.id, selectedDockerConfig.ID, projectName, projectCommandBuild, runFile, projectPathToEntry, file)
+        if (projectPathToEntry && projectCommandBuild && runFile && file && selectedDockerConfig) {
+            AddProjectConfig(props.id, selectedDockerConfig.ID, projectCommandBuild, runFile, projectPathToEntry, file)
+                .then((resp) => {
+                    if (resp.status === 200){
+                        setIsModalOpen(false)
+                    } else {
+                        alert(resp.statusText)
+                    }
+                })
         }
     }
 
@@ -85,18 +95,19 @@ export function ProjectPage(props: { name: string, id: string }) {
                 onEsc={() => setIsModalOpen(false)}>
                 <div className={style.model_form}>
                     <div className={style.label}>Конфигурация</div>
-                    <TextField width='full' className={style.input_field} onChange={handleProjectName}
-                               value={projectName}
-                               type="text" placeholder="Имя приложения"/>
                     <TextField width='full' className={style.input_field} onChange={handleProjectCommandBuild}
                                value={projectCommandBuild}
+                               label={"Команда сборки"}
                                type="text" placeholder="Команда сборки"/>
                     <TextField width='full' className={style.input_field} onChange={handleRunFile} value={runFile}
+                               label={"Имя исполняемого файла"}
                                type="text" placeholder="Имя исполняемого файла"/>
                     <TextField width='full' className={style.input_field} onChange={handlePathToEntry}
                                value={projectPathToEntry}
+                               label={"Путь к папке проекта"}
                                type="text" placeholder="Путь к проекту в папке"/>
                     <Combobox
+                        label={"Конфигурация приложения"}
                         className={style.input_field}
                         placeholder="Выберите конфигурацию"
                         items={dockerConfigs}
