@@ -12,12 +12,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Card } from '@consta/uikit/Card';
 import { File } from '@consta/uikit/File';
 import { Attachment } from '@consta/uikit/Attachment';
+import authServer from '../../ServiceAuth/authServer';
 
 interface Props {}
-
-const onClick = async (name: string | null, desc: string | null) => {
-  PostProject(name, desc);
-};
 
 export function ModelAddProjectData() {
     const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -69,7 +66,12 @@ export function ModelAddProjectData() {
             value={desc}/>
           </Layout>
           <Layout flex={2}>
-              <Button view="secondary" label="Добавить" className={style.buttonModel} onClick={() => {PostProject(value, desc); setIsModalOpen(false); window.location.reload()}}/> 
+              <Button view="secondary" label="Добавить" className={style.buttonModel} onClick={() => {
+                authServer.getUserName().then(res => {
+                  PostProject(res.data.ID, value, desc);
+                })
+                setIsModalOpen(false); 
+                window.location.reload()}}/> 
           </Layout>
         </Layout>
         </Modal>

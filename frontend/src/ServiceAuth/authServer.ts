@@ -1,10 +1,16 @@
 import axios from "axios";
+import { Session } from "inspector";
 const instance = axios.create({
   baseURL: "http://localhost:8080/auth",
 });
 
+const instance1 = axios.create({
+  baseURL: "http://localhost:8084",
+});
+
 class AuthService {
-  login(username: string, password: string) {
+  login(username: string | null, password: string | null) {
+    if(username == null || password == null) return;
     return instance.post<UserAuth>(
       'sign-in',
       { username: username, password: password},
@@ -15,17 +21,16 @@ class AuthService {
         },
       },
     ).then(response => {
-        console.log("s");
-        if (response.data.status == "ok") {
-          console.log("1");
-          localStorage.setItem("user", JSON.stringify(response.data.token));
-        }
-    });
+      if (response.data.status == "ok") {
+        sessionStorage.setItem("user", JSON.stringify(response.data.token));
+      }
+  });
   }
   logout() {
     localStorage.removeItem("user");
   }
-  register(username: string, password: string) {
+  register(username: string | null, password: string | null) {
+    if(username == null || password == null) return;
     return instance.post<UserAuth>(
       'sign-up',
       { username: username, password: password},
@@ -37,11 +42,24 @@ class AuthService {
       },
     );
   }
-  getCurrentUser() {
-    const userStr = localStorage.getItem("user");
+  registerUser(name: string | null, email: string | null) {
+    if(name == null || email == null) return;
+    return instance1.post<User>(
+      'user',
+      { Name: name, Email: email},
+    )
+  }
+  getToken() {
+    const userStr = sessionStorage.getItem("user");
     console.log("userStr", userStr);
-    if (userStr) return JSON.parse(userStr);
-    return null;
+    if (userStr) return (JSON.parse(userStr) as string);
+    return "";
+  }
+  getUserName() {
+    return instance1.get<User>(
+      'user/info',
+      {headers: {Authorization : `Bearer ${this.getToken()}`}},
+    )
   }
 }
 
@@ -50,6 +68,12 @@ interface UserAuth {
   password: string,
   status?: string,
   token?: string,
+}
+
+interface User {
+  ID: string,
+  Name: string,
+  Email: string,
 }
 
 export default new AuthService();
