@@ -9,28 +9,33 @@ import authServer from '../../ServiceAuth/authServer';
 import { Modal } from '@consta/uikit/Modal';
 import { Layout } from '@consta/uikit/LayoutCanary';
 import { TextField } from '@consta/uikit/TextField';
+import { User } from '@consta/uikit/User';
 
 interface Props {}
 
 function CollapseExampleHover() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
-  const [UserName, setUserName] = React.useState<string>(""); 
-  let x = authServer.getToken();
+  const [UserName, setUserName] = React.useState<string>("");
+  const [UserEmail, setUserEmail] = React.useState<string>("");
   if(authServer.getToken() != ""){
     authServer.getUserName().then(res => {
       setUserName(res.data.Name)
+      setUserEmail(res.data.Email)
     });
   }
   return (
     <div>
       {
         authServer.getToken() != "" ?
-        <HeaderLogin
-          personName={UserName}
-          
-          isLogged={true}
+        <User
+          name={UserName}
+          info={UserEmail}
+          onClick={() => setIsSidebarOpen(true)}
+          view="ghost"
+          size="l"
+          withArrow
         /> :
-        <ModalLogin userName={setUserName}></ModalLogin>
+        <ModalLogin userName={setUserName} userEmail={setUserEmail}></ModalLogin>
       }
       <Sidebar
         isOpen={isSidebarOpen}
@@ -41,30 +46,24 @@ function CollapseExampleHover() {
           <HeaderLogo>
             <img width={300} height={100} src="./logoAppRunner.png" alt="Логотип" />
           </HeaderLogo>
-          <Button
-            size="l"
-            label="Личный кабинет"
-            view="secondary"
-            width="full"
-            className={style.button}
-            onClick={() => setIsSidebarOpen(false)}
-          />
-          <Button
-            size="l"
-            view="secondary"
-            label="Графики"
-            width="full"
-            className={style.button}
-            disabled={true}
-            onClick={() => setIsSidebarOpen(false)}
-          />
+          <Link to="/profile">
+            <Button
+              size="l"
+              label="Личный кабинет"
+              view="secondary"
+              width="full"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+          </Link>
           <Button
             size="l"
             view="secondary"
             label="Выход"
             width="full"
             className={style.button}
-            onClick={() => setIsSidebarOpen(false)}
+            onClick={() => {
+              authServer.logout();
+              setIsSidebarOpen(false)}}
           />
         </Sidebar.Content>
       </Sidebar>
@@ -99,17 +98,19 @@ export const header = () => {
         </Link>
       </HeaderModule>
       <HeaderModule indent="s">
-        <Button
-          size="s"
-          view="secondary"
-          label="Запуск"
-          width="default"
-        />
+      <Link to="/run">
+          <Button
+            size="s"
+            view="secondary"
+            label="Запуск"
+            width="default"
+          />
+        </Link>
       </HeaderModule>
-        <HeaderModule indent="s" className={style.user}>
+        <HeaderModule indent="s">
           <CollapseExampleHover></CollapseExampleHover>
         </HeaderModule>
-      <HeaderModule indent="s" className={style.user}>  
+      <HeaderModule indent="s">  
       </HeaderModule>
     </>
   }
@@ -164,7 +165,10 @@ function ModalRegistration() {
   )
 }
 
-function ModalLogin(props: {userName: Dispatch<SetStateAction<string>>}) {
+function ModalLogin(props: {
+  userName: Dispatch<SetStateAction<string>>,
+  userEmail: Dispatch<SetStateAction<string>>
+}) {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [login, setLogin] = useState<string | null>(null);
   const handleChangeLogin = ({ value }: { value: string | null }) => setLogin(value);
@@ -200,7 +204,8 @@ function ModalLogin(props: {userName: Dispatch<SetStateAction<string>>}) {
                     authServer.logout();
                     authServer.login(login, password)?.then(res => {
                       authServer.getUserName().then(res => {
-                        props.userName(res.data.Name)
+                        props.userName(res.data.Name);
+                        props.userEmail(res.data.Email);
                       });
                   });
                 }}/> 

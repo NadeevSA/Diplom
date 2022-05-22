@@ -27,7 +27,7 @@ class AuthService {
   });
   }
   logout() {
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("user");
   }
   register(username: string | null, password: string | null) {
     if(username == null || password == null) return;

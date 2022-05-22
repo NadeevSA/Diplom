@@ -123,7 +123,7 @@ export function MyData() {
   useEffect(() => {
     authServer.getUserName().then(res => {
       debugger
-        instance.get( `data/filter?field=Author&val=${res.data.Email}`,
+        instance.get( `data/filter?field=author&val=${res.data.Email}`,
         {headers: {
           Authorization : `Bearer ${authServer.getToken()}`
         }},
