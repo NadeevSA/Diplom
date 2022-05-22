@@ -23,7 +23,7 @@ func main() {
 	dbName := "postgres"
 	port := "5432"
 	sslMode := "disable"
-	useAuth := true
+	useAuth := false
 	usePreload := true
 
 	var connectionString = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
