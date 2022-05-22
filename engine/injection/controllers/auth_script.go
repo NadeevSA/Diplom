@@ -38,6 +38,76 @@ func (a *AuthService) Auth(next http.HandlerFunc, useAuth bool) http.HandlerFunc
 	}
 }
 
+func toStringArr(arr []int) []string {
+	strArr := make([]string, len(arr))
+	for i := range arr {
+		strArr[i] = strconv.Itoa(arr[i])
+	}
+	return strArr
+}
+func (a *AuthService) AuthDeleteIntent(next http.HandlerFunc, useAuth bool) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !useAuth {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		var deleteIntent filters.IdsFilter
+
+		var projects []model.Project
+		Decode(r, &deleteIntent, w)
+		stringArr := toStringArr(deleteIntent.Ids)
+		filter := filters.FilterBy{
+			Field: "ID",
+			Args:  stringArr,
+		}
+
+		err := a.AppInjection.Provider.QueryListStatement(&projects, filter)
+		if err != nil {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		var users []model.User
+		str := strconv.Itoa(projects[0].UserId)
+		filter = filters.FilterBy{
+			Field: "id",
+			Args:  []string{str},
+		}
+		err = a.AppInjection.Provider.QueryListStatement(&users, filter)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		if len(users) == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("No such user"))
+			return
+		}
+		user := users[0]
+		signingKey := []byte(viper.GetString("auth.signing_key"))
+		reqToken := r.Header.Get("Authorization")
+		splitToken := strings.Split(reqToken, "Bearer ")
+		if len(splitToken) == 1 {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+		reqToken = splitToken[1]
+		userNameFromToken, err := ParseToken(reqToken, signingKey)
+
+		if err != nil || user.Email != userNameFromToken {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(err.Error()))
+			return
+		}
+		next.ServeHTTP(w, r)
+	}
+}
+
 func (a *AuthService) AuthCheckUserProjectBody(next http.HandlerFunc, useAuth bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !useAuth {
@@ -63,7 +133,7 @@ func (a *AuthService) AuthCheckUserProjectBody(next http.HandlerFunc, useAuth bo
 		}
 
 		if len(users) == 0 {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusForbidden)
 			w.Write([]byte("No such user"))
 			return
 		}

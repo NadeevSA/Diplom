@@ -23,7 +23,7 @@ func main() {
 	dbName := "postgres"
 	port := "5432"
 	sslMode := "disable"
-	useAuth := false
+	useAuth := true
 	usePreload := true
 
 	var connectionString = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
@@ -106,7 +106,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(
 		":8084",
 		handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "projectConfigId"}),
-			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}),
+			handlers.AllowedMethods([]string{"GET", "POST", "DELETE", "PUT", "HEAD", "OPTIONS"}),
 			handlers.AllowedOrigins([]string{"*"}))(router)))
 }
 

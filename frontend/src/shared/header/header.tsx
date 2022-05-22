@@ -60,7 +60,7 @@ function CollapseExampleHover() {
             view="secondary"
             label="Выход"
             width="full"
-            className={style.button}
+            className={style.buttonModel}
             onClick={() => {
               authServer.logout();
               setIsSidebarOpen(false)}}
@@ -207,6 +207,7 @@ function ModalLogin(props: {
                       authServer.getUserName().then(res => {
                         props.userName(res.data.Name);
                         props.userEmail(res.data.Email);
+                        window.location.reload()
                       });
                   });
                 }}/> 

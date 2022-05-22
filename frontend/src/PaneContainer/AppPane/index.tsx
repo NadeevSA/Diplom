@@ -12,6 +12,7 @@ import { Grid, GridItem } from '@consta/uikit/Grid';
 import { Card } from '@consta/uikit/Card';
 import { Select } from '@consta/uikit/Select';
 import { Text } from '@consta/uikit/Text';
+import authServer from "../../ServiceAuth/authServer";
 
 export const AppPane: FC<IPane> = ({
                                        attachUrlFileUrl,
@@ -116,7 +117,7 @@ export const AppPane: FC<IPane> = ({
             method: 'POST',
             headers: {
                 'projectConfigId': `${selectedProjectConfigId}`,
-                'Authorization' : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTMyMjg5OTkuMjk5NTM4OSwiaWF0IjoxNjUzMTQyNTk5LjI5OTUzODksInVzZXJuYW1lIjoiU2VyZWdhIn0.8ykwPIpg2UpQp4_-xVy6BBKmG7-5JArh1XRFddOLwRQ",
+                'Authorization' : `Bearer ${authServer.getToken()}`,
             }
         })
             .then((response) => {

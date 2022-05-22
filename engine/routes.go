@@ -19,7 +19,7 @@ func AddRoutes(app *controllers.App) *mux.Router {
 	router.HandleFunc("/project_config", app.ProjectConfigController.GetAllProjectConfig).Methods("GET")
 	router.HandleFunc("/project_config", auth.AuthServiceUserProjectConfig(app.ProjectConfigController.AddProjectConfig, app.AppInjection.UseAuth)).Methods("POST")
 	router.HandleFunc("/project_config", auth.AuthServiceUserProjectConfig(app.ProjectConfigController.PutProjectConfig, app.AppInjection.UseAuth)).Methods("PUT")
-	router.HandleFunc("/project_config", auth.AuthServiceUserProjectConfig(app.ProjectConfigController.DeleteProjectConfig, app.AppInjection.UseAuth)).Methods("DELETE")
+	router.HandleFunc("/project_config", auth.AuthDeleteIntent(app.ProjectConfigController.DeleteProjectConfig, app.AppInjection.UseAuth)).Methods("DELETE")
 	router.HandleFunc("/project_config/filter", app.ProjectConfigController.GetFilteredProjectConfig).Methods("GET")
 	router.HandleFunc("/project_config/file", app.ProjectConfigController.AddProjectConfigFiles).Methods("POST")
 
@@ -33,7 +33,7 @@ func AddRoutes(app *controllers.App) *mux.Router {
 	router.HandleFunc("/project", app.ProjectController.GetAllProject).Methods("GET")
 	router.HandleFunc("/project", auth.AuthCheckUserProjectBody(app.ProjectController.AddProject, app.AppInjection.UseAuth)).Methods("POST")
 	router.HandleFunc("/project", auth.AuthCheckUserProjectBody(app.ProjectController.PutProject, app.AppInjection.UseAuth)).Methods("PUT")
-	router.HandleFunc("/project", auth.AuthCheckUserProjectBody(app.ProjectController.DeleteProject, app.AppInjection.UseAuth)).Methods("DELETE")
+	router.HandleFunc("/project", auth.AuthDeleteIntent(app.ProjectController.DeleteProject, app.AppInjection.UseAuth)).Methods("DELETE")
 	router.HandleFunc("/project/filter", app.ProjectController.GetFilteredProject).Methods("GET")
 
 	router.HandleFunc("/docker_config/all", app.DockerConfigController.GetAllDockerConfigs).Methods("GET")

@@ -7,15 +7,16 @@ import {DragNDropField} from "@consta/uikit/DragNDropField";
 import {Attachment} from "@consta/uikit/Attachment";
 import {Text} from "@consta/uikit/Text";
 import {
-    AddProjectConfig,
+    AddProjectConfig, DeleteProjectConfig,
     GetConfigurationFiltered,
     GetDockerConfigs,
     IConfiguration,
-    IDockerConfiguration, PutProjectConfig
+    IDockerConfiguration,
+    PutProjectConfig
 } from "./queries";
 import {Combobox} from "@consta/uikit/Combobox";
 
-export function ProjectPage(props: { name: string, id: string }) {
+export function ProjectPage(props: { name: string, id: string, onDelete: (id: string) => void}) {
     const [selectedDockerConfig, setSelectedDockerConfig] = useState<IDockerConfiguration|null>()
     const [dockerConfigs, setDockerConfigs] = useState<IDockerConfiguration[]>([])
     const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -44,7 +45,6 @@ export function ProjectPage(props: { name: string, id: string }) {
                 })
             }
         })
-
     },[])
 
     useEffect(() => {
@@ -80,14 +80,39 @@ export function ProjectPage(props: { name: string, id: string }) {
         }
     }
 
+    const onDeleteProject = () => {
+        setIsModalOpen(false)
+        DeleteProjectConfig(props.id)
+            .then(resp => {
+                if (resp.status == 200){
+                    props.onDelete(props.id)
+                }
+            })
+            .catch(err => alert(err))
+    }
+
     return (
         <div>
-            <Button
-                size="s"
-                view="secondary"
-                label="Конфигурация"
-                onClick={() => setIsModalOpen(true)}
-            />
+            <div className={style.buttons}>
+                <div className={style.button}>
+                    <Button
+                        size="s"
+                        view="secondary"
+                        label="Конфигурация"
+                        onClick={() => setIsModalOpen(true)}/>
+                </div>
+
+                <div className={style.button}>
+                    <Button
+                        className={style.button}
+                        size="s"
+                        view="secondary"
+                        label="Удалить"
+                        onClick={() => onDeleteProject()}
+                    />
+                </div>
+
+            </div>
             <Modal
                 isOpen={isModalOpen}
                 hasOverlay

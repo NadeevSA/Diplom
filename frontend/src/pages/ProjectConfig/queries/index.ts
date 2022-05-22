@@ -1,4 +1,5 @@
 import axios from "axios";
+import authServer from "../../../ServiceAuth/authServer";
 
 const instance = axios.create({
     baseURL: "http://localhost:8084"
@@ -30,7 +31,7 @@ export interface IDockerConfiguration {
 export async function GetDockerConfigs() {
     const { data } = await instance.get<IDockerConfiguration[]>(
         'docker_config/all',
-        {headers: {Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTIzNjc0NDUuODE3NzM0LCJpYXQiOjE2NTIyODEwNDUuODE3NzM0LCJ1c2VybmFtZSI6Ildlc3QxIn0.S0mN5EgR11_MnbvO7n0DDzEMGVleYPgUzkbhAehfDDQ"}},
+        {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
     );
     console.log("Get", data);
     return data;
@@ -39,7 +40,7 @@ export async function GetDockerConfigs() {
 export async function GetConfigurationFiltered(filter: string) {
     const { data } = await instance.get<IConfiguration[]>(
         `project_config/filter?${filter}`,
-        {headers: {Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTIzNjc0NDUuODE3NzM0LCJpYXQiOjE2NTIyODEwNDUuODE3NzM0LCJ1c2VybmFtZSI6Ildlc3QxIn0.S0mN5EgR11_MnbvO7n0DDzEMGVleYPgUzkbhAehfDDQ"}},
+        {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
     );
     console.log("Get", data);
     return data;
@@ -65,7 +66,7 @@ export async function AddProjectConfig(projectId: string,
             headers: {
                 'Content-Type': 'multipart/form-data',
                 Accept: '*/*',
-                Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc",
+                Authorization: `Bearer ${authServer.getToken()}`
             },
         },
     );
@@ -73,13 +74,13 @@ export async function AddProjectConfig(projectId: string,
 
 
 export async function PutProjectConfig(
-                                       id:string,
-                                       projectId: string,
-                                       dockerConfigId: string,
-                                       projectCommandBuild: string,
-                                       runFile: string,
-                                       projectPathToEntry: string,
-                                       file?: File) {
+           id:string,
+           projectId: string,
+           dockerConfigId: string,
+           projectCommandBuild: string,
+           runFile: string,
+           projectPathToEntry: string,
+           file?: File) {
     return instance.put(
         'project_config',
         {
@@ -95,7 +96,25 @@ export async function PutProjectConfig(
             headers: {
                 'Content-Type': 'multipart/form-data',
                 Accept: '*/*',
-                Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc",
+                Authorization: `Bearer ${authServer.getToken()}`
+            },
+        },
+    );
+}
+
+
+export async function DeleteProjectConfig(
+    projectId: string) {
+    return instance.delete(
+        'project',
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: '*/*',
+                Authorization: `Bearer ${authServer.getToken()}`,
+            },
+            data: {
+                Ids: [projectId]
             },
         },
     );

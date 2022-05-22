@@ -88,8 +88,8 @@ export function ModelAddProjectData() {
                 authServer.getUserName().then(res => {
                   PostProject(res.data.ID, value, desc);
                 })
-                setIsModalOpen(false); 
-                window.location.reload()}}/> 
+                setIsModalOpen(false);
+                window.location.reload()}}/>
           </Layout>
         </Layout>
         </Modal>
@@ -145,13 +145,14 @@ export function ModelAddProjectData() {
                   let x = res.data.ID;
                   selectedProjectConfig?.map(p => {
                     PostProjectConfigData(res.data.ID, p.ID).then(res =>{
-                      debugger;
-                      console.log(res);
+                        if (res.status === 200){
+                            setIsModalOpenData(false)
+                            window.location.reload()
+                        }
                     });
                   })
-                }); 
-              //etIsModalOpen(false);
-              //window.location.reload()
+                });
+
             }}/> 
           </Layout>
         </Layout>

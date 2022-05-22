@@ -21,6 +21,7 @@ class AuthService {
         },
       },
     ).then(response => {
+      debugger
       if (response.data.status == "ok") {
         sessionStorage.setItem("user", JSON.stringify(response.data.token));
       }
