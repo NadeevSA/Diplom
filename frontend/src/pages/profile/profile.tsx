@@ -87,7 +87,6 @@ export const profile = (props: Props) => {
         <Grid gap="l" cols="5" className={style.grid}>
             <GridItem><Info></Info></GridItem>
             <GridItem rowStart="2"><ModelAddProjectData></ModelAddProjectData></GridItem>
-            <GridItem rowStart="3"><ComboboxExampleItems></ComboboxExampleItems></GridItem>
             <GridItem colStart="2" col="2" row="4"><Projects></Projects></GridItem>
             <GridItem colStart="4" col="2" row="4"><Datas></Datas></GridItem>
         </Grid>
