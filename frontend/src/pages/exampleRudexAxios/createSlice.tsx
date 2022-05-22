@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import { createSlice,createSelector,PayloadAction,createAsyncThunk,} from "@reduxjs/toolkit";
 import { store, RootState } from '../../store'
 import authServer from '../../ServiceAuth/authServer';
+import { ProjectConfig } from '../../PaneContainer/AppPane/types';
 
 export interface CounterState {
   value: number
@@ -64,23 +65,39 @@ export async function PostProject(id: string | null, name: string | null, desc: 
 }
 
 export interface Data {
+  ID: string,
   File: File,
   Label: string,
 }
 
-export async function PostData(file: File | null, desc: string | null) {
-  const { data } = await instance.post<Data>(
+export interface ProjectConfigData {
+  DataId: string,
+  ProjectConfigId: string,
+}
+
+export function PostData(file: File | null, desc: string | null) {
+  return instance.post<Data>(
     'data',
     { File: file, Label: desc},
     {
       headers: {
         'Content-Type': 'multipart/form-data',
-        Accept: '*/*',
         Authorization: `Bearer ${authServer.getToken()}`,
       },
     },
   );
-  console.log("PostData", data);
+}
+
+export function PostProjectConfigData(Data: string | null, ProjectConfig: number | null) {
+  return instance.post<ProjectConfigData>(
+    'project_data',
+    { DataId: Data, ProjectConfigId: ProjectConfig},
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
 }
 
 export async function GetProject() {
