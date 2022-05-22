@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type ProjectConfigController struct {
@@ -19,7 +20,52 @@ func (c *ProjectConfigController) AddProjectConfig(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var projectConfig model.ProjectConfig
-	Decode(request, &projectConfig, writer)
+
+	err := request.ParseMultipartForm(32 << 20)
+	if err != nil {
+		log.Fatal(err)
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	file, header, err := request.FormFile("File")
+	defer file.Close()
+	if err != nil {
+		panic(err)
+	}
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, file)
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	dockerConfigId, err := strconv.Atoi(request.MultipartForm.Value["DockerConfigId"][0])
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	projectId, err := strconv.Atoi(request.MultipartForm.Value["ProjectId"][0])
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+		return
+	}
+
+	projectConfig.ProjectFile = header.Filename
+	projectConfig.Status = model.Status(0)
+	projectConfig.DockerConfigId = dockerConfigId
+	projectConfig.Name = request.MultipartForm.Value["ProjectName"][0]
+	projectConfig.BuildCommand = request.MultipartForm.Value["BuildCommand"][0]
+	projectConfig.RunFile = request.MultipartForm.Value["RunFile"][0]
+	projectConfig.ProjectId = projectId
+	projectConfig.PathToEntry = request.MultipartForm.Value["PathToEntry"][0]
+	projectConfig.File = buf.Bytes()
+
 	c.Add(&projectConfig, request, writer)
 }
 
@@ -72,7 +118,6 @@ func (c *ProjectConfigController) AddProjectConfigFiles(
 	if err != nil {
 		log.Fatal(err)
 	}
-	buf.Bytes()
 
 	field := "id"
 	id := request.Form.Get("id")

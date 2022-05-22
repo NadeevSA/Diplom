@@ -5,9 +5,6 @@ import { Modal } from '@consta/uikit/Modal';
 import { TextField } from '@consta/uikit/TextField';
 import React, { useState } from 'react';
 import style from './project.module.css';
-import { Text } from '@consta/uikit/Text';
-
-interface Props {}
 
 export function ProjectPage(props: { name: string }) {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -20,7 +17,7 @@ export function ProjectPage(props: { name: string }) {
         <Button
           size="s"
           view="secondary"
-          label="Изменить"
+          label="Конфигурация"
           onClick={() => setIsModalOpen(true)}
         />
         <Modal
@@ -28,27 +25,14 @@ export function ProjectPage(props: { name: string }) {
           hasOverlay
           onClickOutside={() => setIsModalOpen(false)}
           onEsc={() => setIsModalOpen(false)}>
-        <Layout direction="column">
-          <Layout flex={1}>
-            <Text className={style.title} weight="black" view="primary" size="2xl">Загрузить проект</Text>
-          </Layout>
-          <Layout flex={1}>
-          <TextField width='full' className={style.form} onChange={handleChange} value={value} type="text" placeholder="Название проекта" />;
-          </Layout>
-          <Layout flex={1}>
-          <TextField
-            className={style.form}
-            type="textarea"
-            rows={7}
-            cols={50}
-            onChange={handleChangeDesc} 
-            placeholder = "Описание проекта"
-            value={desc}/>
-          </Layout>
-          <Layout flex={2}>
-              <Button view="secondary" label="Добавить" className={style.buttonModel}/> 
-          </Layout>
-        </Layout>
+            <div>
+                <TextField width='full' className={style.form} onChange={handleChange} value={value} type="text" placeholder="Имя приложения" />
+                <TextField width='full' className={style.form} onChange={handleChange} value={value} type="text" placeholder="Команда сборки" />
+                <TextField width='full' className={style.form} onChange={handleChange} value={value} type="text" placeholder="Имя исполняемого файла" />
+                <TextField width='full' className={style.form} onChange={handleChange} value={value} type="text" placeholder="Путь к проекту в папке" />
+                <TextField width='full' className={style.form} onChange={handleChange} value={value} type="text" placeholder="Команда сборки" />
+            </div>
+
         </Modal>
       </div>
   );

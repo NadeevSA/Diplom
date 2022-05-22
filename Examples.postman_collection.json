@@ -105,13 +105,44 @@
 					}
 				],
 				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"BuildCommand\":\"go build -o main .\",\r\n    \"RunFile\":\"main\",\r\n    \"PathToEntry\":\"app1\",\r\n    \"Name\":\"my_app17\",\r\n    \"ConfigurationType\":1,\r\n    \"Status\":0,\r\n    \"DockerConfigId\":7,\r\n    \"ProjectId\":1\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "BuildCommand",
+							"value": "go build -o main .",
+							"type": "text"
+						},
+						{
+							"key": "RunFile",
+							"value": "main",
+							"type": "text"
+						},
+						{
+							"key": "PathToEntry",
+							"value": "app1",
+							"type": "text"
+						},
+						{
+							"key": "ProjectName",
+							"value": "my_app17",
+							"type": "text"
+						},
+						{
+							"key": "DockerConfigId",
+							"value": "7",
+							"type": "text"
+						},
+						{
+							"key": "ProjectId",
+							"value": "3",
+							"type": "text"
+						},
+						{
+							"key": "File",
+							"type": "file",
+							"src": "/C:/Users/Andre/Desktop/diplom_nad/Diplom/engine/core/core_tests/projects/app1.zip"
 						}
-					}
+					]
 				},
 				"url": {
 					"raw": "http://localhost:8084/project_config",

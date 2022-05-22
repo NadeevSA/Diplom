@@ -16,15 +16,15 @@ import (
 )
 
 func main() {
+
 	host := "localhost"
 	user := "postgres"
 	password := "postgres"
 	dbName := "postgres"
 	port := "5432"
 	sslMode := "disable"
-
-	var useAuth = true
-	var usePreload = true
+	useAuth := true
+	usePreload := true
 
 	var connectionString = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		host,
@@ -57,6 +57,7 @@ func main() {
 
 	if err != nil {
 		log.Fatal("Migration error: ", err)
+		return
 	}
 	provider := &providers.Provider{
 		Db: dbOrm,
@@ -64,6 +65,7 @@ func main() {
 	injection := controllers2.AppInjection{
 		Provider: provider,
 		Db:       db,
+		UseAuth:  useAuth,
 	}
 
 	ctx := context.Background()
@@ -98,7 +100,6 @@ func main() {
 		DockerConfigController:  dockerConfigsController,
 		AuthService:             authService,
 		AppInjection:            &injection,
-		UseAuth:                 useAuth,
 	}
 	router := AddRoutes(&app)
 
@@ -110,6 +111,10 @@ func main() {
 }
 
 func LoadDefaultDataToDataBase(provider *providers.Provider) {
+	LoadDefaultGolangDockerConfig(provider)
+}
+
+func LoadDefaultGolangDockerConfig(provider *providers.Provider) {
 	bytes, err := core.ReadFile("dockerfiles\\go.DockerFile")
 
 	var goDockerConfig model.DockerConfig

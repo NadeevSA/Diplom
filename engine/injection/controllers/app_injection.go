@@ -20,7 +20,6 @@ type App struct {
 	DataProjectController   DataProjectController
 	DockerConfigController  DockerConfigController
 	AuthService             AuthService
-	UseAuth                 bool
 	AppInjection            *AppInjection
 	Builder                 *core.Builder
 }
@@ -28,6 +27,7 @@ type App struct {
 type AppInjection struct {
 	Provider *providers.Provider
 	Db       *sql.DB
+	UseAuth  bool
 }
 
 func Decode(request *http.Request, obj interface{}, writer http.ResponseWriter) {

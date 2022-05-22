@@ -9,9 +9,6 @@ type IMigrator interface {
 	MigrateUser() error
 	MigrateProjectDoc() error
 	MigrateProjectDescription() error
-	//MigrateConfiguration() error
-	//MigrateLanguage() error
-	//MigrateBuilder() error
 	MigrateData() error
 	MigrateAll() error
 }

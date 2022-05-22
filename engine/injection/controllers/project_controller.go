@@ -17,17 +17,19 @@ func (c *ProjectController) AddProject(
 	var Project model.Project
 	Decode(request, &Project, writer)
 
-	signingKey := []byte(viper.GetString("auth.signing_key"))
-	reqToken := request.Header.Get("Authorization")
-	splitToken := strings.Split(reqToken, "Bearer ")
-	if len(splitToken) == 1 {
-		writer.WriteHeader(http.StatusForbidden)
-		return
-	}
-	reqToken = splitToken[1]
-	userNameFromToken, _ := ParseToken(reqToken, signingKey)
-	if Project.Author == "" {
-		Project.Author = userNameFromToken
+	if c.AppInjection.UseAuth {
+		signingKey := []byte(viper.GetString("auth.signing_key"))
+		reqToken := request.Header.Get("Authorization")
+		splitToken := strings.Split(reqToken, "Bearer ")
+		if len(splitToken) == 1 {
+			writer.WriteHeader(http.StatusForbidden)
+			return
+		}
+		reqToken = splitToken[1]
+		userNameFromToken, _ := ParseToken(reqToken, signingKey)
+		if Project.Author == "" {
+			Project.Author = userNameFromToken
+		}
 	}
 
 	c.Add(&Project, request, writer)
