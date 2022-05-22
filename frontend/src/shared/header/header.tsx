@@ -1,45 +1,36 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, Dispatch, SetStateAction, useEffect, useLayoutEffect } from 'react';
 import style from './header.module.css'
 import { Header, HeaderButton, HeaderLogin, HeaderLogo, HeaderModule, HeaderSearchBar } from '@consta/uikit/Header';
 import { Button } from '@consta/uikit/Button';
-import { User } from '@consta/uikit/User';
-import { ContextMenu } from '@consta/uikit/ContextMenuCanary';
-import { profile } from '../../pages/profile/profile'
-import { Switch, Route } from 'react-router';
 import { Link, Redirect } from 'react-router-dom';
-import { useHistory } from "react-router-dom";
 import { Sidebar } from '@consta/uikit/Sidebar';
 import { Text } from '@consta/uikit/Text';
+import authServer from '../../ServiceAuth/authServer';
+import { Modal } from '@consta/uikit/Modal';
+import { Layout } from '@consta/uikit/LayoutCanary';
+import { TextField } from '@consta/uikit/TextField';
 
 interface Props {}
 
-function RouteForMenu(value: string | number | void){
-  if (value == 'Личный кабинет') {
-      <Route exact path="/profile"></Route>
-  }
-}
-
-type ContextMenuItemDefault = {
-  label: string | number;
-  onClick?: React.MouseEventHandler<HTMLDivElement> | undefined;
-};
-
-function func(){
-  console.log("Мы здесь");
-  <Route exact path="/profile"></Route>
-}
-
 function CollapseExampleHover() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
-  const ref = useRef(null);
+  const [UserName, setUserName] = React.useState<string>(""); 
+  let x = authServer.getToken();
+  if(authServer.getToken() != ""){
+    authServer.getUserName().then(res => {
+      setUserName(res.data.Name)
+    });
+  }
   return (
     <div>
-      <User
-          name="Nadeev Sergey"
-          size="l"
-          view ="ghost"
-          ref={ref}
-          onClick={() => setIsSidebarOpen(true)}/>
+      {
+        authServer.getToken() != "" ?
+        <HeaderLogin
+          personName={UserName}
+          isLogged={true}
+        /> :
+        <ModalLogin userName={setUserName}></ModalLogin>
+      }
       <Sidebar
         isOpen={isSidebarOpen}
         size="m"
@@ -80,7 +71,7 @@ function CollapseExampleHover() {
   );
 };
 
-export const header = (props: Props) => {
+export const header = () => {
   return (
     <Header
   leftSide={
@@ -97,6 +88,8 @@ export const header = (props: Props) => {
   }
   rightSide={
     <>
+    <HeaderModule>
+    </HeaderModule>
       <HeaderModule indent="s">
         <Link to="/">
           <Button
@@ -116,10 +109,109 @@ export const header = (props: Props) => {
         />
       </HeaderModule>
         <HeaderModule indent="s" className={style.user}>
-        <CollapseExampleHover></CollapseExampleHover>
+          <CollapseExampleHover></CollapseExampleHover>
+        </HeaderModule>
+      <HeaderModule indent="s" className={style.user}>  
       </HeaderModule>
     </>
   }
 />
+  )
+}
+
+function ModalRegistration() {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [login, setLogin] = useState<string | null>(null);
+  const handleChangeLogin = ({ value }: { value: string | null }) => setLogin(value);
+  const [password, setPassword] = useState<string | null>("");
+  const handleChangePassword = ({ value }: { value: string | null }) => setPassword(value);
+  const [name, setName] = useState<string | null>("");
+  const handleChangeName = ({ value }: { value: string | null }) => setName(value);
+  return(
+    <div>
+      <Button
+          size="s"
+          view="secondary"
+          label="Регистрация"
+          className={style.button}
+          onClick={() => setIsModalOpen(true)}
+        />
+      <Modal
+          isOpen={isModalOpen}
+          hasOverlay
+          onClickOutside={() => setIsModalOpen(false)}
+          onEsc={() => setIsModalOpen(false)}>
+        <Layout direction="column">
+            <Layout flex={1}>
+              <Text className={style.title} weight="black" view="primary" size="2xl">Регистрация</Text>
+            </Layout>
+            <Layout flex={1}>
+              <TextField value={name} onChange={handleChangeName} width='full' className={style.form} type="text" placeholder="Имя" />
+            </Layout>
+            <Layout flex={1}>
+              <TextField value={login} onChange={handleChangeLogin} width='full' className={style.form} type="text" placeholder="Электронная почта" />
+            </Layout>
+            <Layout flex={1}>
+              <TextField value={password} onChange={handleChangePassword} width='full' className={style.form} type="text" placeholder="Пароль" />
+            </Layout>
+            <Layout flex={2}>
+                <Button view="secondary" label="Зарегистрироваться" className={style.buttonModel} onClick={() => {
+                  authServer.register(login, password);
+                  authServer.registerUser(name, login);
+                }}/> 
+            </Layout>
+          </Layout>
+      </Modal>
+    </div>
+  )
+}
+
+function ModalLogin(props: {userName: Dispatch<SetStateAction<string>>}) {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [login, setLogin] = useState<string | null>(null);
+  const handleChangeLogin = ({ value }: { value: string | null }) => setLogin(value);
+  const [password, setPassword] = useState<string | null>("");
+  const handleChangePassword = ({ value }: { value: string | null }) => setPassword(value);
+
+  return (
+    <div>
+        <Button
+          size="s"
+          view="secondary"
+          label="Войти/Регистрация"
+          className={style.button}
+          onClick={() => setIsModalOpen(true)}
+        />
+      <Modal
+          isOpen={isModalOpen}
+          hasOverlay
+          onClickOutside={() => setIsModalOpen(false)}
+          onEsc={() => setIsModalOpen(false)} >
+          <Layout direction="column">
+            <Layout flex={1}>
+              <Text className={style.title} weight="black" view="primary" size="2xl">Войти</Text>
+            </Layout>
+            <Layout flex={1}>
+              <TextField width='full' className={style.form} value={login} onChange={handleChangeLogin} type="text" placeholder="Электронная почта" />
+            </Layout>
+            <Layout flex={1}>
+              <TextField width='full' className={style.form} value={password} onChange={handleChangePassword} type="text" placeholder="Пароль" />
+            </Layout>
+            <Layout flex={2}>
+                <Button view="secondary" label="Войти" className={style.buttonModel} onClick={() => {
+                    authServer.logout();
+                    authServer.login(login, password)?.then(res => {
+                      authServer.getUserName().then(res => {
+                        props.userName(res.data.Name)
+                      });
+                  });
+                }}/> 
+            </Layout>
+            <Layout flex={1}>
+              <ModalRegistration></ModalRegistration>
+            </Layout>
+          </Layout>
+      </Modal>
+    </div>
   )
 }

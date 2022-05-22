@@ -99,7 +99,7 @@ function GetNameAvtor(val: number) {
   let name = null;
   return instance.get( `user/filter?field=id&val=${val}`,
     {headers: {
-      Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc"
+      Authorization : `Bearer ${authServer.getToken()}`
     }},
   ).then(response => {
     name = response.data.map((d: Project) => d.Name)[0];
@@ -113,9 +113,11 @@ export function MyTable(props: { isHidden: boolean }) {
   });
   const [data, setData] = useState<typeof rows>([]);
   useEffect(() => {
-    instance.get( 'project',
+    authServer.getUserName().then(res => { 
+      debugger
+      instance.get( `project/filter?field=User_id&val=${res.data.ID}`,
       {headers: {
-        Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc"
+        Authorization : `Bearer ${authServer.getToken()}`
       }},
     ).then(response => {
       let id = response.data.map((d: Project) => d.UserId)[0];
@@ -124,6 +126,7 @@ export function MyTable(props: { isHidden: boolean }) {
       })
       setData(response.data);
     });
+    })
   }, [useDispatch()]);
   return (
     <Table rows={data} columns={columns} 
@@ -140,7 +143,7 @@ export function MyData() {
   useEffect(() => {
     instance.get( 'data',
       {headers: {
-        Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc"
+        Authorization : `Bearer ${authServer.getToken()}`
       }},
     ).then(response => {
       setData(response.data);
@@ -155,11 +158,6 @@ export function MyData() {
     zebraStriped="even"
     emptyRowsPlaceholder={<Text>Нет данных</Text>}/>)
 }
-
-//authServer.logout();
-//authServer.register("userrаа", "123");
-//authServer.login("Serega", "1235");
-//console.log("user", authServer.getCurrentUser());
 
 export const main = (props: Props) => {
   return <MyTable isHidden={false}></MyTable>

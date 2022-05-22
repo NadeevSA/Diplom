@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { createSlice,createSelector,PayloadAction,createAsyncThunk,} from "@reduxjs/toolkit";
 import { store, RootState } from '../../store'
+import authServer from '../../ServiceAuth/authServer';
 
 export interface CounterState {
   value: number
@@ -46,15 +47,15 @@ export const PostProject1 = (name: string | null) => createAsyncThunk<Project>(
     return data;
 });
 
-export async function PostProject(name: string | null, desc: string | null) {
+export async function PostProject(id: string | null, name: string | null, desc: string | null) {
   const { data } = await instance.post<Project>(
     'project',
-    { Name: name, Description: desc, UserId: 1},
+    { Name: name, Description: desc, UserId: id},
     {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc",
+        Authorization: `Bearer ${authServer.getToken()}`,
       },
     },
   );
@@ -75,7 +76,7 @@ export async function PostData(file: File | null, desc: string | null) {
       headers: {
         'Content-Type': 'multipart/form-data',
         Accept: '*/*',
-        Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc",
+        Authorization: `Bearer ${authServer.getToken()}`,
       },
     },
   );
@@ -85,7 +86,7 @@ export async function PostData(file: File | null, desc: string | null) {
 export async function GetProject() {
   const { data } = await instance.get<Project>(
     'project',
-    {headers: {Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTI2MDc5NjAuMDY1OTY5LCJpYXQiOjE2NTI1MjE1NjAuMDY1OTY5LCJ1c2VybmFtZSI6Ildlc3QifQ.QmhkeAO2-a2iKmA4lhQlRN4_eJkph5xCC2VqsVXE8zc"}},
+    {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
   );
   console.log("Get", data);
   return data;
@@ -94,7 +95,7 @@ export async function GetProject() {
 export async function getUsers() {
   const { data } = await instance.get<Project>(
     'user',
-    {headers: {Authorization : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTIzNjc0NDUuODE3NzM0LCJpYXQiOjE2NTIyODEwNDUuODE3NzM0LCJ1c2VybmFtZSI6Ildlc3QxIn0.S0mN5EgR11_MnbvO7n0DDzEMGVleYPgUzkbhAehfDDQ"}},
+    {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
   );
   console.log("Get", data);
   return data;
