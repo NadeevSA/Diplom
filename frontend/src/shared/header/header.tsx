@@ -27,6 +27,7 @@ function CollapseExampleHover() {
         authServer.getToken() != "" ?
         <HeaderLogin
           personName={UserName}
+          
           isLogged={true}
         /> :
         <ModalLogin userName={setUserName}></ModalLogin>
@@ -81,9 +82,6 @@ export const header = () => {
         <img width={150} height={50} src="./logoAppRunner.png" alt="Логотип"/>
       </HeaderLogo>
     </HeaderModule>
-      <HeaderModule indent="l">
-        <HeaderSearchBar /> 
-      </HeaderModule>
     </>
   }
   rightSide={
