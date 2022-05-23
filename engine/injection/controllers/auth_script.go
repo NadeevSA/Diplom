@@ -45,6 +45,7 @@ func toStringArr(arr []int) []string {
 	}
 	return strArr
 }
+
 func (a *AuthService) AuthDeleteIntent(next http.HandlerFunc, useAuth bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !useAuth {

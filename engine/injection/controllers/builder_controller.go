@@ -6,8 +6,10 @@ import (
 	"engine_app/filters"
 	"engine_app/providers"
 	"fmt"
+	"github.com/spf13/viper"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -252,4 +254,99 @@ func (c *BuilderController) GetProjectConfigRunned(
 		writer.Write([]byte("true"))
 	}
 	writer.WriteHeader(http.StatusOK)
+}
+
+func (b *BuilderController) AttachProjectDocDataTime(
+	writer http.ResponseWriter,
+	request *http.Request) {
+
+	signingKey := []byte(viper.GetString("auth.signing_key"))
+	reqToken := request.Header.Get("Authorization")
+	splitToken := strings.Split(reqToken, "Bearer ")
+	if len(splitToken) == 1 {
+		writer.WriteHeader(http.StatusForbidden)
+		return
+	}
+	reqToken = splitToken[1]
+	userNameFromToken, _ := ParseToken(reqToken, signingKey)
+
+	var attachIntent AttachIntentDataTime
+	Decode(request, &attachIntent, writer)
+	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	data := model.Data{}
+	stringId := fmt.Sprint(attachIntent.DataId)
+	err = b.Provider.QueryListStatement(&data, filters.FilterBy{
+		Field: "id",
+		Args:  []string{stringId},
+	})
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	inputBytes := data.File
+	_, err = waiter.Conn.Write(inputBytes)
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	defer waiter.Close()
+	defer waiter.CloseWrite()
+	defer b.HandleContainerWorking(attachIntent.Name, writer)
+
+	var c1 = make(chan bool)
+	var now time.Time
+	var timeCnt time.Duration
+	go func() {
+		now = time.Now()
+		res := WriteToWriter(&writer, &waiter)
+		timeCnt = time.Now().Sub(now)
+		c1 <- res
+	}()
+
+	projectId, _ := strconv.Atoi(attachIntent.ProjectId)
+	dataId, _ := strconv.Atoi(attachIntent.DataId)
+
+	select {
+	case <-c1:
+
+		timeProjectData := model.TimeProjectData{
+			ProjectId: projectId,
+			Author:    userNameFromToken,
+			DataId:    dataId,
+			Duration:  timeCnt,
+		}
+
+		var timesProjectsDocs []model.TimeProjectData
+		var str = fmt.Sprintf("project_id = %d and data_id = %d and author = '%s'", projectId, dataId, userNameFromToken)
+		b.Provider.Db.Where(str).Find(&timesProjectsDocs)
+		if timesProjectsDocs == nil || len(timesProjectsDocs) == 0 {
+			err = b.Provider.AddStatement(&timeProjectData)
+			if err != nil {
+				writer.Write([]byte(err.Error()))
+				writer.WriteHeader(http.StatusBadRequest)
+				return
+			}
+		} else {
+			err = b.Provider.UpdateStatement(&timeProjectData)
+			if err != nil {
+				writer.Write([]byte(err.Error()))
+				writer.WriteHeader(http.StatusBadRequest)
+				return
+			}
+		}
+
+		writer.WriteHeader(http.StatusOK)
+		return
+	case <-time.After(10 * time.Second):
+		return
+	}
 }

@@ -115,7 +115,7 @@ func (b *Builder) HandleBuild(
 
 	err = WriteFile(tempDir+"\\"+projectConfig.PathToEntry+"\\"+"Dockerfile", dockerConfig.File)
 	if err != nil {
-		writer.Write([]byte("can not write dockerfile"))
+		writer.Write([]byte("project path error"))
 		writer.WriteHeader(500)
 		return
 	}

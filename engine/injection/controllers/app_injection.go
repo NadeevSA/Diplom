@@ -12,16 +12,17 @@ import (
 )
 
 type App struct {
-	ProjectConfigController ProjectConfigController
-	UserController          UserController
-	BuilderController       BuilderController
-	ProjectController       ProjectController
-	DataFileController      DataFileController
-	DataProjectController   DataProjectController
-	DockerConfigController  DockerConfigController
-	AuthService             AuthService
-	AppInjection            *AppInjection
-	Builder                 *core.Builder
+	ProjectConfigController   ProjectConfigController
+	UserController            UserController
+	BuilderController         BuilderController
+	ProjectController         ProjectController
+	DataFileController        DataFileController
+	DataProjectController     DataProjectController
+	DockerConfigController    DockerConfigController
+	TimeProjectDataController TimeProjectDataController
+	AuthService               AuthService
+	AppInjection              *AppInjection
+	Builder                   *core.Builder
 }
 
 type AppInjection struct {
@@ -38,7 +39,7 @@ func Decode(request *http.Request, obj interface{}, writer http.ResponseWriter) 
 		return
 	}
 	if err = json.Unmarshal(body, obj); err != nil {
-		panic(err)
+		panic(string(body))
 		writer.Write([]byte("Decode error"))
 		writer.WriteHeader(http.StatusBadRequest)
 		return

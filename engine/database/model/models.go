@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Status uint
 
 const (
@@ -55,6 +57,17 @@ type Project struct {
 	User   User
 
 	Description string
+}
+
+type TimeProjectData struct {
+	ProjectId int `gorm:"primaryKey"`
+	Project   Project
+
+	Author string `gorm:"primaryKey"`
+	DataId int    `gorm:"primaryKey"`
+	Data   Data
+
+	Duration time.Duration
 }
 
 type Data struct {

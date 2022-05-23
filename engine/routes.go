@@ -30,6 +30,8 @@ func AddRoutes(app *controllers.App) *mux.Router {
 	router.HandleFunc("/builder/status", app.BuilderController.GetStatusProjectConfig).Methods("GET")
 	router.HandleFunc("/builder/is_running", app.BuilderController.GetProjectConfigRunned).Methods("GET")
 
+	router.HandleFunc("/builder/attach/data/time", app.BuilderController.AttachProjectDocDataTime).Methods("POST")
+
 	router.HandleFunc("/project", app.ProjectController.GetAllProject).Methods("GET")
 	router.HandleFunc("/project", auth.AuthCheckUserProjectBody(app.ProjectController.AddProject, app.AppInjection.UseAuth)).Methods("POST")
 	router.HandleFunc("/project", auth.AuthCheckUserProjectBody(app.ProjectController.PutProject, app.AppInjection.UseAuth)).Methods("PUT")
@@ -49,6 +51,9 @@ func AddRoutes(app *controllers.App) *mux.Router {
 	router.HandleFunc("/project_data", app.DataProjectController.AddDataProject).Methods("POST")
 	router.HandleFunc("/project_data", app.DataProjectController.DeleteDataProject).Methods("DELETE")
 	router.HandleFunc("/project_data", app.DataProjectController.GetDataProject).Methods("GET")
+
+	router.HandleFunc("/time_project_data/filter", app.TimeProjectDataController.GetTimeProjectDataControllerFiltered).Methods("GET")
+	router.HandleFunc("/time_project_data", app.TimeProjectDataController.DeleteTimeProjectDataController).Methods("DELETE")
 
 	return router
 }
