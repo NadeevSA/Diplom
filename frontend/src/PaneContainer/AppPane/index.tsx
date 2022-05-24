@@ -13,6 +13,7 @@ import { Card } from '@consta/uikit/Card';
 import { Select } from '@consta/uikit/Select';
 import { Text } from '@consta/uikit/Text';
 import authServer from "../../ServiceAuth/authServer";
+import axios from 'axios';
 
 export const AppPane: FC<IPane> = ({
                                        attachUrlFileUrl,
@@ -28,6 +29,7 @@ export const AppPane: FC<IPane> = ({
 
     const [outPut, setOutput] = useState<string>(defaultOutput)
     const [isUseFile, setIsUseFile] = useState(false)
+    const [isUseTimer, setIsUseTimer] = useState(false)
     const [isRunning, setIsRunning] = useState(true)
     const [status, setStatus] = useState(0);
     const [isWaiting, setWaiting] = useState(false);
@@ -65,7 +67,6 @@ export const AppPane: FC<IPane> = ({
         if (config == null) return;
         const name = config.Name
         let replicaUuid :string
-        debugger
         if (!sessionStorage.getItem(`${name}`)){
             replicaUuid = crypto.randomUUID();
             sessionStorage.setItem(name,replicaUuid)
@@ -153,7 +154,7 @@ export const AppPane: FC<IPane> = ({
                 })
             });
     };
-
+      
     const attachInput = () => {
         if (!input) return
         const intent: AttachIntentInput = {
@@ -179,27 +180,47 @@ export const AppPane: FC<IPane> = ({
             });
     }
 
+    const instance = axios.create({
+        baseURL: "http://localhost:8084"
+    });
+
     const attachFile = () => {
         if (!selectedFile) return
         const intent: AttachIntentFile = {
             Name: projectContainerReplicaName,
             Data_id: selectedFile.ID.toString()
         }
-        setWaiting(true);
-        fetch(attachUrlFileUrl, {
-            method: 'POST',
-            body: JSON.stringify(intent)
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(response.statusText);
-                }
-                response.text().then(text => {
-                    setOutput(text)
-                    getIsRunningApp()
-                })
-                setWaiting(false);
-            });
+        //setWaiting(true);
+        if(isUseTimer){
+            debugger
+            instance.post (
+                '/builder/attach/data/time',
+                { name: projectContainerReplicaName, data_id: 1, project_id: 1},
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Accept: '*/*',
+                    'Authorization' : `Bearer ${authServer.getToken()}`,
+                  },
+                },
+            ).then(res => console.log(res));
+        }
+        else{
+            fetch(attachUrlFileUrl, {
+                method: 'POST',
+                body: JSON.stringify(intent)
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    response.text().then(text => {
+                        setOutput(text)
+                        getIsRunningApp()
+                    })
+                    setWaiting(false);
+                });
+        }
     }
 
     const getIsRunningApp = () => {
@@ -210,6 +231,10 @@ export const AppPane: FC<IPane> = ({
 
     const setChecked = () => {
         setIsUseFile(!isUseFile)
+    }
+
+    const setCheckedTimer = () => {
+        setIsUseTimer(!isUseTimer)
     }
 
     const panelInfo = () => {
@@ -263,12 +288,20 @@ export const AppPane: FC<IPane> = ({
                     getItemKey={(item) => item.ID}
                 />
                 <Switch
-                    className={"button"}
+                    className={"switcher"}
                     label={!isUseFile ? "Ручной ввод" : "Использовать данные"}
                     view={'primary'}
                     size={'l'}
                     checked={isUseFile}
                     onClick={setChecked}/>
+                <Switch
+                    className={"switcher"}
+                    label={"Посчет времени работы" }
+                    view={'primary'}
+                    size={'l'}
+                    disabled={!isUseFile}
+                    checked={isUseTimer}
+                    onClick={setCheckedTimer}/>
                 <Button
                     size='l'
                     label={'Собрать'}
