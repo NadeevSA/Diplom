@@ -1,10 +1,9 @@
-FROM golang:1.18
-RUN mkdir /app
+FROM mcr.microsoft.com/dotnet/sdk:6.0
 ADD . /app/
 WORKDIR /app
-RUN go mod download
 ARG BUILD_COMMAND
 RUN $BUILD_COMMAND
 ARG RUN_FILE
 ENV RUN_FILE_CMD ${RUN_FILE}
-CMD /app/${RUN_FILE_CMD}
+WORKDIR /app/bin/Debug/net6.0
+CMD dotnet ${RUN_FILE_CMD}

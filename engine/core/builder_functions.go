@@ -149,7 +149,7 @@ func BuildImage(
 
 	buildResp, err := cli.ImageBuild(context, dockerBuildContext, buildOptions)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 		return err
 	}
 	defer buildResp.Body.Close()

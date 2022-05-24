@@ -126,8 +126,11 @@ export const AppPane: FC<IPane> = ({
                 if (!response.ok) {
                     throw new Error(response.statusText);
                 }
-                setStatus(Status.Build);
-                setOutput("")
+                if (response.status === 200){
+                    setStatus(Status.Build);
+                    setOutput("")
+                }
+
             });
     };
 
@@ -195,7 +198,7 @@ export const AppPane: FC<IPane> = ({
             debugger
             instance.post (
                 '/builder/attach/data/time',
-                { name: projectContainerReplicaName, data_id: 1, project_id: 1},
+                { name: projectContainerReplicaName, data_id: "1", project_id: "1"},
                 {
                   headers: {
                     'Content-Type': 'application/json',

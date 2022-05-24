@@ -37,23 +37,18 @@ export function ProjectPage(props: { name: string, id: string, onDelete: (id: st
         GetDockerConfigs().then(dockerConfigs => {
             if (dockerConfigs){
                 setDockerConfigs(dockerConfigs)
-                GetConfigurationFiltered(`field=project_id&val=${props.id}`).then(configuration => {
-                    if (configuration && configuration.length > 0) {
-                        const currentConfig = configuration[0]
-                        setCurrentConfig(currentConfig)
-                    }
-                })
             }
         })
     },[])
 
     useEffect(() => {
         if (isModalOpen && currentConfig){
-            setRunFile(currentConfig.ProjectFile)
+            setRunFile(currentConfig.RunFile)
             setProjectCommandBuild(currentConfig.BuildCommand)
             setPathToEntry(currentConfig.PathToEntry)
             setSelectedDockerConfig(dockerConfigs.find(conf => conf.ID === currentConfig.DockerConfigId) || null)
         }
+
     }, [isModalOpen])
 
     const onBtnClick = () => {
@@ -90,7 +85,16 @@ export function ProjectPage(props: { name: string, id: string, onDelete: (id: st
             })
             .catch(err => alert(err))
     }
-
+    
+    const onSetModelOpen = () => {
+        GetConfigurationFiltered(`field=project_id&val=${props.id}`).then(configuration => {
+            if (configuration && configuration.length > 0) {
+                const currentConfig = configuration[0]
+                setCurrentConfig(currentConfig)
+            }
+            setIsModalOpen(true)
+        })
+    }
     return (
         <div>
             <div className={style.buttons}>
@@ -99,7 +103,7 @@ export function ProjectPage(props: { name: string, id: string, onDelete: (id: st
                         size="s"
                         view="secondary"
                         label="Конфигурация"
-                        onClick={() => setIsModalOpen(true)}/>
+                        onClick={() => onSetModelOpen()}/>
                 </div>
 
                 <div className={style.button}>

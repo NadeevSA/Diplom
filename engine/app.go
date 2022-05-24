@@ -114,6 +114,7 @@ func main() {
 
 func LoadDefaultDataToDataBase(provider *providers.Provider) {
 	LoadDefaultGolangDockerConfig(provider)
+	LoadDefaultC_sharpDockerConfig(provider)
 }
 
 func LoadDefaultGolangDockerConfig(provider *providers.Provider) {
@@ -133,6 +134,29 @@ func LoadDefaultGolangDockerConfig(provider *providers.Provider) {
 	}
 
 	err = provider.AddStatement(&goDockerConfig)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+}
+
+func LoadDefaultC_sharpDockerConfig(provider *providers.Provider) {
+	bytes, err := core.ReadFile("dockerfiles\\c#.DockerFile")
+
+	var c_charpDockerConfig model.DockerConfig
+
+	provider.Db.First(&c_charpDockerConfig, "description = ?", "Конфигурация по умолчанию для сборки на языке c#")
+	if c_charpDockerConfig.Description == "Конфигурация по умолчанию для сборки на языке c#" {
+		return
+	}
+
+	c_charpDockerConfig = model.DockerConfig{
+		Config:      model.ConfigurationType(1),
+		Description: "Конфигурация по умолчанию для сборки на языке c#",
+		File:        bytes,
+	}
+
+	err = provider.AddStatement(&c_charpDockerConfig)
 	if err != nil {
 		log.Fatal(err)
 		return

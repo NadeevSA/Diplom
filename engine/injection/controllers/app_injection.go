@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"engine_app/core"
 	"engine_app/providers"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -38,6 +39,7 @@ func Decode(request *http.Request, obj interface{}, writer http.ResponseWriter) 
 		http.Error(writer, "can't read body", http.StatusBadRequest)
 		return
 	}
+	fmt.Println(string(body))
 	if err = json.Unmarshal(body, obj); err != nil {
 		panic(string(body))
 		writer.Write([]byte("Decode error"))

@@ -96,7 +96,7 @@ func (b *BuilderController) RunProjectDoc(
 
 	projectConfig := projectConfigs[0]
 
-	_, err = b.Builder.ContainerCreate(projectConfig.Name, projectConfig.RunFile, containerName)
+	_, err = b.Builder.ContainerCreate(projectConfig.Name, containerName)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
 		writer.WriteHeader(http.StatusBadRequest)

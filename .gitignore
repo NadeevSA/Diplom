@@ -115,3 +115,4 @@ fabric.properties
 /frontend/.idea/frontend.iml
 /frontend/.idea/.gitignore
 /.idea/.gitignore
+/engine/core/core_tests/projects/c#_app/app/bin/

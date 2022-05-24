@@ -417,7 +417,7 @@ func (a *AuthService) AuthCheckUseCanBuildProjectConfig(next http.HandlerFunc, u
 
 		if err != nil || user.Email != userNameFromToken {
 			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte(err.Error()))
+			w.Write([]byte("author error"))
 			return
 		}
 		next.ServeHTTP(w, r)

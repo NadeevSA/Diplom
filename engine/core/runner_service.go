@@ -4,7 +4,6 @@ import (
 	"context"
 	"engine_app/database/model"
 	"errors"
-	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
@@ -32,11 +31,9 @@ func (b *Builder) BuildImage(projectName, buildCommand, runFile, pathToEntry, te
 	return nil
 }
 
-func (b *Builder) ContainerCreate(imageName, executableFile, containerName string) (container.ContainerCreateCreatedBody, error) {
-	cmd := fmt.Sprintf("/app/%s", executableFile)
+func (b *Builder) ContainerCreate(imageName, containerName string) (container.ContainerCreateCreatedBody, error) {
 	resp, err := b.Cli.ContainerCreate(b.Ctx, &container.Config{
 		Image:        imageName,
-		Cmd:          []string{cmd},
 		AttachStderr: true,
 		AttachStdin:  true,
 		Tty:          true,

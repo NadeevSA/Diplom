@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	uuid2 "github.com/google/uuid"
 	"log"
 	"os"
 )
@@ -12,6 +13,8 @@ func main() {
 	if err != nil {
 		log.Fatal("Can not open file")
 	}
+	uuid, _ := uuid2.NewUUID()
+	fmt.Println(uuid)
 	var i int
 	fmt.Scan(&i)
 	fmt.Println("read number", i, "from stdin")

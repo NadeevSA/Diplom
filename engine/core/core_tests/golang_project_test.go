@@ -25,41 +25,29 @@ func init() {
 	}
 }
 
-var buildCommand = "go build -o main ."
-var runFile = "main"
-var pathToEntry = "app1"
-
-var buildArgs = map[string]*string{
-	"BUILD_COMMAND": &buildCommand,
-	"RUN_FILE":      &runFile,
-}
-
-func Test_Core(t *testing.T) {
-	core.UnzipSource("projects\\app1.zip", "temp")
-	core.CopyFile("dockerfiles\\Dockerfile", "\\temp"+"\\"+pathToEntry, "Dockerfile", 20)
-}
-
 func Test_BuildImage(t *testing.T) {
+	buildCommand := "go build -o main ."
+	runFile := "main"
+	pathToEntry := "app1"
+
+	buildArgs := map[string]*string{
+		"BUILD_COMMAND": &buildCommand,
+		"RUN_FILE":      &runFile,
+	}
+
 	_, err := core.RemoveImage(cli, ctx, "summer")
-	err = core.BuildImage(cli, ctx, "\\temp"+"\\"+pathToEntry, "summer", buildArgs)
+	err = core.BuildImage(cli, ctx, "\\projects"+"\\"+pathToEntry, "summer", buildArgs)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func Test_CanCreateContainer(t *testing.T) {
-	resp, err := builder.ContainerCreate("summer", runFile, "summer")
+	resp, err := builder.ContainerCreate("summer", "summer")
 	if err != nil {
 		t.Fatal(err)
 	} else {
 		t.Log(resp.ID)
-	}
-}
-
-func Test_CanDeleteContainer(t *testing.T) {
-	err := builder.ContainerDelete("my_app16")
-	if err != nil {
-		t.Fatal(err)
 	}
 }
 
@@ -69,11 +57,11 @@ func Test_CanRunAndAttachContainer(t *testing.T) {
 		Filters: filters.Args{},
 	})
 	log.Println(res)
-	err = builder.ContainerRun("my_app16")
+	err = builder.ContainerRun("summer")
 	if err != nil {
 		t.Fatal(err)
 	}
-	waiter, err := builder.ContainerAttach("my_app16")
+	waiter, err := builder.ContainerAttach("summer")
 
 	go io.Copy(os.Stdout, waiter.Reader)
 	go io.Copy(os.Stderr, waiter.Reader)
@@ -86,8 +74,15 @@ func Test_CanRunAndAttachContainer(t *testing.T) {
 	waiter.Conn.Write(append([]byte("8\n")))
 }
 
+func Test_CanDeleteContainer(t *testing.T) {
+	err := builder.ContainerDelete("summer")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func Test_DeleteImage(t *testing.T) {
-	res, err := core.RemoveImage(cli, ctx, "my_app16")
+	res, err := core.RemoveImage(cli, ctx, "summer")
 	if err != nil {
 		t.Log(err)
 	} else {
