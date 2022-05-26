@@ -17,7 +17,7 @@ func (c *ProjectController) AddProject(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var Project model.Project
-	Decode(request, &Project, writer)
+	Decode(request, &Project)
 
 	if c.AppInjection.UseAuth {
 		signingKey := []byte(viper.GetString("auth.signing_key"))
@@ -43,7 +43,12 @@ func (c *ProjectController) DeleteProject(
 
 	var Projects model.Project
 	var deleteIntent filters.IdsFilter
-	Decode(request, &deleteIntent, writer)
+	decodeError := Decode(request, &deleteIntent)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	str := strings.Trim(strings.Replace(fmt.Sprint(deleteIntent.Ids), " ", ",", -1), "[]")
 	query := "delete from project_configs where project_id in ($1)"
 	query = strings.Replace(query, "$1", str, -1)
@@ -61,7 +66,12 @@ func (c *ProjectController) PutProject(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var Project model.Project
-	Decode(request, &Project, writer)
+	decodeError := Decode(request, &Project)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	c.Put(&Project, request, writer)
 }
 

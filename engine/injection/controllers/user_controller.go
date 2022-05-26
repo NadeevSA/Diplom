@@ -46,7 +46,12 @@ func (c *UserController) AddUser(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var user model.User
-	Decode(request, &user, writer)
+	decodeError := Decode(request, &user)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	c.Add(&user, request, writer)
 }
 
@@ -61,7 +66,12 @@ func (c *UserController) PutUser(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var user model.User
-	Decode(request, &user, writer)
+	decodeError := Decode(request, &user)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	c.Put(&user, request, writer)
 }
 

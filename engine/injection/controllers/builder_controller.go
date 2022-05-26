@@ -81,7 +81,12 @@ func (b *BuilderController) RunProjectDoc(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var runProjectIntent RunProjectIntent
-	Decode(request, &runProjectIntent, writer)
+	decodeError := Decode(request, &runProjectIntent)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	containerName := runProjectIntent.ContainerName
 	var projectConfigs []model.ProjectConfig
 	filter := filters.FilterBy{
@@ -117,14 +122,19 @@ func (b *BuilderController) RunProjectDoc(
 	}
 
 	writer.Write([]byte("container created"))
-	writer.WriteHeader(http.StatusOK)
+	//writer.WriteHeader(http.StatusOK)
 }
 
 func (b *BuilderController) AttachProjectDoc(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var attachIntent AttachIntent
-	Decode(request, &attachIntent, writer)
+	decodeError := Decode(request, &attachIntent)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
@@ -161,7 +171,12 @@ func (b *BuilderController) AttachProjectDocData(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var attachIntent AttachIntentData
-	Decode(request, &attachIntent, writer)
+	decodeError := Decode(request, &attachIntent)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
@@ -278,7 +293,12 @@ func (b *BuilderController) AttachProjectDocDataTime(
 	userNameFromToken, _ := ParseToken(reqToken, signingKey)
 
 	var attachIntent AttachIntentDataTime
-	Decode(request, &attachIntent, writer)
+	decodeError := Decode(request, &attachIntent)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
