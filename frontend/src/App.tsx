@@ -12,6 +12,7 @@ import { store } from './store'
 import { Provider } from 'react-redux'
 import { ProjectPage } from './pages/ProjectConfig/project';
 import { AppContent } from './PaneContainer';
+import { main2 } from './pages/main2/main2';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Header/>
           <Switch>
             <Route path="/" exact component={main}/>
+            <Route path="/main2" exact component={main2}/>
             <Route path="/profile" exact component={profile}/>
             <Route path="/dashboard" exact component={dashboard}/>
             <Route path="/testing" exact component={testing}/>
