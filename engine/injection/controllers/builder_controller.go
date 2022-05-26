@@ -7,6 +7,7 @@ import (
 	"engine_app/providers"
 	"fmt"
 	"github.com/spf13/viper"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -89,6 +90,12 @@ func (b *BuilderController) RunProjectDoc(
 	}
 	err := b.Provider.QueryListStatement(&projectConfigs, filter)
 	if err != nil {
+		writer.Write([]byte("can not find project"))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if len(projectConfigs) == 0 {
 		writer.Write([]byte("can not find project"))
 		writer.WriteHeader(http.StatusBadRequest)
 		return
@@ -309,6 +316,7 @@ func (b *BuilderController) AttachProjectDocDataTime(
 		now = time.Now()
 		res := WriteToWriter(&writer, &waiter)
 		timeCnt = time.Now().Sub(now)
+		log.Println(timeCnt.Seconds())
 		c1 <- res
 	}()
 
@@ -322,7 +330,7 @@ func (b *BuilderController) AttachProjectDocDataTime(
 			ProjectId: projectId,
 			Author:    userNameFromToken,
 			DataId:    dataId,
-			Duration:  timeCnt,
+			Duration:  timeCnt.Seconds(),
 		}
 
 		var timesProjectsDocs []model.TimeProjectData

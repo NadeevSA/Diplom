@@ -1,7 +1,5 @@
 package model
 
-import "time"
-
 type Status uint
 
 const (
@@ -67,7 +65,7 @@ type TimeProjectData struct {
 	DataId int    `gorm:"primaryKey"`
 	Data   Data
 
-	Duration time.Duration
+	Duration float64
 }
 
 type Data struct {
