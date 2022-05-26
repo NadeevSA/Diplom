@@ -137,7 +137,10 @@ function CollapseExampleHover() {
             label="Выход"
             iconLeft={IconExit} 
             width="full"
+<<<<<<< HEAD
             className={style.buttonModel}
+=======
+>>>>>>> afed6fdcd9442375e2e63e3b8d668ac989f89306
             onClick={() => {
               authServer.logout();
               setIsSidebarOpen(false)}}
