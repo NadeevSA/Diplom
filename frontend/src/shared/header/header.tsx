@@ -1,4 +1,4 @@
-import React, { useState, useRef, Dispatch, SetStateAction, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useRef, Dispatch, SetStateAction, useEffect, useLayoutEffect, ReactElement } from 'react';
 import style from './header.module.css'
 import { Header, HeaderButton, HeaderLogin, HeaderLogo, HeaderModule, HeaderSearchBar } from '@consta/uikit/Header';
 import { Button } from '@consta/uikit/Button';
@@ -10,6 +10,14 @@ import { Modal } from '@consta/uikit/Modal';
 import { Layout } from '@consta/uikit/LayoutCanary';
 import { TextField } from '@consta/uikit/TextField';
 import { User } from '@consta/uikit/User';
+import { IconHamburger } from '@consta/uikit/IconHamburger';
+import { IconUser } from '@consta/uikit/IconUser';
+import { IconExit } from '@consta/uikit/IconExit';
+import { IconHome } from '@consta/uikit/IconHome';
+import { IconPlay } from '@consta/uikit/IconPlay';
+import { IconStorage } from '@consta/uikit/IconStorage';
+import { IconTest } from '@consta/uikit/IconTest';
+import { Collapse } from '@consta/uikit/Collapse';
 
 interface Props {}
 
@@ -30,41 +38,110 @@ function CollapseExampleHover() {
         <User
           name={UserName}
           info={UserEmail}
-          onClick={() => setIsSidebarOpen(true)}
           view="ghost"
           size="l"
-          withArrow
         /> :
         <ModalLogin userName={setUserName} userEmail={setUserEmail}></ModalLogin>
       }
+      <Button 
+        size="l" 
+        view='clear' 
+        iconLeft={IconHamburger} 
+        onlyIcon
+        onClick={() => setIsSidebarOpen(true)} />
       <Sidebar
         isOpen={isSidebarOpen}
         size="m"
         onClickOutside={() => setIsSidebarOpen(false)}
         onEsc={() => setIsSidebarOpen(false)}>
         <Sidebar.Content className={style.sideBar}>
-          <HeaderLogo>
-            <img width={300} height={100} src="./logoAppRunner.png" alt="Логотип" />
-          </HeaderLogo>
-          <Link to="/profile">
+            <Text size="l" weight="black">AppRunner</Text>
             <Button
-              size="l"
-              label="Личный кабинет"
-              view="secondary"
+              size="m"
+              label="Главная"
+              view="clear"
               width="full"
+              iconLeft={IconHome} 
+            />
+            <Button
+              size="m"
+              label="Запустить"
+              view="clear"
+              width="full"
+              iconLeft={IconPlay} 
+            />
+          <Button
+              size="m"
+              label="Личный кабинет"
+              view="clear"
+              width="full"
+              iconLeft={IconUser} 
               onClick={() => setIsSidebarOpen(false)}
             />
-          </Link>
+           <Collapse
+              label="Справочник"
+              horizontalSpace="s"
+              icon={IconStorage}
+              isOpen={true}
+              closeDirectionIcon={"up"}
+              hoverEffect
+            >
+              <Button
+                size="m"
+                label="Проекты"
+                view="clear"
+                width="full"
+                onClick={() => setIsSidebarOpen(false)}
+              />
+              <Button
+                size="m"
+                label="Данные"
+                view="clear"
+                width="full"
+                onClick={() => setIsSidebarOpen(false)}
+              />
+              <Button
+                size="m"
+                label="Конфигурации приложения"
+                view="clear"
+                width="full"
+                onClick={() => setIsSidebarOpen(false)}
+              />
+          </Collapse>
+          <Collapse
+              label="Аналитика"
+              horizontalSpace="s"
+              isOpen={true}
+              closeDirectionIcon={"up"}
+              icon={IconTest}
+              hoverEffect
+            >
+              <Button
+                size="m"
+                label="Графики"
+                view="clear"
+                width="full"
+                onClick={() => setIsSidebarOpen(false)}
+              />
+              <Button
+                size="m"
+                label="Тестирование"
+                view="clear"
+                width="full"
+                onClick={() => setIsSidebarOpen(false)}
+              />
+          </Collapse>
           <Button
-            size="l"
-            view="secondary"
+            size="m"
+            view="clear"
             label="Выход"
+            iconLeft={IconExit} 
             width="full"
             className={style.buttonModel}
             onClick={() => {
               authServer.logout();
               setIsSidebarOpen(false)}}
-          />
+            />
         </Sidebar.Content>
       </Sidebar>
     </div> 
