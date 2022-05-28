@@ -44,6 +44,7 @@ export interface ProjectConfig {
     ProjectFile: string
     File: string
     Author: string
+    ProjectId: string;
     Status: Status
     ConfigurationType: ConfigurationType
 }

@@ -85,6 +85,7 @@ export const main2 = () => {
                 label="Личный кабинет"
                 view="clear"
                 width="full"
+                disabled={authServer.getToken() == ""}
                 iconLeft={IconUser}
               />
               <Button
@@ -92,6 +93,7 @@ export const main2 = () => {
                 label="Выйти"
                 view="clear"
                 width="full"
+                disabled={authServer.getToken() == ""}
                 iconLeft={IconExit}
               />
               </Card>

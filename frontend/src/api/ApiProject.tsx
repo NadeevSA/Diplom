@@ -7,6 +7,7 @@ export interface Project {
     Name: string,
     UserId: number,
     Description: string,
+    Author: string,
 }
 
 export default class ApiProject {
@@ -16,7 +17,7 @@ export default class ApiProject {
           {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
         );
     }
-    static async getProjectById(id: number) {
+    static async getProjectById(id: number | string) {
         return await instance.get<Project[]>(
             `/project/filter?field=id&val=${id}`, 
             {headers: {Authorization : `Bearer ${authServer.getToken()}`}},

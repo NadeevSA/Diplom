@@ -14,6 +14,8 @@ import { Select } from '@consta/uikit/Select';
 import { Text } from '@consta/uikit/Text';
 import authServer from "../../ServiceAuth/authServer";
 import axios from 'axios';
+import { Informer } from '@consta/uikit/Informer';
+import ApiProject from '../../api/ApiProject';
 
 export const AppPane: FC<IPane> = ({
                                        attachUrlFileUrl,
@@ -41,6 +43,10 @@ export const AppPane: FC<IPane> = ({
     const [selectedProjectConfigId, setSelectedProjectConfigID] = useState<number>()
     const [config, setConfig] = useState<ProjectConfig>()
     const [projectContainerReplicaName, setProjectContainerReplicaName] = useState<string>("")
+    const [labelInformer, setLabelInformer] = useState<string>("Выберите нужные параметры.");
+    const [statusInformer, setStatusInformer] = useState<boolean>(true);
+    const [author, setAuthor] = useState<string>("");                            
+    const [accessBuild, setAccessBuild] = useState<boolean>(true);  
 
     useLayoutEffect(() => {
         getProjectConfigStatus()
@@ -51,6 +57,7 @@ export const AppPane: FC<IPane> = ({
     useEffect(() => {
         if (!isRunning) {
             console.log("not_running")
+            setStatusInformer(true);
             sessionStorage.removeItem(`${projectContainerReplicaName}_data`)
         }
     }, [isRunning])
@@ -83,6 +90,11 @@ export const AppPane: FC<IPane> = ({
         api<ProjectConfig[]>(`${projectConfigUrl}/filter?field=id&val=${selectedProjectConfigId}`)
             .then(projectsConfigs => {
                 setConfig(projectsConfigs[0])
+                setStatus(projectsConfigs[0].Status)
+                ApiProject.getProjectById(projectsConfigs[0].ProjectId).then(res => {
+                    setAuthor(res.data[0].Author); 
+                    checkAuthor(); 
+                })
             })
     }, [selectedProjectConfigId])
 
@@ -129,8 +141,13 @@ export const AppPane: FC<IPane> = ({
                 if (response.status === 200){
                     setStatus(Status.Build);
                     setOutput("")
+                    setLabelInformer("Вы успешно собрали проект")
+                    setStatusInformer(true);
                 }
-
+            }).catch(err => {
+                setOutput("")
+                setLabelInformer("Упс, сборка не удалась")
+                setStatusInformer(false);
             });
     };
 
@@ -154,7 +171,13 @@ export const AppPane: FC<IPane> = ({
                     console.log(t)
                     getIsRunningApp()
                     setOutput("")
+                    setLabelInformer("Проект запушен")
+                    setStatusInformer(true);
                 })
+            }).catch(err => {
+                setOutput("")
+                setLabelInformer("Упс, запуск не удался")
+                setStatusInformer(false);
             });
     };
       
@@ -179,6 +202,7 @@ export const AppPane: FC<IPane> = ({
                     sessionStorage.setItem(`${projectContainerReplicaName}_data`, text)
                     getIsRunningApp()
                     setInput("")
+                    setLabelInformer("Проект не запушен")
                 })
             });
     }
@@ -209,6 +233,7 @@ export const AppPane: FC<IPane> = ({
                 setOutput(res.data)
                 getIsRunningApp()
                 setWaiting(false)
+                setLabelInformer("Проект не запушен")
             });
         }
         else{
@@ -223,6 +248,7 @@ export const AppPane: FC<IPane> = ({
                     response.text().then(text => {
                         setOutput(text)
                         getIsRunningApp()
+                        setLabelInformer("Проект не запушен")
                     })
                     setWaiting(false);
                 });
@@ -241,6 +267,12 @@ export const AppPane: FC<IPane> = ({
 
     const setCheckedTimer = () => {
         setIsUseTimer(!isUseTimer)
+    }
+
+    function checkAuthor() {
+        authServer.getUserName().then(res => {
+            setAccessBuild(res.data.Email == author);
+        })
     }
 
     const panelInfo = () => {
@@ -313,7 +345,7 @@ export const AppPane: FC<IPane> = ({
                     label={'Собрать'}
                     width="full"
                     view="secondary"
-                    disabled={!selectedProjectConfigId}
+                    disabled={!selectedProjectConfigId || accessBuild}
                     onClick={buildProject}
                     className={"button"}/>
                 <Button
@@ -340,6 +372,10 @@ export const AppPane: FC<IPane> = ({
                     onClick={setOutPutClear}
                     disabled={outPut == ""}
                     className={"button"}/>
+                <Informer 
+                status={statusInformer ? "success" : "alert"}
+                view="bordered" 
+                label={labelInformer}/>
             </Card>
         )
     };

@@ -21,43 +21,29 @@ import { IconSettings } from '@consta/uikit/IconSettings';
 import { IconMail } from '@consta/uikit/IconMail';
 import { IconProcessing } from '@consta/uikit/IconProcessing';
 import { Collapse } from '@consta/uikit/Collapse';
+import { Grid, GridItem } from '@consta/uikit/Grid';
+import { Informer } from '@consta/uikit/Informer';
 
 interface Props {}
 
-function CollapseExampleHover() {
+function SideBar() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
-  const [UserName, setUserName] = React.useState<string>("");
-  const [UserEmail, setUserEmail] = React.useState<string>("");
-  if(authServer.getToken() != ""){
-    authServer.getUserName().then(res => {
-      setUserName(res.data.Name)
-      setUserEmail(res.data.Email)
-    });
-  }
   return (
     <div>
-      {
-        authServer.getToken() != "" ?
-        <User
-          name={UserName}
-          info={UserEmail}
-          view="ghost"
-          size="l"
-        /> :
-        <ModalLogin userName={setUserName} userEmail={setUserEmail}></ModalLogin>
-      }
       <Button 
         size="l" 
         view='clear' 
-        iconLeft={IconHamburger} 
+        iconLeft={IconHamburger}
+        className={style.buttonSideBar} 
         onlyIcon
         onClick={() => setIsSidebarOpen(true)} />
       <Sidebar
         isOpen={isSidebarOpen}
         size="m"
+        position="left"
         onClickOutside={() => setIsSidebarOpen(false)}
         onEsc={() => setIsSidebarOpen(false)}>
-        <Sidebar.Content className={style.sideBar}>
+        <Sidebar.Content>
             <Text size="l" weight="black">AppRunner</Text>
             <Button
               size="m"
@@ -78,7 +64,7 @@ function CollapseExampleHover() {
               label="Личный кабинет"
               view="clear"
               width="full"
-              iconLeft={IconUser} 
+              iconLeft={IconUser}
               onClick={() => setIsSidebarOpen(false)}
             />
             <Button
@@ -125,6 +111,31 @@ function CollapseExampleHover() {
             />
         </Sidebar.Content>
       </Sidebar>
+    </div>
+  )
+}
+
+function CollapseExampleHover() {
+  const [UserName, setUserName] = React.useState<string>("");
+  const [UserEmail, setUserEmail] = React.useState<string>("");
+  if(authServer.getToken() != ""){
+    authServer.getUserName().then(res => {
+      setUserName(res.data.Name)
+      setUserEmail(res.data.Email)
+    });
+  }
+  return (
+    <div>
+      {
+        authServer.getToken() != "" ?
+        <User
+          name={UserName}
+          info={UserEmail}
+          view="ghost"
+          size="l"
+        /> :
+        <ModalLogin userName={setUserName} userEmail={setUserEmail}></ModalLogin>
+      }
     </div> 
   );
 };
@@ -135,6 +146,9 @@ export const header = () => {
   leftSide={
     <>
     <HeaderModule>
+        {SideBar()}
+    </HeaderModule>
+    <HeaderModule indent="m">
       <HeaderLogo>
         <img width={150} height={50} src="./logoAppRunner.png" alt="Логотип"/>
       </HeaderLogo>
@@ -143,29 +157,7 @@ export const header = () => {
   }
   rightSide={
     <>
-    <HeaderModule>
-    </HeaderModule>
       <HeaderModule indent="s">
-        <Link to="/">
-          <Button
-            size="s"
-            view="secondary"
-            label="Главная"
-            width="default"
-          />
-        </Link>
-      </HeaderModule>
-      <HeaderModule indent="s">
-      <Link to="/run">
-          <Button
-            size="s"
-            view="secondary"
-            label="Запуск"
-            width="default"
-          />
-        </Link>
-      </HeaderModule>
-        <HeaderModule indent="s">
           <CollapseExampleHover></CollapseExampleHover>
         </HeaderModule>
       <HeaderModule indent="s">  
@@ -184,13 +176,14 @@ function ModalRegistration() {
   const handleChangePassword = ({ value }: { value: string | null }) => setPassword(value);
   const [name, setName] = useState<string | null>("");
   const handleChangeName = ({ value }: { value: string | null }) => setName(value);
+  const [info, setInfo] = useState<string>("");
+
   return(
-    <Layout flex={2}>
+    <div>
       <Button
           size="l"
           view="secondary"
           label="Регистрация"
-          className={style.buttonModel}
           onClick={() => setIsModalOpen(true)}
         />
       <Modal
@@ -198,29 +191,48 @@ function ModalRegistration() {
           hasOverlay
           onClickOutside={() => setIsModalOpen(false)}
           onEsc={() => setIsModalOpen(false)}>
-        <Layout direction="column">
-            <Layout flex={1}>
-              <Text className={style.title} weight="black" view="primary" size="2xl">Регистрация</Text>
-            </Layout>
-            <Layout flex={1}>
-              <TextField value={name} onChange={handleChangeName} width='full' className={style.form} type="text" placeholder="Имя" />
-            </Layout>
-            <Layout flex={1}>
-              <TextField value={login} onChange={handleChangeLogin} width='full' className={style.form} type="text" placeholder="Электронная почта" />
-            </Layout>
-            <Layout flex={1}>
-              <TextField value={password} onChange={handleChangePassword} width='full' className={style.form} type="text" placeholder="Пароль" />
-            </Layout>
-            <Layout flex={2}>
-                <Button view="secondary" size="l"  label="Зарегистрироваться" className={style.buttonModel} onClick={() => {
-                  authServer.register(login, password);
-                  authServer.registerUser(name, login);
-                  setIsModalOpen(false)
-                }}/> 
-            </Layout>
-          </Layout>
+            <Grid cols="2">
+            <GridItem className={style.title} rowStart="1" colStart="1" col="2">
+              <Text weight="black" view="primary" size="2xl">Регистрация</Text>
+            </GridItem>
+            <GridItem className={style.form} rowStart="2" colStart="1" col="2">
+              <Text weight="black" view="secondary" size="l">Имя</Text>
+              <TextField value={name} onChange={handleChangeName} width='full' type="text" placeholder="Имя" />
+            </GridItem>
+            <GridItem className={style.form} rowStart="3" colStart="1" col="2">
+              <Text weight="black" view="secondary" size="l">Электронная почта</Text>
+              <TextField value={login} onChange={handleChangeLogin} width='full' type="text" placeholder="Электронная почта" />
+            </GridItem>
+            <GridItem className={style.form} rowStart="4" colStart="1" col="2">
+            <Text weight="black" view="secondary" size="l">Пароль</Text>
+              <TextField value={password} onChange={handleChangePassword} width='full'  type="text" placeholder="Пароль" />
+            </GridItem>
+            <GridItem className={style.button} rowStart="5" colStart="1" col="2">
+              <Button view="secondary" size="l"  label="Зарегистрироваться" onClick={() => {
+                    authServer.register(login, password)?.then(res => {
+                        authServer.registerUser(name, login)?.then(res =>{
+                          setInfo("Вы успешно зарегистрировались. Спасибо.")
+                        }).catch(err => {
+                          setInfo("Уппс, что-то пошло не так")  
+                      })
+                    }).catch(err => {
+                      setInfo("Уппс, что-то пошло не так")  
+                    });
+                  }}/>
+            </GridItem>
+            <GridItem rowStart="6" colStart="1" col="2">
+                {
+                  info != "" ?
+                  <Informer
+                    className={style.form}
+                    view="bordered"
+                    label={info}
+                  /> : <div></div>
+                }
+            </GridItem>
+          </Grid>
       </Modal>
-    </Layout>
+    </div>
   )
 }
 
@@ -248,30 +260,34 @@ function ModalLogin(props: {
           hasOverlay
           onClickOutside={() => setIsModalOpen(false)}
           onEsc={() => setIsModalOpen(false)} >
-          <Layout direction="column">
-            <Layout flex={1}>
-              <Text className={style.title} weight="black" view="primary" size="2xl">Войти</Text>
-            </Layout>
-            <Layout flex={1}>
-              <TextField width='full' className={style.form} value={login} onChange={handleChangeLogin} type="text" placeholder="Электронная почта" />
-            </Layout>
-            <Layout flex={1}>
-              <TextField width='full' className={style.form} value={password} onChange={handleChangePassword} type="text" placeholder="Пароль" />
-            </Layout>
-            <Layout flex={2}>
-                <Button view="secondary" size="l" label="Войти" className={style.buttonModel} onClick={() => {
-                    authServer.logout();
-                    authServer.login(login, password)?.then(res => {
-                      authServer.getUserName().then(res => {
-                        props.userName(res.data.Name);
-                        props.userEmail(res.data.Email);
-                        window.location.reload()
-                      });
-                  });
-                }}/> 
-            </Layout>
-            <ModalRegistration></ModalRegistration>
-          </Layout>
+          <Grid cols="2">
+            <GridItem className={style.title} rowStart="1" colStart="1" col="2">
+              <Text weight="black" view="primary" size="2xl">Войти</Text>
+            </GridItem>
+            <GridItem className={style.form} rowStart="2" colStart="1" col="2">
+              <Text weight="black" view="secondary" size="l">Электронная почта</Text>
+              <TextField width='full' value={login} onChange={handleChangeLogin} type="text" placeholder="Электронная почта" />
+            </GridItem>
+            <GridItem className={style.form} rowStart="3" colStart="1" col="2">
+              <Text weight="black" view="secondary" size="l">Пароль</Text>
+              <TextField width='full' value={password} onChange={handleChangePassword} type="text" placeholder="Пароль" />
+            </GridItem>
+            <GridItem className={style.buttonLeft} rowStart="4" colStart="1" col="1">
+              <Button view="secondary" size="l" label="Войти" onClick={() => {
+                      authServer.logout();
+                      authServer.login(login, password)?.then(res => {
+                        authServer.getUserName().then(res => {
+                          props.userName(res.data.Name);
+                          props.userEmail(res.data.Email);
+                          window.location.reload()
+                        });
+                    });
+              }}/> 
+            </GridItem>
+            <GridItem className={style.buttonRight}  rowStart="4" colStart="2" col="1">
+              <ModalRegistration></ModalRegistration>
+            </GridItem>
+          </Grid>
       </Modal>
     </div>
   )

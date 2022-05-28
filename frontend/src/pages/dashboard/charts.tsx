@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Button } from '@consta/uikit/Button';
 import { Grid, GridItem } from '@consta/uikit/Grid';
 import { Chart } from './chart';
-import { Card } from '@consta/uikit/Card';
 
 export function Charts() {  
     const [value, setValue] = useState<number[]>([1]);
