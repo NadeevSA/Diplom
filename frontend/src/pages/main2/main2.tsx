@@ -17,19 +17,17 @@ import { IconStorage } from '@consta/uikit/IconStorage';
 import { IconTest } from '@consta/uikit/IconTest';
 import { IconPlay } from '@consta/uikit/IconPlay';
 import { IconUser } from '@consta/uikit/IconUser';
+import { IconExit } from '@consta/uikit/IconExit';
 
 interface Props {}
 
 export const main2 = () => {
   return(
     <Grid gap="l" cols="5" rowGap="5xl" className={style.grid}>
-            <GridItem colStart="2" col="1" row="4">
-              <Text weight="bold" size="4xl">AppRunner</Text>
+            <GridItem colStart="2" col="3" row="1">
+              <Text weight="bold" size="3xl">Система для сборки, хранения и запуска консольных приложений</Text>
             </GridItem>
-            <GridItem colStart="3" col="2" row="4">
-              <Text weight="bold" size="4xl">Система для сборки и запуска консольных приложений</Text>
-            </GridItem>
-            <GridItem colStart="2">
+            <GridItem colStart="2" row="3">
               <Card>
               <Button
                 onlyIcon
@@ -38,19 +36,19 @@ export const main2 = () => {
               />
               <Text weight="bold" size="l">Справочник</Text>
               <Button
-                size="l"
+                size="m"
                 label="Проекты"
                 view="clear"
                 width="full"
               />
               <Button
-                size="l"
+                size="m"
                 label="Данные"
                 view="clear"
                 width="full"
-              />
+              />  
               <Button
-                size="l"
+                size="m"
                 label="Конфигурации"
                 view="clear"
                 width="full"
@@ -71,12 +69,6 @@ export const main2 = () => {
                 view="clear"
                 width="full"
               />
-              <Button
-                size="m"
-                label="Тестирование"
-                view="clear"
-                width="full"
-              />
               </Card>
             </GridItem>
             <GridItem colStart="4">
@@ -94,6 +86,13 @@ export const main2 = () => {
                 view="clear"
                 width="full"
                 iconLeft={IconUser}
+              />
+              <Button
+                size="m"
+                label="Выйти"
+                view="clear"
+                width="full"
+                iconLeft={IconExit}
               />
               </Card>
             </GridItem>

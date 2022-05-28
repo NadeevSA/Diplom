@@ -193,12 +193,11 @@ export const AppPane: FC<IPane> = ({
             Name: projectContainerReplicaName,
             Data_id: selectedFile.ID.toString()
         }
-        //setWaiting(true);
+        setWaiting(true);
         if(isUseTimer){
-            debugger
             instance.post (
                 '/builder/attach/data/time',
-                { name: projectContainerReplicaName, data_id: "1", project_id: "1"},
+                { name: projectContainerReplicaName, data_id: selectedFile.ID.toString(), project_id: selectedProjectConfigId?.toString()},
                 {
                   headers: {
                     'Content-Type': 'application/json',
@@ -206,7 +205,11 @@ export const AppPane: FC<IPane> = ({
                     'Authorization' : `Bearer ${authServer.getToken()}`,
                   },
                 },
-            ).then(res => console.log(res));
+            ).then(res => {
+                setOutput(res.data)
+                getIsRunningApp()
+                setWaiting(false)
+            });
         }
         else{
             fetch(attachUrlFileUrl, {

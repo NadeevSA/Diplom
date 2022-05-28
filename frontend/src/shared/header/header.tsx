@@ -17,6 +17,9 @@ import { IconHome } from '@consta/uikit/IconHome';
 import { IconPlay } from '@consta/uikit/IconPlay';
 import { IconStorage } from '@consta/uikit/IconStorage';
 import { IconTest } from '@consta/uikit/IconTest';
+import { IconSettings } from '@consta/uikit/IconSettings';
+import { IconMail } from '@consta/uikit/IconMail';
+import { IconProcessing } from '@consta/uikit/IconProcessing';
 import { Collapse } from '@consta/uikit/Collapse';
 
 interface Props {}
@@ -78,19 +81,20 @@ function CollapseExampleHover() {
               iconLeft={IconUser} 
               onClick={() => setIsSidebarOpen(false)}
             />
-           <Collapse
-              label="Справочник"
-              horizontalSpace="s"
-              icon={IconStorage}
-              isOpen={true}
-              closeDirectionIcon={"up"}
-              hoverEffect
-            >
+            <Button
+                size="m"
+                label="Графики"
+                view="clear"
+                width="full"
+                iconLeft={IconTest}
+                onClick={() => setIsSidebarOpen(false)}
+              />
               <Button
                 size="m"
                 label="Проекты"
                 view="clear"
                 width="full"
+                iconLeft={IconSettings}
                 onClick={() => setIsSidebarOpen(false)}
               />
               <Button
@@ -98,6 +102,7 @@ function CollapseExampleHover() {
                 label="Данные"
                 view="clear"
                 width="full"
+                iconLeft={IconMail}
                 onClick={() => setIsSidebarOpen(false)}
               />
               <Button
@@ -105,39 +110,15 @@ function CollapseExampleHover() {
                 label="Конфигурации приложения"
                 view="clear"
                 width="full"
+                iconLeft={IconProcessing}
                 onClick={() => setIsSidebarOpen(false)}
               />
-          </Collapse>
-          <Collapse
-              label="Аналитика"
-              horizontalSpace="s"
-              isOpen={true}
-              closeDirectionIcon={"up"}
-              icon={IconTest}
-              hoverEffect
-            >
-              <Button
-                size="m"
-                label="Графики"
-                view="clear"
-                width="full"
-                onClick={() => setIsSidebarOpen(false)}
-              />
-              <Button
-                size="m"
-                label="Тестирование"
-                view="clear"
-                width="full"
-                onClick={() => setIsSidebarOpen(false)}
-              />
-          </Collapse>
           <Button
             size="m"
             view="clear"
             label="Выход"
             iconLeft={IconExit} 
             width="full"
-            className={style.buttonModel}
             onClick={() => {
               authServer.logout();
               setIsSidebarOpen(false)}}
