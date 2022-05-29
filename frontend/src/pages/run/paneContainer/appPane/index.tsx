@@ -1,21 +1,20 @@
-import React, {FC, useEffect, useLayoutEffect, useState} from 'react';
-import {AttachIntentFile, AttachIntentInput, IPane, ProjectConfig, RunIntent, Status} from './types';
+import {FC, useEffect, useLayoutEffect, useState} from 'react';
 import {Button} from '@consta/uikit/Button';
 import './index.css';
 import {Loader} from "@consta/uikit/Loader";
 import {Switch} from "@consta/uikit/Switch";
-import {PanelHand} from "./PaneHand";
-import {PanelFile} from "./PaneFile";
-import {IDataFile, IProjectConfig} from "./PaneFile/types";
-import {api, getIsRunning} from "./api";
 import { Grid, GridItem } from '@consta/uikit/Grid';
 import { Card } from '@consta/uikit/Card';
 import { Select } from '@consta/uikit/Select';
-import { Text } from '@consta/uikit/Text';
-import authServer from "../../ServiceAuth/authServer";
 import axios from 'axios';
 import { Informer } from '@consta/uikit/Informer';
-import ApiProject from '../../api/ApiProject';
+import { IDataFile } from './paneFile/types';
+import { AttachIntentFile, AttachIntentInput, IPane, ProjectConfig, RunIntent, Status } from './types';
+import { api, getIsRunning } from './api';
+import ApiProject from '../../../../api/apiProject';
+import authServer from '../../../../serviceAuth/authServer';
+import { PanelHand } from './paneHand';
+import { PanelFile } from './paneFile';
 
 export const AppPane: FC<IPane> = ({
                                        attachUrlFileUrl,
@@ -91,7 +90,7 @@ export const AppPane: FC<IPane> = ({
             .then(projectsConfigs => {
                 setConfig(projectsConfigs[0])
                 setStatus(projectsConfigs[0].Status)
-                ApiProject.getProjectById(projectsConfigs[0].ProjectId).then(res => {
+                ApiProject.GetProjectById(projectsConfigs[0].ProjectId).then(res => {
                     setAuthor(res.data[0].Author); 
                     checkAuthor(); 
                 })

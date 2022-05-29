@@ -1,4 +1,4 @@
-import authServer from "../ServiceAuth/authServer";
+import authServer from "../serviceAuth/authServer";
 import { instance } from "./axios";
 
 export interface Data {
@@ -21,4 +21,17 @@ export default class ApiTimeProjectData {
             {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
         );
     }
+
+    static async postData(file: File | null, desc: string | null) {
+        return instance.post<Data>(
+          'data',
+          { File: file, Label: desc},
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${authServer.getToken()}`,
+            },
+          },
+        );
+      }
 }

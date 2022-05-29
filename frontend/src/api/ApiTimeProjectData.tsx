@@ -1,4 +1,4 @@
-import authServer from "../ServiceAuth/authServer";
+import authServer from "../serviceAuth/authServer";
 import { instance } from "./axios";
 
 export interface TimeProjectData {

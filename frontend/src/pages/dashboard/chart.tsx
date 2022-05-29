@@ -3,10 +3,10 @@ import { Button } from "@consta/uikit/Button";
 import { Card } from "@consta/uikit/Card";
 import { Grid, GridItem } from "@consta/uikit/Grid";
 import { useEffect, useState } from "react";
-import ApiData, { Data } from "../../api/ApiData";
-import ApiTimeProjectData, { TimeProjectData } from "../../api/ApiTimeProjectData";
+import ApiData, { Data } from "../../api/apiData";
+import ApiTimeProjectData, { TimeProjectData } from "../../api/apiTimeProjectData";
 import { Combobox } from '@consta/uikit/Combobox';
-import ApiProject, { Project } from "../../api/ApiProject";
+import ApiProject, { Project } from "../../api/apiProject";
 import { Text } from '@consta/uikit/Text';
 import style from './dashboard.module.css'
 import { Informer } from '@consta/uikit/Informer';
@@ -50,7 +50,7 @@ export function Chart() {
                           resData.data.map(file => {
                               dataId.DataName = file.FileName;
                           });
-                          ApiProject.getProjectById(id).then(resProject => {
+                          ApiProject.GetProjectById(id).then(resProject => {
                             dataId.ViewId = resProject.data[0].Name;
                             setValue(old => [...old, dataId]);
                           }) 
@@ -63,7 +63,7 @@ export function Chart() {
           DataId.map(id => {
               ApiTimeProjectData.getAllProjectByDataId(id).then(res => {
                 res.data.map(projectId => {
-                  ApiProject.getProjectById(projectId.ProjectId).then(resProject => {
+                  ApiProject.GetProjectById(projectId.ProjectId).then(resProject => {
                       projectId.DataName = resProject.data[0].Name;
                       ApiData.getDataById(id).then(resData => {
                           projectId.ViewId = resData.data[0].FileName;

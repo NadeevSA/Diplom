@@ -1,0 +1,100 @@
+import { Button } from "@consta/uikit/Button";
+import { Table, TableColumn } from "@consta/uikit/Table";
+import { useEffect, useState } from "react";
+import { instance } from "../../../api/axios";
+import authServer from "../../../serviceAuth/authServer";
+import { Text } from '@consta/uikit/Text';
+import ApiProject, { Project } from "../../../api/apiProject";
+
+export function TableProject (props: {hidden: boolean, newProject: Project | null | undefined}) {
+  const [data, setData] = useState<typeof rowProjects>([]);
+
+  useEffect(() => {
+    debugger
+    if(props.newProject != null) {
+      setData(old => [...old, props.newProject!]);
+    } 
+  }, [props.newProject]);
+
+  useEffect(() => {
+    columns.map(v => {
+      if(v.title == "Автор") v.hidden = props.hidden;
+      if(v.title == "Действие") v.hidden = !props.hidden;
+    });
+    if (!props.hidden) {
+      ApiProject.GetAllProject().then(res => {
+        setData(res.data);
+      })
+    } 
+    else {
+      authServer.getUserName().then(res => {
+        ApiProject.GetProjectByUserId(res.data.ID).then(res => {
+          setData(res.data);
+        })
+      })
+    }
+  }, []);
+
+  let rowProjects: {
+    id: string;
+    ID: number;
+    Name: string;
+    UserId: number;
+    Author: string;
+    Description: string;
+    Action?: typeof Button;
+  }[]
+
+  const columns: TableColumn<typeof rowProjects[number]>[] = [
+    {
+      title: '№',
+      accessor: 'id',
+      align: 'center',
+      hidden: true,
+    },
+    {
+      title: 'Название',
+      accessor: 'Name',
+      align: 'center',
+    },
+    {
+      title: 'Avtor',
+      accessor: 'UserId',
+      align: 'center',
+      hidden: true,
+    },
+    {
+      title: 'Автор',
+      accessor: 'Author',
+      align: 'center',
+      hidden: true,
+    },
+    {
+      title: 'Описание',
+      accessor: 'Description',
+      align: 'center',
+    },
+    {
+      title: 'Действие',
+      accessor: "Action",
+      align: 'center',
+      //renderCell: (row) => <ProjectPage name={row.Name} id={row.ID} onDelete={onDelete}/>
+    },
+  ];
+
+  function SetNewProject(project: Project){
+    setData(old => [...old, project]);
+  }
+
+  function GetTable(props: { isHidden: boolean }) {
+    return (
+      <Table rows={data} columns={columns}
+      borderBetweenColumns
+      stickyHeader
+      isResizable
+      zebraStriped="even"
+      emptyRowsPlaceholder={<Text>Нет проектов</Text>}/>)
+  }
+
+  return GetTable({isHidden : false})
+}

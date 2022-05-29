@@ -1,4 +1,4 @@
-import authServer from "../ServiceAuth/authServer";
+import authServer from "../serviceAuth/authServer";
 import { instance } from "./axios";
 
 export interface Project {
@@ -17,10 +17,32 @@ export default class ApiProject {
           {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
         );
     }
-    static async getProjectById(id: number | string) {
+
+    static async GetProjectById(id: number | string) {
         return await instance.get<Project[]>(
             `/project/filter?field=id&val=${id}`, 
             {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
+        );
+    }
+
+    static async GetProjectByUserId(id: number | string) {
+      return await instance.get<Project[]>(
+          `/project/filter?field=User_id&val=${id}`, 
+          {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
+      );
+    }
+
+    static async PostProject(id: string | null, name: string | null, desc: string | null) {
+        return await instance.post<Project>(
+          'project',
+          { Name: name, Description: desc, UserId: id},
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              Authorization: `Bearer ${authServer.getToken()}`,
+            },
+          },
         );
     }
 }

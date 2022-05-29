@@ -1,9 +1,4 @@
-import React, {useLayoutEffect, useState} from "react";
-import {ProjectConfig} from "./AppPane/types";
-import {AppPane} from "./AppPane";
-import {api} from "./AppPane/api";
-import {Button} from "@consta/uikit/Button";
-import {Loader} from "@consta/uikit/Loader";
+import { AppPane } from './appPane';
 import './index.css';
 
 export const AppContent = () => {
