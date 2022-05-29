@@ -11,7 +11,7 @@ type IMigrator interface {
 	MigrateProjectDescription() error
 	MigrateData() error
 	MigrateAll() error
-	TimeProjectData() error
+	MigrateTimeProjectData() error
 }
 
 type Migrator struct {
@@ -39,7 +39,7 @@ func (m *Migrator) MigrateAll() error {
 		return err
 	}
 
-	err = m.TimeProjectData()
+	err = m.MigrateTimeProjectData()
 	if err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func (m *Migrator) MigrateData() error {
 	return nil
 }
 
-func (m *Migrator) TimeProjectData() error {
+func (m *Migrator) MigrateTimeProjectData() error {
 	err := m.db.AutoMigrate(&model.TimeProjectData{})
 	if err != nil {
 		return err

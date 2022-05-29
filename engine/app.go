@@ -84,7 +84,7 @@ func main() {
 	authService := controllers2.AuthService{AppInjection: &injection}
 	userController := controllers2.UserController{BaseCrudController: &baseCrudController}
 	projectConfigController := controllers2.ProjectConfigController{BaseCrudController: &baseCrudController}
-	builderController := controllers2.BuilderController{Provider: provider, Builder: builder}
+	builderController := controllers2.AppsController{Provider: provider, Builder: builder}
 	projectController := controllers2.ProjectController{BaseCrudController: &baseCrudController}
 	timeProjectDataController := controllers2.TimeProjectDataController{AppInjection: &injection}
 	datafileController := controllers2.DataFileController{BaseCrudController: &baseCrudController}
@@ -92,15 +92,15 @@ func main() {
 	dataProjectController := controllers2.DataProjectController{Db: db}
 
 	app := controllers2.App{
-		ProjectConfigController:   projectConfigController,
-		UserController:            userController,
-		BuilderController:         builderController,
-		ProjectController:         projectController,
-		DataFileController:        datafileController,
-		DataProjectController:     dataProjectController,
-		DockerConfigController:    dockerConfigsController,
-		TimeProjectDataController: timeProjectDataController,
-		AuthService:               authService,
+		ProjectConfigController:   &projectConfigController,
+		UserController:            &userController,
+		AppsController:            &builderController,
+		ProjectController:         &projectController,
+		DataFileController:        &datafileController,
+		DataProjectController:     &dataProjectController,
+		DockerConfigController:    &dockerConfigsController,
+		TimeProjectDataController: &timeProjectDataController,
+		AuthService:               &authService,
 		AppInjection:              &injection,
 	}
 	router := AddRoutes(&app)

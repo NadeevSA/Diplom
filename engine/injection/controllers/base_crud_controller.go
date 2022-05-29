@@ -12,7 +12,7 @@ type BaseCrudController struct {
 
 func (bc *BaseCrudController) Delete(obj interface{}, request *http.Request, writer http.ResponseWriter) {
 	writer.Header().Set("Content-Type", "application/json")
-	var deleteIntent filters.IdsFilter
+	var deleteIntent filters.IdsIntent
 	var err = json.NewDecoder(request.Body).Decode(&deleteIntent)
 	if err != nil {
 		writer.WriteHeader(http.StatusBadRequest)

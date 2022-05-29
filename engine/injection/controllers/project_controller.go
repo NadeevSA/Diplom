@@ -42,7 +42,7 @@ func (c *ProjectController) DeleteProject(
 	request *http.Request) {
 
 	var Projects model.Project
-	var deleteIntent filters.IdsFilter
+	var deleteIntent filters.IdsIntent
 	decodeError := Decode(request, &deleteIntent)
 	if decodeError != nil {
 		writer.WriteHeader(http.StatusBadRequest)

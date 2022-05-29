@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
-	"engine_app/core"
 	"engine_app/providers"
 	"io/ioutil"
 	"log"
@@ -12,17 +11,16 @@ import (
 )
 
 type App struct {
-	ProjectConfigController   ProjectConfigController
-	UserController            UserController
-	BuilderController         BuilderController
-	ProjectController         ProjectController
-	DataFileController        DataFileController
-	DataProjectController     DataProjectController
-	DockerConfigController    DockerConfigController
-	TimeProjectDataController TimeProjectDataController
-	AuthService               AuthService
+	ProjectConfigController   *ProjectConfigController
+	UserController            *UserController
+	AppsController            *AppsController
+	ProjectController         *ProjectController
+	DataFileController        *DataFileController
+	DataProjectController     *DataProjectController
+	DockerConfigController    *DockerConfigController
+	TimeProjectDataController *TimeProjectDataController
+	AuthService               *AuthService
 	AppInjection              *AppInjection
-	Builder                   *core.Builder
 }
 
 type AppInjection struct {

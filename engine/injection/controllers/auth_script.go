@@ -53,7 +53,7 @@ func (a *AuthService) AuthDeleteIntent(next http.HandlerFunc, useAuth bool) http
 			return
 		}
 
-		var deleteIntent filters.IdsFilter
+		var deleteIntent filters.IdsIntent
 
 		var projects []model.Project
 		decodeError := Decode(r, &deleteIntent)
