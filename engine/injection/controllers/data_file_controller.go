@@ -56,7 +56,7 @@ func (c *DataFileController) DeleteDataFile(
 	writer http.ResponseWriter,
 	request *http.Request) {
 
-	var deleteIntent filters.IdsFilter
+	var deleteIntent filters.IdsIntent
 	decodeError := Decode(request, &deleteIntent)
 	if decodeError != nil {
 		writer.WriteHeader(http.StatusBadRequest)

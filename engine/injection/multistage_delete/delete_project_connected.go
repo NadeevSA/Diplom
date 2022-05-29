@@ -10,7 +10,7 @@ import (
 )
 
 // Delete all objects connected with project
-func DeleteProjectConnected(deleteIntent filters.IdsFilter, db *sql.DB, provider *providers.Provider) error {
+func DeleteProjectConnected(deleteIntent filters.IdsIntent, db *sql.DB, provider *providers.Provider) error {
 
 	if len(deleteIntent.Ids) == 0 {
 		return nil
