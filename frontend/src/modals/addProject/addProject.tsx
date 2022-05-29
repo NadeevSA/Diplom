@@ -91,7 +91,6 @@ export function ModelAddProjectData(props : {create : (Project: Project) => void
                   });
                 })
                 setIsModalOpen(false);
-                //window.location.reload()
               }}/>
           </Layout>
         </Layout>

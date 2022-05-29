@@ -8,14 +8,16 @@ import { SideBar } from './sideBar';
 export const CustomHeader = () => {
   const [UserName, setUserName] = React.useState<string>("");
   const [UserEmail, setUserEmail] = React.useState<string>("");
+  authServer.getUserName().then(res => {
+    setUserName(res.data.Name)
+    setUserEmail(res.data.Email)
+  })
 
   function isLogin(login: string){
-      debugger;
       setUserName(login);
   }
 
   useEffect(() => {
-    debugger;
     Avatar();
   }, [UserName, UserEmail]);
 

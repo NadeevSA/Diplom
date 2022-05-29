@@ -7,6 +7,10 @@ import { run } from './pages/run/run';
 import { CustomHeader as CustomHeader} from './shared/header/header'
 import { main } from './pages/main/main';
 import { projects } from './pages/projects/projects';
+import { datas } from './pages/datas/datas';
+import authServer from './serviceAuth/authServer';
+import { Redirect } from 'react-router-dom';
+import { projectConfigs } from './pages/projectConfigs/projectConfigs';
 
 function App() {
   return (
@@ -16,9 +20,12 @@ function App() {
         <Switch>
           <Route path="/" exact component={main}/>
           <Route path="/projects" exact component={projects}/>
-          <Route path="/profile" exact component={Profile}/>
+          <Route path="/datas" exact component={datas}/>
+          <Route path="/projectConfigs" exact component={projectConfigs}/>
           <Route path="/dashboard" exact component={dashboard}/>
           <Route path="/run" exact component={run}/>
+          {authServer.getToken() != "" ? <Route path="/profile" exact component={Profile}/> :
+          <Redirect from="/profile" to="/" />}
         </Switch>
       </Theme>
     </div>

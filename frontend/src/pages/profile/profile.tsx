@@ -6,10 +6,8 @@ import {Text} from '@consta/uikit/Text';
 import authServer from '../../serviceAuth/authServer';
 import { ModelAddProjectData } from '../../modals/addProject/addProject';
 import { Project } from '../../api/apiProject';
-import { TableProject } from '../../shared/tables/Projects/tableProject';
+import { TableProject } from '../../shared/tables/projects/tableProject';
 
-interface Props {
-}
 function Info() {
     const [userName, setUserName] = useState<string | null>("");
     const [userEmail, setUserEmail] = useState<string | null>("");

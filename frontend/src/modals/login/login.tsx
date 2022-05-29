@@ -38,7 +38,7 @@ export function ModalLogin(props: {
               </GridItem>
               <GridItem className={style.form} rowStart="2" colStart="1" col="2">
                 <Text weight="black" view="secondary" size="l">Электронная почта</Text>
-                <TextField width='full' value={login} onChange={handleChangeLogin} type="text" placeholder="Электронная почта" />
+                <TextField autoFocus width='full' value={login} onChange={handleChangeLogin} type="text" placeholder="Электронная почта" />
               </GridItem>
               <GridItem className={style.form} rowStart="3" colStart="1" col="2">
                 <Text weight="black" view="secondary" size="l">Пароль</Text>

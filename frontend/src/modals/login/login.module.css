@@ -10,3 +10,15 @@
 .title {
     margin: auto;
 }
+
+.buttonRight {
+    margin: auto;
+    float: right;
+    margin-bottom: 3%;
+}
+
+.buttonLeft {
+    margin: auto;
+    float: left;
+    margin-bottom: 3%;
+}

@@ -13,6 +13,7 @@ import { IconTest } from '@consta/uikit/IconTest';
 import { IconSettings } from '@consta/uikit/IconSettings';
 import { IconMail } from '@consta/uikit/IconMail';
 import { IconProcessing } from '@consta/uikit/IconProcessing';
+import { Link } from 'react-router-dom';
 
 export function SideBar(props: {userName: string, isLogin: (login: string) => void}) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -43,19 +44,27 @@ export function SideBar(props: {userName: string, isLogin: (login: string) => vo
           <Sidebar.Content>
               <Text size="l" weight="black">AppRunner</Text>
               <Button
-                size="m"
-                label="Главная"
-                view="clear"
-                width="full"
-                iconLeft={IconHome} 
-              />
+                  size="m"
+                  label="Главная"
+                  view="clear"
+                  width="full"
+                  onClick={() => {
+                    setIsSidebarOpen(false)
+                    window.location.href = "/"
+                  }}
+                  iconLeft={IconHome} 
+                />
               <Button
-                size="m"
-                label="Запустить"
-                view="clear"
-                width="full"
-                iconLeft={IconPlay} 
-              />
+                  size="m"
+                  label="Запустить"
+                  view="clear"
+                  width="full"
+                  onClick={() => {
+                    setIsSidebarOpen(false)
+                    window.location.href = "/run"
+                  }}
+                  iconLeft={IconPlay} 
+                />
             <Button
                 size="m"
                 label="Личный кабинет"
@@ -63,7 +72,10 @@ export function SideBar(props: {userName: string, isLogin: (login: string) => vo
                 width="full"
                 iconLeft={IconUser}
                 disabled={disableButton()}
-                onClick={() => setIsSidebarOpen(false)}
+                onClick={() => {
+                  setIsSidebarOpen(false)
+                  window.location.href = "/profile"
+                }}
               />
               <Button
                   size="m"
@@ -71,7 +83,10 @@ export function SideBar(props: {userName: string, isLogin: (login: string) => vo
                   view="clear"
                   width="full"
                   iconLeft={IconTest}
-                  onClick={() => setIsSidebarOpen(false)}
+                  onClick={() => {
+                    setIsSidebarOpen(false)
+                    window.location.href = "/dashboard"
+                  }}
                 />
                 <Button
                   size="m"
@@ -79,7 +94,10 @@ export function SideBar(props: {userName: string, isLogin: (login: string) => vo
                   view="clear"
                   width="full"
                   iconLeft={IconSettings}
-                  onClick={() => setIsSidebarOpen(false)}
+                  onClick={() => {
+                    setIsSidebarOpen(false)
+                    window.location.href = "/projects"
+                  }}
                 />
                 <Button
                   size="m"
@@ -87,7 +105,10 @@ export function SideBar(props: {userName: string, isLogin: (login: string) => vo
                   view="clear"
                   width="full"
                   iconLeft={IconMail}
-                  onClick={() => setIsSidebarOpen(false)}
+                  onClick={() => {
+                    setIsSidebarOpen(false)
+                    window.location.href = "/datas"
+                  }}
                 />
                 <Button
                   size="m"
@@ -95,21 +116,29 @@ export function SideBar(props: {userName: string, isLogin: (login: string) => vo
                   view="clear"
                   width="full"
                   iconLeft={IconProcessing}
-                  onClick={() => setIsSidebarOpen(false)}
+                  onClick={() => {
+                    setIsSidebarOpen(false)
+                    window.location.href = "/projectConfigs"
+                  }}
                 />
-            <Button
-              size="m"
-              view="clear"
-              label="Выход"
-              iconLeft={IconExit} 
-              width="full"
-              disabled={disableButton()}
-              onClick={() => {
-                authServer.logout();
-                setIsSidebarOpen(false);
-                props.isLogin("");
-              }}
-              />
+                <Button
+                  size="m"
+                  view="clear"
+                  label="Выход"
+                  iconLeft={IconExit} 
+                  width="full"
+                  disabled={disableButton()}
+                  onClick={() => {
+                    authServer.logout();
+                    setIsSidebarOpen(false);
+                    props.isLogin("");
+                    debugger
+                    if (window.location.href == "http://localhost:3000/profile" ||
+                    window.location.href == "http://localhost:3000/run"){
+                      window.location.href = "/";
+                    }
+                  }}
+                  />
           </Sidebar.Content>
         </Sidebar>
       </div>

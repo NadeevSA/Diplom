@@ -3,19 +3,19 @@ import { instance } from "./axios";
 
 export interface Data {
     ID: number,
-    File: File,
+    id: string,
     Label: string,
     FileName: string,
 }
 
-export default class ApiTimeProjectData {
+export default class ApiData {
     static async getAllData() {
         return await instance.get<Data[]>(
             `data`, 
             {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
         );
     }
-    static async getDataById(id: number) {
+    static async getDataById(id: number | string) {
         return await instance.get<Data[]>(
             `/data/filter?field=id&val=${id}`, 
             {headers: {Authorization : `Bearer ${authServer.getToken()}`}},

@@ -1,50 +1,11 @@
 import { Button } from "@consta/uikit/Button";
 import { Table, TableColumn } from "@consta/uikit/Table";
 import { useEffect, useState } from "react";
-import { instance } from "../../../api/axios";
 import authServer from "../../../serviceAuth/authServer";
 import { Text } from '@consta/uikit/Text';
 import ApiProject, { Project } from "../../../api/apiProject";
 
 export function TableProject (props: {hidden: boolean, newProject: Project | null | undefined}) {
-  const [data, setData] = useState<typeof rowProjects>([]);
-
-  useEffect(() => {
-    debugger
-    if(props.newProject != null) {
-      setData(old => [...old, props.newProject!]);
-    } 
-  }, [props.newProject]);
-
-  useEffect(() => {
-    columns.map(v => {
-      if(v.title == "Автор") v.hidden = props.hidden;
-      if(v.title == "Действие") v.hidden = !props.hidden;
-    });
-    if (!props.hidden) {
-      ApiProject.GetAllProject().then(res => {
-        setData(res.data);
-      })
-    } 
-    else {
-      authServer.getUserName().then(res => {
-        ApiProject.GetProjectByUserId(res.data.ID).then(res => {
-          setData(res.data);
-        })
-      })
-    }
-  }, []);
-
-  let rowProjects: {
-    id: string;
-    ID: number;
-    Name: string;
-    UserId: number;
-    Author: string;
-    Description: string;
-    Action?: typeof Button;
-  }[]
-
   const columns: TableColumn<typeof rowProjects[number]>[] = [
     {
       title: '№',
@@ -81,20 +42,54 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
       //renderCell: (row) => <ProjectPage name={row.Name} id={row.ID} onDelete={onDelete}/>
     },
   ];
+  
+  const [data, setData] = useState<typeof rowProjects>([]);
+  const [col, setCol] = useState<TableColumn<typeof rowProjects[number]>[]>(columns);
 
-  function SetNewProject(project: Project){
-    setData(old => [...old, project]);
-  }
+  useEffect(() => {
+    if(props.newProject != null) {
+      setData(old => [...old, props.newProject!]);
+    } 
+  }, [props.newProject]);
 
-  function GetTable(props: { isHidden: boolean }) {
-    return (
-      <Table rows={data} columns={columns}
+  useEffect(() => {
+    columns.map(v => {
+      if(v.title == "Автор") {
+        v.hidden = props.hidden;
+      }
+      if(v.title == "Действие") v.hidden = !props.hidden;
+    });
+    setCol(columns);
+    if (!props.hidden) {
+      ApiProject.GetAllProject().then(res => {
+        setData(res.data);
+      })
+    } 
+    else {
+      authServer.getUserName().then(res => {
+        ApiProject.GetProjectByUserId(res.data.ID).then(res => {
+          setData(res.data);
+        })
+      })
+    }
+  }, []);
+
+  let rowProjects: {
+    id: string;
+    ID: number;
+    Name: string;
+    UserId: number;
+    Author: string;
+    Description: string;
+    Action?: typeof Button;
+  }[]
+
+  return (
+      <Table rows={data} columns={col}
       borderBetweenColumns
       stickyHeader
       isResizable
       zebraStriped="even"
-      emptyRowsPlaceholder={<Text>Нет проектов</Text>}/>)
-  }
-
-  return GetTable({isHidden : false})
+      emptyRowsPlaceholder={<Text>Нет проектов</Text>}/>
+  )
 }
