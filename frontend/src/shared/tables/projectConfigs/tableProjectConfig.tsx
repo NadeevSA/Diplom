@@ -1,8 +1,10 @@
 import { Button } from "@consta/uikit/Button";
 import { Table, TableColumn } from "@consta/uikit/Table";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Text } from '@consta/uikit/Text';
 import ApiProjectConfig from "../../../api/apiProjectConfig";
+import { HeaderSearchBar } from "@consta/uikit/Header";
+import style from '../tables.module.css'
 
 export const TableProjectConfigs = () => {
     const columns: TableColumn<typeof rowsProjectConfig[number]>[] = [
@@ -73,7 +75,8 @@ export const TableProjectConfigs = () => {
       };
 
       const [data, setData] = useState<typeof rowsProjectConfig>([]);
-    
+      const [search, setSearch] = useState<string | null>(null);
+      
       useEffect(() => {
         ApiProjectConfig.getAllProjectConfigs().then(res => {
             setData(res.data);
@@ -90,12 +93,32 @@ export const TableProjectConfigs = () => {
         Download?: typeof Button
       }[]
     
+      const searchTable = useMemo(() =>{
+        if(search != null) {
+            return data.filter(d => d.Name.toLowerCase().includes(search));
+        }
+        else{
+          return null;
+        }
+      },[search])
+    
+      const handleChange = ({ value }: { value: string | null}) => setSearch(value);
+
       return (
-          <Table rows={data} columns={columns}
-          borderBetweenColumns
-          stickyHeader
-          isResizable
-          zebraStriped="even"
-          emptyRowsPlaceholder={<Text>Нет данных</Text>}/>
+        <div>
+          <HeaderSearchBar
+            placeholder="я ищу"
+            label="поиск"
+            value={search}
+            className={style.searchBar}
+            onChange={handleChange}
+          />
+          <Table rows={searchTable ?? data} columns={columns}
+            borderBetweenColumns
+            stickyHeader
+            isResizable
+            zebraStriped="even"
+            emptyRowsPlaceholder={<Text>Нет данных</Text>}/>
+        </div>
       )
 }

@@ -1,10 +1,12 @@
 import { Button } from "@consta/uikit/Button";
 import { Table, TableColumn } from "@consta/uikit/Table";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import authServer from "../../../serviceAuth/authServer";
 import { Text } from '@consta/uikit/Text';
 import ApiData, { Data } from "../../../api/apiData";
 import { DataContent } from "../../../modals/dataContent/dataContent";
+import { HeaderSearchBar } from "@consta/uikit/Header";
+import style from '../tables.module.css'
 
 export function TableData(props: {hidden: boolean, newData: Data | null | undefined}) {
     const columns: TableColumn<typeof rowsData[number]>[] = [
@@ -29,9 +31,9 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
           accessor: 'Delete',
           align: 'center',
           renderCell: (row) => 
-            <div>
+            <div className={style.buttons}>
               <DataContent id={row.ID} name={row.FileName}></DataContent>
-              <Button label="Удалить" size="s" view="secondary" onClick={() => {setDeleteId(row.ID)}}/>
+              <Button className={style.button} label="Удалить" size="s" view="secondary" onClick={() => {setDeleteId(row.ID)}}/>
             </div>
         }
         ];
@@ -39,6 +41,7 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
       const [data, setData] = useState<typeof rowsData>([]);
       const [col, setCol] = useState<TableColumn<typeof rowsData[number]>[]>(columns);
       const [deleteId, setDeleteId] = useState<number>(0);
+      const [search, setSearch] = useState<string | null>(null);
 
       useEffect(() => {
         if(deleteId != 0) {
@@ -84,12 +87,32 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
         Delete?: typeof Button;
       }[]
     
+      const searchTable = useMemo(() =>{
+        if(search != null) {
+            return data.filter(d => d.FileName.toLowerCase().includes(search));
+        }
+        else{
+          return null;
+        }
+      },[search])
+    
+      const handleChange = ({ value }: { value: string | null}) => setSearch(value);
+
       return (
-          <Table rows={data} columns={col}
-          borderBetweenColumns
-          stickyHeader
-          isResizable
-          zebraStriped="even"
-          emptyRowsPlaceholder={<Text>Нет данных</Text>}/>
+        <div>
+          <HeaderSearchBar
+            placeholder="я ищу"
+            label="поиск"
+            value={search}
+            className={style.searchBar}
+            onChange={handleChange}
+          />
+          <Table rows={searchTable ?? data} columns={col}
+            borderBetweenColumns
+            stickyHeader
+            isResizable
+            zebraStriped="even"
+            emptyRowsPlaceholder={<Text>Нет данных</Text>}/>
+        </div>
       )
 }

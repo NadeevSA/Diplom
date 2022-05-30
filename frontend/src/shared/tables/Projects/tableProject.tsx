@@ -1,10 +1,13 @@
 import { Button } from "@consta/uikit/Button";
 import { Table, TableColumn } from "@consta/uikit/Table";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import authServer from "../../../serviceAuth/authServer";
 import { Text } from '@consta/uikit/Text';
 import ApiProject, { Project } from "../../../api/apiProject";
 import { ProjectPage } from "../../../modals/projectConfig/project";
+import { HeaderSearchBar } from "@consta/uikit/Header";
+import style from '../tables.module.css'
+
 
 export function TableProject (props: {hidden: boolean, newProject: Project | null | undefined}) {
   const columns: TableColumn<typeof rowProjects[number]>[] = [
@@ -48,8 +51,10 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
   ];
 
   const [data, setData] = useState<typeof rowProjects>([]);
+  const [Data, setPredData] = useState<typeof rowProjects>(data);
   const [col, setCol] = useState<TableColumn<typeof rowProjects[number]>[]>(columns);
   const [deleteId, setDeleteId] = useState<number>(0);
+  const [search, setSearch] = useState<string | null>(null);
 
   useEffect(() => {
     if(deleteId !== 0) {
@@ -96,12 +101,32 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
     Download?: typeof Button;
   }[]
 
+  const searchTable = useMemo(() =>{
+    if(search != null) {
+        return data.filter(d => d.Name.toLowerCase().includes(search));
+    }
+    else{
+      return null;
+    }
+  },[search])
+
+  const handleChange = ({ value }: { value: string | null}) => setSearch(value);
+
   return (
-      <Table rows={data} columns={col}
+    <div>
+      <HeaderSearchBar
+        placeholder="я ищу"
+        label="поиск"
+        value={search}
+        className={style.searchBar}
+        onChange={handleChange}
+      />
+    <Table rows={searchTable ?? data} columns={col}
       borderBetweenColumns
       stickyHeader
       isResizable
       zebraStriped="even"
       emptyRowsPlaceholder={<Text>Нет проектов</Text>}/>
+    </div>
   )
 }
