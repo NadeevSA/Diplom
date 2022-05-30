@@ -10,13 +10,14 @@ import { Card } from '@consta/uikit/Card';
 import { Attachment } from '@consta/uikit/Attachment';
 import authServer from '../../serviceAuth/authServer';
 import { Combobox } from '@consta/uikit/Combobox';
-import ApiData from '../../api/apiData';
+import ApiData, { Data } from '../../api/apiData';
 import ApiProjectConfigData from '../../api/apiProjectConfigData';
 import ApiProject, { Project } from '../../api/apiProject';
 import { ProjectConfig } from '../../pages/run/paneContainer/appPane/types';
 import { api } from '../../pages/run/paneContainer/appPane/api';
 
-export function ModelAddProjectData(props : {create : (Project: Project) => void}) {
+export function ModelAddProjectData(props : {createProject : (Project: Project) => void ,
+createData : (Data: Data) => void}) {
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const [value, setValue] = useState<string | null>(null);
     const handleChange = ({ value }: { value: string | null }) => setValue(value);
@@ -87,7 +88,7 @@ export function ModelAddProjectData(props : {create : (Project: Project) => void
                 authServer.getUserName().then(res => {
                   ApiProject.PostProject(res.data.ID, value, desc).then(res => {
                     setNewProject(res.data);
-                    props.create(res.data);
+                    props.createProject(res.data);
                   });
                 })
                 setIsModalOpen(false);
@@ -144,14 +145,10 @@ export function ModelAddProjectData(props : {create : (Project: Project) => void
           <Layout flex={2}>
               <Button view="secondary" label="Добавить" className={style.buttonModel} onClick={() => {
                 ApiData.postData(fileData, descData).then(res => {
+                  props.createData(res.data);
+                  setIsModalOpenData(false);
                   selectedProjectConfig?.map(p => {
                     ApiProjectConfigData.PostProjectConfigData(res.data.ID, p.ID).then(res =>{
-                        if (res.status === 200){
-                            //setNewProject(res.data);
-                            //setIsModalOpenData(false)
-                            //GetTable({isHidden: false});
-                            //window.location.reload()
-                        }
                     });
                   })
                 });

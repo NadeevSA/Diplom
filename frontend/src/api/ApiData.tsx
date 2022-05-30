@@ -21,7 +21,18 @@ export default class ApiData {
             {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
         );
     }
-
+    static async getDataContentById(id: number | string) {
+      return await instance.get<string>(
+          `/data/content?id=${id}`, 
+          {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
+      );
+  }
+    static async getDataByUserEmail(email: string) {
+      return await instance.get<Data[]>(
+          `/data/filter?field=author&val=${email}`, 
+          {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
+      );
+    }
     static async postData(file: File | null, desc: string | null) {
         return instance.post<Data>(
           'data',

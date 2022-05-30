@@ -17,4 +17,19 @@ export default class ApiProjectConfig {
             {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
         );
     }
+    static async deleteProjectConfig(projectId: number) {
+        return instance.delete(
+            'project',
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: '*/*',
+                    Authorization: `Bearer ${authServer.getToken()}`,
+                },
+                data: {
+                    Ids: [projectId]
+                },
+            },
+        );
+    }
 }

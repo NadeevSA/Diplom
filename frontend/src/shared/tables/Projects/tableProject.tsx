@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import authServer from "../../../serviceAuth/authServer";
 import { Text } from '@consta/uikit/Text';
 import ApiProject, { Project } from "../../../api/apiProject";
+import { ProjectPage } from "../../../modals/projectConfig/project";
 
 export function TableProject (props: {hidden: boolean, newProject: Project | null | undefined}) {
   const columns: TableColumn<typeof rowProjects[number]>[] = [
@@ -39,9 +40,14 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
       title: 'Действие',
       accessor: "Action",
       align: 'center',
-      //renderCell: (row) => <ProjectPage name={row.Name} id={row.ID} onDelete={onDelete}/>
+      renderCell: (row) => <ProjectPage name={row.Name} id={row.ID} onDelete={onDelete}/>
     },
   ];
+  
+  function onDelete(id: number){
+    debugger
+    setData(data.filter(d => d.ID !== id));
+  }
   
   const [data, setData] = useState<typeof rowProjects>([]);
   const [col, setCol] = useState<TableColumn<typeof rowProjects[number]>[]>(columns);
@@ -82,6 +88,7 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
     Author: string;
     Description: string;
     Action?: typeof Button;
+    Download?: typeof Button;
   }[]
 
   return (

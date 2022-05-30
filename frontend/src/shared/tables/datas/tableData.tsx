@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import authServer from "../../../serviceAuth/authServer";
 import { Text } from '@consta/uikit/Text';
 import ApiData, { Data } from "../../../api/apiData";
+import { DataContent } from "../../../modals/dataContent/dataContent";
 
 export function TableData(props: {hidden: boolean, newData: Data | null | undefined}) {
     const columns: TableColumn<typeof rowsData[number]>[] = [
@@ -27,13 +28,7 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
           title: 'Действие',
           accessor: 'Delete',
           align: 'center',
-          hidden: true,
-          /*
-          renderCell: (row) => <Button 
-          view="secondary"
-          width="full"
-          label={"Удалить"}
-          onClick={() => DeleteData(row.ID)}/> */
+          renderCell: (row) => <DataContent id={row.ID} name={row.FileName}></DataContent>
         }
         ];
       
@@ -51,7 +46,6 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
           if(v.title == "Автор") {
             v.hidden = props.hidden;
           }
-          if(v.title == "Действие") v.hidden = !props.hidden;
         });
         setCol(columns);
         if (!props.hidden) {
@@ -61,7 +55,8 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
         } 
         else {
           authServer.getUserName().then(res => {
-            ApiData.getDataById(res.data.ID).then(res => {
+            debugger
+            ApiData.getDataByUserEmail(res.data.Email).then(res => {
               setData(res.data);
             })
           })

@@ -7,6 +7,8 @@ import authServer from '../../serviceAuth/authServer';
 import { ModelAddProjectData } from '../../modals/addProject/addProject';
 import { Project } from '../../api/apiProject';
 import { TableProject } from '../../shared/tables/projects/tableProject';
+import { TableData } from '../../shared/tables/datas/tableData';
+import { Data } from '../../api/apiData';
 
 function Info() {
     const [userName, setUserName] = useState<string | null>("");
@@ -23,20 +25,27 @@ function Info() {
     )
 }
 
-function Datas() {
-    return (
-        <Card>
-            <Text weight="black" view="primary" size="2xl">Мои данные</Text>
-        </Card>)
-}
-
 export const Profile = () => {
     const [newProject, setNewProject] = useState<Project | null>();
+    const [newData, setNewData] = useState<Data | null>();
+
+    function createData(data : Data){
+        setNewData(data);
+    }
 
     function createProject(project : Project){
         setNewProject(project);
     }
 
+    function Datas() {
+        return (
+            <Card>
+                <Text weight="black" view="primary" size="2xl">Мои данные</Text>
+                <TableData hidden={true} newData={newData}></TableData>
+            </Card>)
+    }
+
+    
     function Projects() {
         return (
             <Card>
@@ -44,10 +53,11 @@ export const Profile = () => {
                 <TableProject hidden={true} newProject={newProject}></TableProject>
             </Card>)
     }
+
     return (
         <Grid gap="l" cols="5" className={style.grid}>
             <GridItem><Info></Info></GridItem>
-            <GridItem rowStart="2"><ModelAddProjectData create={createProject}></ModelAddProjectData></GridItem>
+            <GridItem rowStart="2"><ModelAddProjectData createProject={createProject} createData={createData}></ModelAddProjectData></GridItem>
             <GridItem colStart="2" col="2" row="4"><Projects></Projects></GridItem>
             <GridItem colStart="4" col="2" row="4"><Datas></Datas></GridItem>
         </Grid>

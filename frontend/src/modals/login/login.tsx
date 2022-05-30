@@ -42,7 +42,7 @@ export function ModalLogin(props: {
               </GridItem>
               <GridItem className={style.form} rowStart="3" colStart="1" col="2">
                 <Text weight="black" view="secondary" size="l">Пароль</Text>
-                <TextField width='full' value={password} onChange={handleChangePassword} type="text" placeholder="Пароль" />
+                <TextField type="password" width='full' value={password} onChange={handleChangePassword} placeholder="Пароль" />
               </GridItem>
               <GridItem className={style.buttonLeft} rowStart="4" colStart="1" col="1">
                 <Button view="secondary" size="l" label="Войти" onClick={() => {

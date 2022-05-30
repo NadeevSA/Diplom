@@ -15,8 +15,9 @@ import {
     PutProjectConfig
 } from "./queries";
 import {Combobox} from "@consta/uikit/Combobox";
+import ApiProjectConfig from '../../api/apiProjectConfig';
 
-export function ProjectPage(props: { name: string, id: string, onDelete: (id: string) => void}) {
+export function ProjectPage(props: { name: string, id: number, onDelete: (id: number) => void}) {
     const [selectedDockerConfig, setSelectedDockerConfig] = useState<IDockerConfiguration|null>()
     const [dockerConfigs, setDockerConfigs] = useState<IDockerConfiguration[]>([])
     const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -53,7 +54,7 @@ export function ProjectPage(props: { name: string, id: string, onDelete: (id: st
 
     const onBtnClick = () => {
         if (currentConfig  && projectPathToEntry && projectCommandBuild && runFile && selectedDockerConfig){
-            PutProjectConfig(currentConfig?.ID, props.id, selectedDockerConfig.ID, projectCommandBuild, runFile, projectPathToEntry, file)
+            PutProjectConfig(currentConfig?.ID, props.id.toString(), selectedDockerConfig.ID, projectCommandBuild, runFile, projectPathToEntry, file)
                 .then((resp) => {
                     if (resp.status === 200){
                         setIsModalOpen(false)
@@ -64,7 +65,7 @@ export function ProjectPage(props: { name: string, id: string, onDelete: (id: st
             return
         }
         if (projectPathToEntry && projectCommandBuild && runFile && file && selectedDockerConfig) {
-            AddProjectConfig(props.id, selectedDockerConfig.ID, projectCommandBuild, runFile, projectPathToEntry, file)
+            AddProjectConfig(props.id.toString(), selectedDockerConfig.ID, projectCommandBuild, runFile, projectPathToEntry, file)
                 .then((resp) => {
                     if (resp.status === 200){
                         setIsModalOpen(false)
@@ -77,7 +78,7 @@ export function ProjectPage(props: { name: string, id: string, onDelete: (id: st
 
     const onDeleteProject = () => {
         setIsModalOpen(false)
-        DeleteProjectConfig(props.id)
+        ApiProjectConfig.deleteProjectConfig(props.id)
             .then(resp => {
                 if (resp.status == 200){
                     props.onDelete(props.id)
@@ -98,6 +99,7 @@ export function ProjectPage(props: { name: string, id: string, onDelete: (id: st
     return (
         <div>
             <div className={style.buttons}>
+                
                 <div className={style.button}>
                     <Button
                         size="s"
