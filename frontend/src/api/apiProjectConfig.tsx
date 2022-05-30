@@ -7,14 +7,22 @@ export interface ProjectConfig {
     BuildCommand: string
     Name: string
     RunFile: string
+    File: string
     ProjectFile: string
 }
 
 export default class ApiProjectConfig {
-    
+
     static async getAllProjectConfigs() {
         return await instance.get<ProjectConfig[]>(
             `project_config`, 
+            {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
+        );
+    }
+
+    static async getProjectConfigById(id: number | string) {
+        return await instance.get<ProjectConfig[]>(
+            `project_config/filter?field=id&val=${id}`, 
             {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
         );
     }

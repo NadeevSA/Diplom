@@ -5,6 +5,7 @@ import authServer from "../../../serviceAuth/authServer";
 import { Text } from '@consta/uikit/Text';
 import ApiProject, { Project } from "../../../api/apiProject";
 import { ProjectPage } from "../../../modals/projectConfig/project";
+import ApiProjectConfig from "../../../api/apiProjectConfig";
 
 export function TableProject (props: {hidden: boolean, newProject: Project | null | undefined}) {
   const columns: TableColumn<typeof rowProjects[number]>[] = [
@@ -40,10 +41,22 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
       title: 'Действие',
       accessor: "Action",
       align: 'center',
-      renderCell: (row) => <ProjectPage name={row.Name} id={row.ID} onDelete={setDeleteId}/>
+      renderCell: (row) => 
+        <div>
+          <ProjectPage name={row.Name} id={row.ID} onDelete={setDeleteId}/>
+          <Button label="Скачать" view="secondary" size="s" onClick={() => {download(row.ID)}}/>
+        </div>
     },
   ];
   
+  function download(id: number) {
+    debugger;
+    ApiProjectConfig.getProjectConfigById(id).then(res => {
+      debugger;
+      console.log(res.data[0].File);
+    })
+  }
+
   const [data, setData] = useState<typeof rowProjects>([]);
   const [col, setCol] = useState<TableColumn<typeof rowProjects[number]>[]>(columns);
   const [deleteId, setDeleteId] = useState<number>(0);
