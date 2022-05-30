@@ -32,23 +32,23 @@ func DeleteProjectConnected(deleteIntent filters.IdsIntent, db *sql.DB, provider
 		query = strings.Replace(query, "$1", ids, -1)
 		_, err = db.Exec(query)
 
-		ids = core.IntsToString(deleteIntent.Ids)
-		query = "delete from time_project_data where project_id in ($1)"
-		query = strings.Replace(query, "$1", ids, -1)
-		_, err = db.Exec(query)
-
 		ids = core.IntsToString(projectConfigIds)
 		query = "delete from project_configs where id in ($1)"
 		query = strings.Replace(query, "$1", ids, -1)
 		_, err = db.Exec(query)
+	}
 
-		ids = core.IntsToString(deleteIntent.Ids)
-		query = "delete from projects where id in ($1)"
-		query = strings.Replace(query, "$1", ids, -1)
-		_, err = db.Exec(query)
-		if err != nil {
-			return err
-		}
+	ids := core.IntsToString(deleteIntent.Ids)
+	query := "delete from time_project_data where project_id in ($1)"
+	query = strings.Replace(query, "$1", ids, -1)
+	_, err = db.Exec(query)
+
+	ids = core.IntsToString(deleteIntent.Ids)
+	query = "delete from projects where id in ($1)"
+	query = strings.Replace(query, "$1", ids, -1)
+	_, err = db.Exec(query)
+	if err != nil {
+		return err
 	}
 
 	return nil
