@@ -40,18 +40,26 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
       title: 'Действие',
       accessor: "Action",
       align: 'center',
-      renderCell: (row) => <ProjectPage name={row.Name} id={row.ID} onDelete={onDelete}/>
+      renderCell: (row) => <ProjectPage name={row.Name} id={row.ID} onDelete={setDeleteId}/>
     },
   ];
   
-  function onDelete(id: number){
-    debugger
-    setData(data.filter(d => d.ID !== id));
-  }
-  
   const [data, setData] = useState<typeof rowProjects>([]);
   const [col, setCol] = useState<TableColumn<typeof rowProjects[number]>[]>(columns);
+  const [deleteId, setDeleteId] = useState<number>(0);
 
+  useEffect(() => {
+    if(deleteId != 0) {
+      setData(data.filter(d => d.ID !== deleteId));
+    } 
+  }, [deleteId]);
+  
+  function onDelete(id: number) {
+    debugger
+    setData(data.filter(d => d.ID !== id));
+    console.log(data);
+  }
+  
   useEffect(() => {
     if(props.newProject != null) {
       setData(old => [...old, props.newProject!]);

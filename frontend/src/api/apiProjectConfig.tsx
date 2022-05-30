@@ -11,12 +11,14 @@ export interface ProjectConfig {
 }
 
 export default class ApiProjectConfig {
+    
     static async getAllProjectConfigs() {
         return await instance.get<ProjectConfig[]>(
             `project_config`, 
             {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
         );
     }
+
     static async deleteProjectConfig(projectId: number) {
         return instance.delete(
             'project',

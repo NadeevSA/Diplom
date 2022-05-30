@@ -44,5 +44,20 @@ export default class ApiData {
             },
           },
         );
-      }
+    }
+    static async deleteData(dataId: number) {
+      return instance.delete(
+          'data',
+          {
+              headers: {
+                  'Content-Type': 'application/json',
+                  Accept: '*/*',
+                  Authorization: `Bearer ${authServer.getToken()}`,
+              },
+              data: {
+                  Ids: [dataId]
+              },
+          },
+      );
+    } 
 }

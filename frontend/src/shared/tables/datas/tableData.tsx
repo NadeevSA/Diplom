@@ -28,13 +28,26 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
           title: 'Действие',
           accessor: 'Delete',
           align: 'center',
-          renderCell: (row) => <DataContent id={row.ID} name={row.FileName}></DataContent>
+          renderCell: (row) => 
+            <div>
+              <DataContent id={row.ID} name={row.FileName}></DataContent>
+              <Button label="Удалить" size="s" view="secondary" onClick={() => {setDeleteId(row.ID)}}/>
+            </div>
         }
         ];
       
       const [data, setData] = useState<typeof rowsData>([]);
       const [col, setCol] = useState<TableColumn<typeof rowsData[number]>[]>(columns);
-    
+      const [deleteId, setDeleteId] = useState<number>(0);
+
+      useEffect(() => {
+        if(deleteId != 0) {
+          ApiData.deleteData(deleteId).then(_ => {
+              setData(data.filter(d => d.ID !== deleteId));
+          })
+        } 
+      }, [deleteId]);
+
       useEffect(() => {
         if(props.newData != null) {
           setData(old => [...old, props.newData!]);

@@ -78,9 +78,11 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
 
     const onDeleteProject = () => {
         setIsModalOpen(false)
+        debugger
         ApiProjectConfig.deleteProjectConfig(props.id)
             .then(resp => {
                 if (resp.status == 200){
+                    debugger
                     props.onDelete(props.id)
                 }
             })
