@@ -36,7 +36,12 @@ func (tpd *TimeProjectDataController) DeleteTimeProjectDataController(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var timeDataProjectData model.TimeProjectData
-	Decode(request, &timeDataProjectData, writer)
+	decodeError := Decode(request, &timeDataProjectData)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	res := tpd.AppInjection.Provider.Db.Delete(&timeDataProjectData)
 
 	if res.Error != nil {

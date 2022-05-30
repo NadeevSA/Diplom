@@ -1,6 +1,6 @@
 package filters
 
-type IdsFilter struct {
+type IdsIntent struct {
 	Ids []int
 }
 

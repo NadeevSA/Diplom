@@ -17,8 +17,12 @@ func (c *ProjectController) AddProject(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var Project model.Project
-	Decode(request, &Project, writer)
-
+	decodeError := Decode(request, &Project)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	if c.AppInjection.UseAuth {
 		signingKey := []byte(viper.GetString("auth.signing_key"))
 		reqToken := request.Header.Get("Authorization")
@@ -41,8 +45,13 @@ func (c *ProjectController) DeleteProject(
 	writer http.ResponseWriter,
 	request *http.Request) {
 
-	var deleteIntent filters.IdsFilter
-	Decode(request, &deleteIntent, writer)
+	var deleteIntent filters.IdsIntent
+	decodeError := Decode(request, &deleteIntent)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 
 	err := multistage_delete.DeleteProjectConnected(deleteIntent, c.AppInjection.Db, c.AppInjection.Provider)
 	if err != nil {
@@ -57,7 +66,12 @@ func (c *ProjectController) PutProject(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var Project model.Project
-	Decode(request, &Project, writer)
+	decodeError := Decode(request, &Project)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	c.Put(&Project, request, writer)
 }
 

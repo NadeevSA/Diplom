@@ -4,26 +4,23 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
-	"engine_app/core"
 	"engine_app/providers"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
 type App struct {
-	ProjectConfigController   ProjectConfigController
-	UserController            UserController
-	BuilderController         BuilderController
-	ProjectController         ProjectController
-	DataFileController        DataFileController
-	DataProjectController     DataProjectController
-	DockerConfigController    DockerConfigController
-	TimeProjectDataController TimeProjectDataController
-	AuthService               AuthService
+	ProjectConfigController   *ProjectConfigController
+	UserController            *UserController
+	AppsController            *AppsController
+	ProjectController         *ProjectController
+	DataFileController        *DataFileController
+	DataProjectController     *DataProjectController
+	DockerConfigController    *DockerConfigController
+	TimeProjectDataController *TimeProjectDataController
+	AuthService               *AuthService
 	AppInjection              *AppInjection
-	Builder                   *core.Builder
 }
 
 type AppInjection struct {
@@ -32,24 +29,19 @@ type AppInjection struct {
 	UseAuth  bool
 }
 
-func Decode(request *http.Request, obj interface{}, writer http.ResponseWriter) {
+func Decode(request *http.Request, obj interface{}) error {
 	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
-		log.Printf("Error reading body: %v", err)
-		http.Error(writer, "can't read body", http.StatusBadRequest)
-		return
+		return err
 	}
-	fmt.Println(string(body))
+	log.Println(string(body))
 	if err = json.Unmarshal(body, obj); err != nil {
 		panic(string(body))
-		writer.Write([]byte("Decode error"))
-		writer.WriteHeader(http.StatusBadRequest)
-		return
+		return err
 	}
 	request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	if err != nil {
-		writer.Write([]byte("Decode error"))
-		writer.WriteHeader(http.StatusBadRequest)
-		return
+		return err
 	}
+	return nil
 }

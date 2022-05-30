@@ -53,10 +53,15 @@ func (a *AuthService) AuthDeleteIntent(next http.HandlerFunc, useAuth bool) http
 			return
 		}
 
-		var deleteIntent filters.IdsFilter
+		var deleteIntent filters.IdsIntent
 
 		var projects []model.Project
-		Decode(r, &deleteIntent, w)
+		decodeError := Decode(r, &deleteIntent)
+		if decodeError != nil {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(decodeError.Error()))
+			return
+		}
 		stringArr := toStringArr(deleteIntent.Ids)
 		filter := filters.FilterBy{
 			Field: "ID",
@@ -117,8 +122,12 @@ func (a *AuthService) AuthCheckUserProjectBody(next http.HandlerFunc, useAuth bo
 		}
 
 		var project model.Project
-		Decode(r, &project, w)
-
+		decodeError := Decode(r, &project)
+		if decodeError != nil {
+			w.WriteHeader(http.StatusForbidden)
+			w.Write([]byte(decodeError.Error()))
+			return
+		}
 		var users []model.User
 		str := strconv.Itoa(project.UserId)
 		filter := filters.FilterBy{

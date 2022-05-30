@@ -16,12 +16,12 @@ import (
 	"github.com/docker/docker/api/types"
 )
 
-type BuilderController struct {
+type AppsController struct {
 	Provider *providers.Provider
 	Builder  *core.Builder
 }
 
-func (b *BuilderController) BuildProjectDoc(
+func (b *AppsController) BuildApp(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	projectConfigId := request.Header.Get("projectConfigId")
@@ -77,11 +77,16 @@ func (b *BuilderController) BuildProjectDoc(
 	}
 }
 
-func (b *BuilderController) RunProjectDoc(
+func (b *AppsController) RunApp(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var runProjectIntent RunProjectIntent
-	Decode(request, &runProjectIntent, writer)
+	decodeError := Decode(request, &runProjectIntent)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	containerName := runProjectIntent.ContainerName
 	var projectConfigs []model.ProjectConfig
 	filter := filters.FilterBy{
@@ -117,14 +122,19 @@ func (b *BuilderController) RunProjectDoc(
 	}
 
 	writer.Write([]byte("container created"))
-	writer.WriteHeader(http.StatusOK)
+	//writer.WriteHeader(http.StatusOK)
 }
 
-func (b *BuilderController) AttachProjectDoc(
+func (b *AppsController) AttachApp(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var attachIntent AttachIntent
-	Decode(request, &attachIntent, writer)
+	decodeError := Decode(request, &attachIntent)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
@@ -141,7 +151,7 @@ func (b *BuilderController) AttachProjectDoc(
 
 	defer waiter.Close()
 	defer waiter.CloseWrite()
-	defer b.HandleContainerWorking(attachIntent.Name, writer)
+	defer b.handleContainerWorking(attachIntent.Name, writer)
 
 	var c1 = make(chan bool)
 	go func() {
@@ -157,11 +167,16 @@ func (b *BuilderController) AttachProjectDoc(
 	}
 }
 
-func (b *BuilderController) AttachProjectDocData(
+func (b *AppsController) AttachAppData(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var attachIntent AttachIntentData
-	Decode(request, &attachIntent, writer)
+	decodeError := Decode(request, &attachIntent)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
@@ -189,7 +204,7 @@ func (b *BuilderController) AttachProjectDocData(
 
 	defer waiter.Close()
 	defer waiter.CloseWrite()
-	defer b.HandleContainerWorking(attachIntent.Name, writer)
+	defer b.handleContainerWorking(attachIntent.Name, writer)
 
 	var c1 = make(chan bool)
 	go func() {
@@ -210,7 +225,7 @@ func WriteToWriter(writer *http.ResponseWriter, waiter *types.HijackedResponse) 
 	return true
 }
 
-func (b *BuilderController) HandleContainerWorking(name string, writer http.ResponseWriter) {
+func (b *AppsController) handleContainerWorking(name string, writer http.ResponseWriter) {
 	time.Sleep(1 * time.Second)
 	isWorking, err := b.Builder.CheckIfContainerWorking(name)
 	if err != nil {
@@ -227,7 +242,7 @@ func (b *BuilderController) HandleContainerWorking(name string, writer http.Resp
 	}
 }
 
-func (c *BuilderController) GetStatusProjectConfig(
+func (c *AppsController) GetStatusApp(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	field, _ := request.URL.Query()["field"]
@@ -249,7 +264,7 @@ func (c *BuilderController) GetStatusProjectConfig(
 	writer.Write([]byte(str))
 }
 
-func (c *BuilderController) GetProjectConfigRunned(
+func (c *AppsController) GetAppRunned(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	field, _ := request.URL.Query()["container_name"]
@@ -263,7 +278,7 @@ func (c *BuilderController) GetProjectConfigRunned(
 	writer.WriteHeader(http.StatusOK)
 }
 
-func (b *BuilderController) AttachProjectDocDataTime(
+func (b *AppsController) AttachAppDataTime(
 	writer http.ResponseWriter,
 	request *http.Request) {
 
@@ -278,7 +293,12 @@ func (b *BuilderController) AttachProjectDocDataTime(
 	userNameFromToken, _ := ParseToken(reqToken, signingKey)
 
 	var attachIntent AttachIntentDataTime
-	Decode(request, &attachIntent, writer)
+	decodeError := Decode(request, &attachIntent)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusForbidden)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	waiter, err := b.Builder.ContainerAttach(attachIntent.Name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
@@ -307,7 +327,7 @@ func (b *BuilderController) AttachProjectDocDataTime(
 
 	defer waiter.Close()
 	defer waiter.CloseWrite()
-	defer b.HandleContainerWorking(attachIntent.Name, writer)
+	defer b.handleContainerWorking(attachIntent.Name, writer)
 
 	var c1 = make(chan bool)
 	var now time.Time
