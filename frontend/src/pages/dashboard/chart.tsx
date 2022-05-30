@@ -4,12 +4,12 @@ import { Card } from "@consta/uikit/Card";
 import { Grid, GridItem } from "@consta/uikit/Grid";
 import { useEffect, useState } from "react";
 import ApiData, { Data } from "../../api/apiData";
-import ApiTimeProjectData, { TimeProjectData } from "../../api/apiTimeProjectData";
 import { Combobox } from '@consta/uikit/Combobox';
 import ApiProject, { Project } from "../../api/apiProject";
 import { Text } from '@consta/uikit/Text';
 import style from './dashboard.module.css'
 import { Informer } from '@consta/uikit/Informer';
+import ApiTimeProjectData, {TimeProjectData} from "../../api/apiTimeProjectData";
 
 export function Chart() {
     const [value, setValue] = useState<TimeProjectData[]>([]);

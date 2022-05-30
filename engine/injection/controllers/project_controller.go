@@ -3,7 +3,7 @@ package controllers
 import (
 	"engine_app/database/model"
 	"engine_app/filters"
-	"fmt"
+	"engine_app/injection/multistage_delete"
 	"github.com/spf13/viper"
 	"net/http"
 	"strings"
@@ -41,20 +41,16 @@ func (c *ProjectController) DeleteProject(
 	writer http.ResponseWriter,
 	request *http.Request) {
 
-	var Projects model.Project
 	var deleteIntent filters.IdsFilter
 	Decode(request, &deleteIntent, writer)
-	str := strings.Trim(strings.Replace(fmt.Sprint(deleteIntent.Ids), " ", ",", -1), "[]")
-	query := "delete from project_configs where project_id in ($1)"
-	query = strings.Replace(query, "$1", str, -1)
-	_, err := c.AppInjection.Db.Exec(query)
+
+	err := multistage_delete.DeleteProjectConnected(deleteIntent, c.AppInjection.Db, c.AppInjection.Provider)
 	if err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
-		return
+	} else {
+		writer.WriteHeader(http.StatusOK)
 	}
-
-	c.Delete(&Projects, request, writer)
 }
 
 func (c *ProjectController) PutProject(

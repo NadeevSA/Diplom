@@ -116,3 +116,8 @@ fabric.properties
 /frontend/.idea/.gitignore
 /.idea/.gitignore
 /engine/core/core_tests/projects/c#_app/app/bin/
+/engine/.idea/.gitignore
+/engine/.idea/engine.iml
+/engine/.idea/misc.xml
+/engine/.idea/modules.xml
+/engine/.idea/vcs.xml

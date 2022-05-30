@@ -30,6 +30,11 @@ func (c *ProjectConfigController) AddProjectConfig(
 	}
 
 	file, header, err := request.FormFile("File")
+	if file == nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte("No file in config"))
+		return
+	}
 	defer file.Close()
 	if err != nil {
 		panic(err)
