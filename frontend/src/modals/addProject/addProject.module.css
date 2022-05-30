@@ -1,6 +1,10 @@
 
 .form {
-    margin: 5%;
+    margin: 3%;
+}
+
+.selector {
+    margin: 2%;
 }
 
 .title {
@@ -12,7 +16,15 @@
     margin: 3%;
 }
 
+.field {
+    margin: auto;
+}
+
 .buttonModel {
     margin: 3%;
     margin-left: 35%;
+}
+
+.info {
+    margin: auto;
 }

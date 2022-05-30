@@ -15,6 +15,7 @@ import ApiProjectConfigData from '../../api/apiProjectConfigData';
 import ApiProject, { Project } from '../../api/apiProject';
 import { ProjectConfig } from '../../pages/run/paneContainer/appPane/types';
 import { api } from '../../pages/run/paneContainer/appPane/api';
+import { Informer } from '@consta/uikit/Informer';
 
 export function ModelAddProjectData(props : {createProject : (Project: Project) => void ,
 createData : (Data: Data) => void}) {
@@ -30,10 +31,11 @@ createData : (Data: Data) => void}) {
     const handleChangeDescData = ({ value }: { value: string | null }) => setDescData(value);
 
     const [dataProjectConfigs, setDataProjectConfigs] = useState<ProjectConfig[]>([])
-    const [selectedProjectConfig, setSelectedProjectConfig] = useState<ProjectConfig[] | null | undefined>()
-
-    const [newProject, setNewProject] = useState<Project>();
+    const [selectedProjectConfig, setSelectedProjectConfig] = useState<ProjectConfig[] | null | undefined>(null)
     
+    const [info, setInfo] = useState<{status: boolean, msg: string}>({status: true, msg: "Введите название и описание проекта"})
+    const [infoData, setInfoData] = useState<{status: boolean, msg: string}>({status: true, msg: "Выберите файл"})
+
     const getProjectConfigs = () => {
       api<ProjectConfig[]>(`${"http://localhost:8084/project_config"}`)
           .then(projectsConfigs => {               
@@ -43,7 +45,9 @@ createData : (Data: Data) => void}) {
     
     useLayoutEffect(() => {
       getProjectConfigs()
-  }, [])
+    }, [])
+
+  const checkIsValid = (str : string) => !/[A-Z !@#\$%\^\&*\)\(+=._-]+./.test(str)
 
     return (
       <Card>
@@ -64,35 +68,63 @@ createData : (Data: Data) => void}) {
         <Modal
           isOpen={isModalOpen}
           hasOverlay
-          onClickOutside={() => setIsModalOpen(false)}
-          onEsc={() => setIsModalOpen(false)}>
+          onClickOutside={() => {
+            setInfo({status: true, msg: "Введите название и описание проекта"})
+            setIsModalOpen(false)
+          }}
+          onEsc={() => {
+            setInfo({status: true, msg: "Введите название и описание проекта"})
+            setIsModalOpen(false)
+          }}>
         <Layout direction="column">
           <Layout flex={1}>
             <Text className={style.title} weight="black" view="primary" size="2xl">Загрузить проект</Text>
           </Layout>
           <Layout flex={1}>
-          <TextField width='full' className={style.form} onChange={handleChange} value={value} type="text" placeholder="Название проекта" />;
+          <TextField required  label="Название проекта" width='full' className={style.form} onChange={handleChange} value={value} type="text" placeholder="Название проекта" />
           </Layout>
           <Layout flex={1}>
           <TextField
             className={style.form}
+            label="Описание"
             type="textarea"
             rows={7}
-            cols={50}
+            cols={50} 
             onChange={handleChangeDesc} 
             placeholder = "Описание проекта"
             value={desc}/>
           </Layout>
+          <Layout flex={1}>
+            <Informer
+                  className={style.info}
+                  status={info.status ? "success" : "alert"}
+                  view="bordered"
+                  label={info.msg}
+                />
+          </Layout>
           <Layout flex={2}>
               <Button view="secondary" label="Добавить" className={style.buttonModel} onClick={() => {
-                authServer.getUserName().then(res => {
-                  ApiProject.PostProject(res.data.ID, value, desc).then(res => {
-                    setNewProject(res.data);
-                    props.createProject(res.data);
-                  });
-                })
-                setIsModalOpen(false);
-              }}/>
+                debugger
+                if(value != null && checkIsValid(value!)) {
+                  authServer.getUserName().then(res => {
+                    ApiProject.PostProject(res.data.ID, value, desc).then(res => {
+                      props.createProject(res.data);
+                      setIsModalOpen(false);
+                      setInfo({status: true, msg: "Введите название и описание проекта"})
+                    }).catch(err => { 
+                        if (err.response.data == `ERROR: duplicate key value violates unique constraint "idx_projects_name" (SQLSTATE 23505)`) {
+                          setInfo({status: false, msg: "Такое название проекта у нас уже есть"})
+                        }
+                        else{
+                          setInfo({status: false, msg: "Уппс, что-то пошло не так"})
+                        }
+                    });
+                  })
+                }
+                else{
+                  setInfo({status: false, msg: "Ой, такое имя нельзя"})
+                }}}
+                />
           </Layout>
         </Layout>
         </Modal>
@@ -100,8 +132,14 @@ createData : (Data: Data) => void}) {
         <Modal
           isOpen={isModalOpenData}
           hasOverlay
-          onClickOutside={() => setIsModalOpenData(false)}
-          onEsc={() => setIsModalOpenData(false)}>
+          onClickOutside={() => {
+            setInfoData({status: true, msg: "Выберите файл"})
+            setIsModalOpenData(false)
+          }}
+          onEsc={() => {
+            setInfoData({status: true, msg: "Выберите файл"})
+            setIsModalOpenData(false)}}
+          >
         <Layout direction="column">
           <Layout flex={1}>
             <Text className={style.title} weight="black" view="primary" size="2xl">Загрузить данные</Text>
@@ -116,18 +154,18 @@ createData : (Data: Data) => void}) {
             placeholder = "Описание для данных"
             value={descData}/>
           </Layout>
-          <Layout flex={2} className={style.form}>
+          <Layout flex={2} className={style.selector}>
                 <Combobox
                   items={dataProjectConfigs}
                   value={selectedProjectConfig}
                   getItemLabel={(item) => item.Name}
                   getItemKey={(item) => item.ID}
                   onChange={({ value }) => setSelectedProjectConfig(value)}
-                  placeholder="Поиск проекта"
+                  placeholder="Привязать проекты"
                   multiple
                 />
           </Layout>
-          <Layout flex={1} className={style.form}>
+          <Layout flex={1} className={style.field}>
             <DragNDropField onDropFiles={function (files: File[]): void {
                 setFileData(files[0]);
               } }></DragNDropField>
@@ -140,18 +178,37 @@ createData : (Data: Data) => void}) {
                 fileExtension={fileData?.name.match(/\.(?!.*\.)(\w*)/)?.[1]}
                 fileDescription={fileData?.type}/>
                 :
-                <Text>Выберите файл</Text>}
+                <Text>Не выбран файл</Text>}
+          </Layout>
+          <Layout flex={1}>
+            <Informer
+                  className={style.info}
+                  status={infoData.status ? "success" : "alert"}
+                  view="bordered"
+                  label={infoData.msg}
+                />
           </Layout>
           <Layout flex={2}>
               <Button view="secondary" label="Добавить" className={style.buttonModel} onClick={() => {
-                ApiData.postData(fileData, descData).then(res => {
-                  props.createData(res.data);
-                  setIsModalOpenData(false);
-                  selectedProjectConfig?.map(p => {
-                    ApiProjectConfigData.PostProjectConfigData(res.data.ID, p.ID).then(res =>{
-                    });
+                debugger
+                if(fileData && selectedProjectConfig) {
+                  ApiData.postData(fileData, descData).then(res => {
+                    props.createData(res.data);
+                    setIsModalOpenData(false);
+                    setInfoData({status: true, msg: "Выберите файл"})
+                    selectedProjectConfig?.map(p => {
+                      ApiProjectConfigData.PostProjectConfigData(res.data.ID, p.ID).then(res =>{
+                      }).catch(err => {
+                        setInfoData({status: false, msg: "Уппс, что-то пошло не так"})
+                      });
+                    })
+                  }).catch(err => {
+                    setInfoData({status: false, msg: "Уппс, что-то пошло не так"})
                   })
-                });
+                }
+                else{
+                    setInfoData({status: false, msg: "Вы не выбрали файл или не привязали проекты"})
+                };
             }}/> 
           </Layout>
         </Layout>

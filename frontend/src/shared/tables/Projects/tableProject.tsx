@@ -5,7 +5,6 @@ import authServer from "../../../serviceAuth/authServer";
 import { Text } from '@consta/uikit/Text';
 import ApiProject, { Project } from "../../../api/apiProject";
 import { ProjectPage } from "../../../modals/projectConfig/project";
-import ApiProjectConfig from "../../../api/apiProjectConfig";
 
 export function TableProject (props: {hidden: boolean, newProject: Project | null | undefined}) {
   const columns: TableColumn<typeof rowProjects[number]>[] = [
@@ -57,12 +56,6 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
       setData(data.filter(d => d.ID !== deleteId));
     } 
   }, [deleteId]);
-  
-  function onDelete(id: number) {
-    debugger
-    setData(data.filter(d => d.ID !== id));
-    console.log(data);
-  }
   
   useEffect(() => {
     if(props.newProject != null) {
