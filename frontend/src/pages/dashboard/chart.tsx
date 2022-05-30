@@ -9,7 +9,7 @@ import ApiProject, { Project } from "../../api/apiProject";
 import { Text } from '@consta/uikit/Text';
 import style from './dashboard.module.css'
 import { Informer } from '@consta/uikit/Informer';
-import ApiTimeProjectData, {TimeProjectData} from "../../api/apiTimeProjectData";
+import ApiTimeProjectData, {TimeProjectData} from "../../api/ApiTimeProjectData";
 
 export function Chart() {
     const [value, setValue] = useState<TimeProjectData[]>([]);
