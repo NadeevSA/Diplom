@@ -1,7 +1,8 @@
-import { TableProject } from "../../shared/tables/projects/tableProject"
+import {TableProject} from "../../shared/tables/Projects/tableProject";
+
 
 export const projects = () => {
     return (
-        <TableProject hidden={false} newProject={null}></TableProject>
+        <TableProject hidden={false} newProject={null}/>
     )
 }

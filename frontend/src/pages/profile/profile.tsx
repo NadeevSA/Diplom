@@ -6,9 +6,9 @@ import {Text} from '@consta/uikit/Text';
 import authServer from '../../serviceAuth/authServer';
 import { ModelAddProjectData } from '../../modals/addProject/addProject';
 import { Project } from '../../api/apiProject';
-import { TableProject } from '../../shared/tables/projects/tableProject';
 import { TableData } from '../../shared/tables/datas/tableData';
 import { Data } from '../../api/apiData';
+import {TableProject} from "../../shared/tables/Projects/tableProject";
 
 function Info() {
     const [userName, setUserName] = useState<string | null>("");
@@ -41,7 +41,7 @@ export const Profile = () => {
         return (
             <Card>
                 <Text weight="black" view="primary" size="2xl">Мои данные</Text>
-                <TableData hidden={true} newData={newData}></TableData>
+                <TableData hidden={true} newData={newData}/>
             </Card>)
     }
 
@@ -50,16 +50,16 @@ export const Profile = () => {
         return (
             <Card>
                 <Text weight="black" view="primary" size="2xl">Мои проекты</Text>
-                <TableProject hidden={true} newProject={newProject}></TableProject>
+                <TableProject    hidden={true} newProject={newProject}/>
             </Card>)
     }
 
     return (
         <Grid gap="l" cols="5" className={style.grid}>
-            <GridItem><Info></Info></GridItem>
-            <GridItem rowStart="2"><ModelAddProjectData createProject={createProject} createData={createData}></ModelAddProjectData></GridItem>
-            <GridItem colStart="2" col="2" row="4"><Projects></Projects></GridItem>
-            <GridItem colStart="4" col="2" row="4"><Datas></Datas></GridItem>
+            <GridItem><Info/></GridItem>
+            <GridItem rowStart="2"><ModelAddProjectData createProject={createProject} createData={createData}/></GridItem>
+            <GridItem colStart="2" col="2" row="4"><Projects/></GridItem>
+            <GridItem colStart="4" col="2" row="4"><Datas/></GridItem>
         </Grid>
     )
 }

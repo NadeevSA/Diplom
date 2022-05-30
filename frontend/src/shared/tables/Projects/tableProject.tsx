@@ -5,7 +5,6 @@ import authServer from "../../../serviceAuth/authServer";
 import { Text } from '@consta/uikit/Text';
 import ApiProject, { Project } from "../../../api/apiProject";
 import { ProjectPage } from "../../../modals/projectConfig/project";
-import ApiProjectConfig from "../../../api/apiProjectConfig";
 
 export function TableProject (props: {hidden: boolean, newProject: Project | null | undefined}) {
   const columns: TableColumn<typeof rowProjects[number]>[] = [
@@ -53,7 +52,7 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
   const [deleteId, setDeleteId] = useState<number>(0);
 
   useEffect(() => {
-    if(deleteId != 0) {
+    if(deleteId !== 0) {
       setData(data.filter(d => d.ID !== deleteId));
     } 
   }, [deleteId]);
@@ -72,10 +71,10 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
 
   useEffect(() => {
     columns.map(v => {
-      if(v.title == "Автор") {
+      if(v.title === "Автор") {
         v.hidden = props.hidden;
       }
-      if(v.title == "Действие") v.hidden = !props.hidden;
+      if(v.title === "Действие") v.hidden = !props.hidden;
     });
     setCol(columns);
     if (!props.hidden) {
