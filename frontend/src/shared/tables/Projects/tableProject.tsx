@@ -44,18 +44,9 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
       renderCell: (row) => 
         <div>
           <ProjectPage name={row.Name} id={row.ID} onDelete={setDeleteId}/>
-          <Button label="Скачать" view="secondary" size="s" onClick={() => {download(row.ID)}}/>
         </div>
     },
   ];
-  
-  function download(id: number) {
-    debugger;
-    ApiProjectConfig.getProjectConfigById(id).then(res => {
-      debugger;
-      console.log(res.data[0].File);
-    })
-  }
 
   const [data, setData] = useState<typeof rowProjects>([]);
   const [col, setCol] = useState<TableColumn<typeof rowProjects[number]>[]>(columns);
