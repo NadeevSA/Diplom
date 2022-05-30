@@ -16,6 +16,7 @@ import {
 } from "./queries";
 import {Combobox} from "@consta/uikit/Combobox";
 import ApiProjectConfig from '../../api/apiProjectConfig';
+import { Informer } from '@consta/uikit/Informer';
 
 export function ProjectPage(props: { name: string, id: number, onDelete: (id: number) => void}) {
     const [selectedDockerConfig, setSelectedDockerConfig] = useState<IDockerConfiguration|null>()
@@ -33,6 +34,7 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
     const handlePathToEntry = ({value}: { value: string | null }) => setPathToEntry(value);
 
     const [file, setFile] = useState<File>()
+    const [infoData, setInfoData] = useState<{status: boolean, msg: string}>({status: true, msg: "Введите параметры и выберите файл"})
 
     useLayoutEffect(() => {
         GetDockerConfigs().then(dockerConfigs => {
@@ -44,9 +46,11 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
 
     useEffect(() => {
         if (isModalOpen && currentConfig){
+            debugger;
             setRunFile(currentConfig.RunFile)
             setProjectCommandBuild(currentConfig.BuildCommand)
             setPathToEntry(currentConfig.PathToEntry)
+            setFile(currentConfig.File)
             setSelectedDockerConfig(dockerConfigs.find(conf => conf.ID === currentConfig.DockerConfigId) || null)
         }
 
@@ -61,9 +65,15 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
                     }else {
                         alert(resp.statusText)
                     }
+                }).catch(err => {
+                    setInfoData({status: false, msg: "Уппс, что-то пошло не так"})
                 })
             return
         }
+        else {
+            setInfoData({status: false, msg: "Вы не ввели все параметры"})
+        }
+        
         if (projectPathToEntry && projectCommandBuild && runFile && file && selectedDockerConfig) {
             AddProjectConfig(props.id.toString(), selectedDockerConfig.ID, projectCommandBuild, runFile, projectPathToEntry, file)
                 .then((resp) => {
@@ -72,7 +82,12 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
                     } else {
                         alert(resp.statusText)
                     }
+                }).catch(err => {
+                    setInfoData({status: false, msg: "Уппс, что-то пошло не так"})
                 })
+        }
+        else {
+            setInfoData({status: false, msg: "Вы не ввели все параметры"})
         }
     }
 
@@ -95,9 +110,11 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
                 const currentConfig = configuration[0]
                 setCurrentConfig(currentConfig)
             }
+            setInfoData({status: true, msg: "Введите параметры и выберите файл"})
             setIsModalOpen(true)
         })
     }
+
     return (
         <div>
             <div className={style.buttons}>
@@ -124,24 +141,34 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
             <Modal
                 isOpen={isModalOpen}
                 hasOverlay
-                onClickOutside={() => setIsModalOpen(false)}
-                onEsc={() => setIsModalOpen(false)}>
+                onClickOutside={() => {
+                    setInfoData({status: true, msg: "Введите параметры и выберите файл"})
+                    setIsModalOpen(false)}
+                }
+                onEsc={() => {
+                    setInfoData({status: true, msg: "Введите параметры и выберите файл"})
+                    setIsModalOpen(false)}}
+                >
                 <div className={style.model_form}>
-                    <div className={style.label}>Конфигурация</div>
+                    <Text className={style.label} weight="black" view="primary" size="2xl">Конфигурация</Text>
                     <TextField width='full' className={style.input_field} onChange={handleProjectCommandBuild}
                                value={projectCommandBuild}
+                               required
                                label={"Команда сборки"}
                                type="text" placeholder="Команда сборки"/>
                     <TextField width='full' className={style.input_field} onChange={handleRunFile} value={runFile}
                                label={"Имя исполняемого файла"}
+                               required
                                type="text" placeholder="Имя исполняемого файла"/>
                     <TextField width='full' className={style.input_field} onChange={handlePathToEntry}
                                value={projectPathToEntry}
                                label={"Путь к папке проекта"}
+                               required
                                type="text" placeholder="Путь к проекту в папке"/>
                     <Combobox
                         label={"Конфигурация приложения"}
                         className={style.input_field}
+                        required
                         placeholder="Выберите конфигурацию"
                         items={dockerConfigs}
                         value={selectedDockerConfig}
@@ -152,15 +179,22 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
                     <div className={style.input_field}>
                         <DragNDropField multiple={false} onDropFiles={(files) => setFile(files[0])}/>
                     </div>
-                    {file ?
+                    {file?.name ?
                         <Attachment
+                            className={style.info}
                             key={file?.name}
                             fileName={file?.name}
-                            fileExtension={file.name.match(/\.(?!.*\.)(\w*)/)?.[1] || ""}
+                            fileExtension={file?.name?.match(/\.(?!.*\.)(\w*)/)?.[1] || ""}
                             fileDescription={file?.type}/>
                         :
-                        <Text>Выберите файл</Text>}
-                    <Button label={'Прикрепить'} onClick={onBtnClick}/>
+                        <Text className={style.info}>{file ? "Файл выбран" : "Не выбран файл"}</Text>}
+                        <Informer
+                            className={style.info}
+                            status={infoData.status ? "success" : "alert"}
+                            view="bordered"
+                            label={infoData.msg}
+                        />
+                    <Button label={'Прикрепить'} view="secondary" onClick={onBtnClick}/>
                 </div>
             </Modal>
         </div>

@@ -8,7 +8,7 @@ import { ModelAddProjectData } from '../../modals/addProject/addProject';
 import { Project } from '../../api/apiProject';
 import { TableData } from '../../shared/tables/datas/tableData';
 import { Data } from '../../api/apiData';
-import {TableProject} from "../../shared/tables/Projects/tableProject";
+import { TableProject } from '../../shared/tables/projects/tableProject';
 
 function Info() {
     const [userName, setUserName] = useState<string | null>("");
@@ -50,7 +50,7 @@ export const Profile = () => {
         return (
             <Card>
                 <Text weight="black" view="primary" size="2xl">Мои проекты</Text>
-                <TableProject    hidden={true} newProject={newProject}/>
+                <TableProject hidden={true} newProject={newProject}/>
             </Card>)
     }
 

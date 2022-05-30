@@ -5,6 +5,7 @@
 
 .label {
     padding-top: 0.5rem;
+    margin: auto;
 }
 
 .model_form{
@@ -22,4 +23,9 @@
 
 .button {
     padding-left: 0.5rem;
+}
+
+.info {
+    margin-top: 2%;
+    margin-bottom: 2%;
 }

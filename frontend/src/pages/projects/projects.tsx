@@ -1,5 +1,4 @@
-import {TableProject} from "../../shared/tables/Projects/tableProject";
-
+import { TableProject } from "../../shared/tables/projects/tableProject"
 
 export const projects = () => {
     return (
