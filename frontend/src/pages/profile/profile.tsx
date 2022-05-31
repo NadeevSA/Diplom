@@ -8,7 +8,7 @@ import { ModelAddProjectData } from '../../modals/addProject/addProject';
 import { Project } from '../../api/apiProject';
 import { TableData } from '../../shared/tables/datas/tableData';
 import { Data } from '../../api/apiData';
-import { TableProject } from '../../shared/tables/projects/tableProject';
+import {TableProject} from "../../shared/tables/Projects/tableProject";
 
 function Info() {
     const [userName, setUserName] = useState<string | null>("");
