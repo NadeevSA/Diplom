@@ -15,6 +15,8 @@ import (
 	"net/http"
 )
 
+//docker exec -it diplom_redis_1 redis-cli
+// West 1234
 func main() {
 
 	host := "localhost"
@@ -84,22 +86,24 @@ func main() {
 	authService := controllers2.AuthService{AppInjection: &injection}
 	userController := controllers2.UserController{BaseCrudController: &baseCrudController}
 	projectConfigController := controllers2.ProjectConfigController{BaseCrudController: &baseCrudController}
-	builderController := controllers2.BuilderController{Provider: provider, Builder: builder}
+	builderController := controllers2.AppsController{Provider: provider, Builder: builder}
 	projectController := controllers2.ProjectController{BaseCrudController: &baseCrudController}
+	timeProjectDataController := controllers2.TimeProjectDataController{AppInjection: &injection}
 	datafileController := controllers2.DataFileController{BaseCrudController: &baseCrudController}
 	dockerConfigsController := controllers2.DockerConfigController{AppInjection: &injection}
 	dataProjectController := controllers2.DataProjectController{Db: db}
 
 	app := controllers2.App{
-		ProjectConfigController: projectConfigController,
-		UserController:          userController,
-		BuilderController:       builderController,
-		ProjectController:       projectController,
-		DataFileController:      datafileController,
-		DataProjectController:   dataProjectController,
-		DockerConfigController:  dockerConfigsController,
-		AuthService:             authService,
-		AppInjection:            &injection,
+		ProjectConfigController:   &projectConfigController,
+		UserController:            &userController,
+		AppsController:            &builderController,
+		ProjectController:         &projectController,
+		DataFileController:        &datafileController,
+		DataProjectController:     &dataProjectController,
+		DockerConfigController:    &dockerConfigsController,
+		TimeProjectDataController: &timeProjectDataController,
+		AuthService:               &authService,
+		AppInjection:              &injection,
 	}
 	router := AddRoutes(&app)
 
@@ -112,6 +116,7 @@ func main() {
 
 func LoadDefaultDataToDataBase(provider *providers.Provider) {
 	LoadDefaultGolangDockerConfig(provider)
+	LoadDefaultC_sharpDockerConfig(provider)
 }
 
 func LoadDefaultGolangDockerConfig(provider *providers.Provider) {
@@ -131,6 +136,29 @@ func LoadDefaultGolangDockerConfig(provider *providers.Provider) {
 	}
 
 	err = provider.AddStatement(&goDockerConfig)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+}
+
+func LoadDefaultC_sharpDockerConfig(provider *providers.Provider) {
+	bytes, err := core.ReadFile("dockerfiles\\c#.DockerFile")
+
+	var c_charpDockerConfig model.DockerConfig
+
+	provider.Db.First(&c_charpDockerConfig, "description = ?", "Конфигурация по умолчанию для сборки на языке c#")
+	if c_charpDockerConfig.Description == "Конфигурация по умолчанию для сборки на языке c#" {
+		return
+	}
+
+	c_charpDockerConfig = model.DockerConfig{
+		Config:      model.ConfigurationType(1),
+		Description: "Конфигурация по умолчанию для сборки на языке c#",
+		File:        bytes,
+	}
+
+	err = provider.AddStatement(&c_charpDockerConfig)
 	if err != nil {
 		log.Fatal(err)
 		return

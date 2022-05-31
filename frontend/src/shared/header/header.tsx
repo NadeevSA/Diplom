@@ -1,82 +1,51 @@
-import React, { useState, useRef, Dispatch, SetStateAction, useEffect, useLayoutEffect } from 'react';
-import style from './header.module.css'
-import { Header, HeaderButton, HeaderLogin, HeaderLogo, HeaderModule, HeaderSearchBar } from '@consta/uikit/Header';
-import { Button } from '@consta/uikit/Button';
-import { Link, Redirect } from 'react-router-dom';
-import { Sidebar } from '@consta/uikit/Sidebar';
-import { Text } from '@consta/uikit/Text';
-import authServer from '../../ServiceAuth/authServer';
-import { Modal } from '@consta/uikit/Modal';
-import { Layout } from '@consta/uikit/LayoutCanary';
-import { TextField } from '@consta/uikit/TextField';
+import React, { useEffect } from 'react';
+import { Header , HeaderLogo, HeaderModule } from '@consta/uikit/Header';
+import authServer from '../../serviceAuth/authServer';
 import { User } from '@consta/uikit/User';
+import { ModalLogin } from '../../modals/login/login';
+import { SideBar } from './sideBar';
 
-interface Props {}
-
-function CollapseExampleHover() {
-  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+export const CustomHeader = () => {
   const [UserName, setUserName] = React.useState<string>("");
   const [UserEmail, setUserEmail] = React.useState<string>("");
-  if(authServer.getToken() != ""){
-    authServer.getUserName().then(res => {
-      setUserName(res.data.Name)
-      setUserEmail(res.data.Email)
-    });
-  }
-  return (
-    <div>
-      {
-        authServer.getToken() != "" ?
-        <User
-          name={UserName}
-          info={UserEmail}
-          onClick={() => setIsSidebarOpen(true)}
-          view="ghost"
-          size="l"
-          withArrow
-        /> :
-        <ModalLogin userName={setUserName} userEmail={setUserEmail}></ModalLogin>
-      }
-      <Sidebar
-        isOpen={isSidebarOpen}
-        size="m"
-        onClickOutside={() => setIsSidebarOpen(false)}
-        onEsc={() => setIsSidebarOpen(false)}>
-        <Sidebar.Content className={style.sideBar}>
-          <HeaderLogo>
-            <img width={300} height={100} src="./logoAppRunner.png" alt="Логотип" />
-          </HeaderLogo>
-          <Link to="/profile">
-            <Button
-              size="l"
-              label="Личный кабинет"
-              view="secondary"
-              width="full"
-              onClick={() => setIsSidebarOpen(false)}
-            />
-          </Link>
-          <Button
-            size="l"
-            view="secondary"
-            label="Выход"
-            width="full"
-            className={style.buttonModel}
-            onClick={() => {
-              authServer.logout();
-              setIsSidebarOpen(false)}}
-          />
-        </Sidebar.Content>
-      </Sidebar>
-    </div> 
-  );
-};
+  authServer.getUserName().then(res => {
+    setUserName(res.data.Name)
+    setUserEmail(res.data.Email)
+  })
 
-export const header = () => {
+  function isLogin(login: string){
+      setUserName(login);
+  }
+
+  useEffect(() => {
+    Avatar();
+  }, [UserName, UserEmail]);
+
+  function Avatar() {
+    return (
+      <div>
+        {
+          authServer.getToken() != "" ?
+          <User
+            name={UserName}
+            info={UserEmail}
+            view="ghost"
+            size="l"
+          /> :
+          <ModalLogin userName={setUserName} userEmail={setUserEmail}></ModalLogin>
+        }
+      </div> 
+    );
+  };
+
   return (
     <Header
   leftSide={
     <>
     <HeaderModule>
+        <SideBar userName={UserName} isLogin={isLogin}></SideBar>
+    </HeaderModule>
+    <HeaderModule indent="m">
       <HeaderLogo>
         <img width={150} height={50} src="./logoAppRunner.png" alt="Логотип"/>
       </HeaderLogo>
@@ -85,136 +54,11 @@ export const header = () => {
   }
   rightSide={
     <>
-    <HeaderModule>
-    </HeaderModule>
       <HeaderModule indent="s">
-        <Link to="/">
-          <Button
-            size="s"
-            view="secondary"
-            label="Главная"
-            width="default"
-          />
-        </Link>
-      </HeaderModule>
-      <HeaderModule indent="s">
-      <Link to="/run">
-          <Button
-            size="s"
-            view="secondary"
-            label="Запуск"
-            width="default"
-          />
-        </Link>
-      </HeaderModule>
-        <HeaderModule indent="s">
-          <CollapseExampleHover></CollapseExampleHover>
+          <Avatar></Avatar>
         </HeaderModule>
       <HeaderModule indent="s">  
       </HeaderModule>
     </>
   }
-/>
-  )
-}
-
-function ModalRegistration() {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [login, setLogin] = useState<string | null>(null);
-  const handleChangeLogin = ({ value }: { value: string | null }) => setLogin(value);
-  const [password, setPassword] = useState<string | null>("");
-  const handleChangePassword = ({ value }: { value: string | null }) => setPassword(value);
-  const [name, setName] = useState<string | null>("");
-  const handleChangeName = ({ value }: { value: string | null }) => setName(value);
-  return(
-    <Layout flex={2}>
-      <Button
-          size="l"
-          view="secondary"
-          label="Регистрация"
-          className={style.buttonModel}
-          onClick={() => setIsModalOpen(true)}
-        />
-      <Modal
-          isOpen={isModalOpen}
-          hasOverlay
-          onClickOutside={() => setIsModalOpen(false)}
-          onEsc={() => setIsModalOpen(false)}>
-        <Layout direction="column">
-            <Layout flex={1}>
-              <Text className={style.title} weight="black" view="primary" size="2xl">Регистрация</Text>
-            </Layout>
-            <Layout flex={1}>
-              <TextField value={name} onChange={handleChangeName} width='full' className={style.form} type="text" placeholder="Имя" />
-            </Layout>
-            <Layout flex={1}>
-              <TextField value={login} onChange={handleChangeLogin} width='full' className={style.form} type="text" placeholder="Электронная почта" />
-            </Layout>
-            <Layout flex={1}>
-              <TextField value={password} onChange={handleChangePassword} width='full' className={style.form} type="text" placeholder="Пароль" />
-            </Layout>
-            <Layout flex={2}>
-                <Button view="secondary" size="l"  label="Зарегистрироваться" className={style.buttonModel} onClick={() => {
-                  authServer.register(login, password);
-                  authServer.registerUser(name, login);
-                  setIsModalOpen(false)
-                }}/> 
-            </Layout>
-          </Layout>
-      </Modal>
-    </Layout>
-  )
-}
-
-function ModalLogin(props: {
-  userName: Dispatch<SetStateAction<string>>,
-  userEmail: Dispatch<SetStateAction<string>>
-}) {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [login, setLogin] = useState<string | null>(null);
-  const handleChangeLogin = ({ value }: { value: string | null }) => setLogin(value);
-  const [password, setPassword] = useState<string | null>("");
-  const handleChangePassword = ({ value }: { value: string | null }) => setPassword(value);
-
-  return (
-    <div>
-        <Button
-          size="s"
-          view="secondary"
-          label="Войти/Регистрация"
-          className={style.button}
-          onClick={() => setIsModalOpen(true)}
-        />
-      <Modal
-          isOpen={isModalOpen}
-          hasOverlay
-          onClickOutside={() => setIsModalOpen(false)}
-          onEsc={() => setIsModalOpen(false)} >
-          <Layout direction="column">
-            <Layout flex={1}>
-              <Text className={style.title} weight="black" view="primary" size="2xl">Войти</Text>
-            </Layout>
-            <Layout flex={1}>
-              <TextField width='full' className={style.form} value={login} onChange={handleChangeLogin} type="text" placeholder="Электронная почта" />
-            </Layout>
-            <Layout flex={1}>
-              <TextField width='full' className={style.form} value={password} onChange={handleChangePassword} type="text" placeholder="Пароль" />
-            </Layout>
-            <Layout flex={2}>
-                <Button view="secondary" size="l" label="Войти" className={style.buttonModel} onClick={() => {
-                    authServer.logout();
-                    authServer.login(login, password)?.then(res => {
-                      authServer.getUserName().then(res => {
-                        props.userName(res.data.Name);
-                        props.userEmail(res.data.Email);
-                        window.location.reload()
-                      });
-                  });
-                }}/> 
-            </Layout>
-            <ModalRegistration></ModalRegistration>
-          </Layout>
-      </Modal>
-    </div>
-  )
-}
+/>)}

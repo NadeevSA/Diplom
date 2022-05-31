@@ -1,0 +1,44 @@
+.button_pane_left {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.button_pane_right {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.button_pane {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.button_pane_right{
+    margin-right: 0.5rem;
+}
+
+.button_action {
+    margin-left: 0.5rem;
+}
+
+.loader {
+    margin: auto;
+}
+
+.switcher {
+    margin: 3% auto;
+    float: left;
+}
+
+.button {
+    margin: 3% auto;
+    display: block;
+}
+
+.card {
+    padding: 3%;
+}

@@ -1,36 +1,34 @@
 import './App.css';
 import { Theme, presetGpnDefault } from '@consta/uikit/Theme';
 import { Switch, Route } from 'react-router';
-import { main } from './pages/main/main';
-import { profile } from './pages/profile/profile';
+import { Profile } from './pages/profile/profile';
 import { dashboard } from './pages/dashboard/dashboard';
-import { testing } from './pages/testing/testing';
-import { play } from './pages/play/play';
-import { exp } from './pages/exampleRudexAxios/exp';
-import { header as Header} from './shared/header/header'
-import { store } from './store'
-import { Provider } from 'react-redux'
-import { ProjectPage } from './pages/ProjectConfig/project';
-import { AppContent } from './PaneContainer';
+import { run } from './pages/run/run';
+import { CustomHeader as CustomHeader} from './shared/header/header'
+import { main } from './pages/main/main';
+import { projects } from './pages/projects/projects';
+import { datas } from './pages/datas/datas';
+import authServer from './serviceAuth/authServer';
+import { Redirect } from 'react-router-dom';
+import { projectConfigs } from './pages/projectConfigs/projectConfigs';
 
 function App() {
   return (
-    <Provider store={store}>
-      <div className="App">
-        <Theme preset={presetGpnDefault}>
-          <Header/>
-          <Switch>
-            <Route path="/" exact component={main}/>
-            <Route path="/profile" exact component={profile}/>
-            <Route path="/dashboard" exact component={dashboard}/>
-            <Route path="/testing" exact component={testing}/>
-            <Route path="/run" exact component={play}/>
-            <Route path="/example" exact component={exp}/>
-            <Route path="/project" exact component={ProjectPage}/>
-          </Switch>
-        </Theme>
-      </div>
-    </Provider>
+    <div className="App">
+      <Theme preset={presetGpnDefault}>
+        <CustomHeader/>
+        <Switch>
+          <Route path="/" exact component={main}/>
+          <Route path="/projects" exact component={projects}/>
+          <Route path="/datas" exact component={datas}/>
+          <Route path="/projectConfigs" exact component={projectConfigs}/>
+          <Route path="/dashboard" exact component={dashboard}/>
+          <Route path="/run" exact component={run}/>
+          {authServer.getToken() != "" ? <Route path="/profile" exact component={Profile}/> :
+          <Redirect from="/profile" to="/" />}
+        </Switch>
+      </Theme>
+    </div>
   );
 }
 

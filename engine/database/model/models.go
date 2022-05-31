@@ -57,6 +57,17 @@ type Project struct {
 	Description string
 }
 
+type TimeProjectData struct {
+	ProjectId int `gorm:"primaryKey"`
+	Project   Project
+
+	Author string `gorm:"primaryKey"`
+	DataId int    `gorm:"primaryKey"`
+	Data   Data
+
+	Duration float64
+}
+
 type Data struct {
 	ID       uint `gorm:"primaryKey"`
 	Label    string

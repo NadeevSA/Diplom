@@ -10,25 +10,39 @@
     margin: 3%;
 }
 
-.button {
-    margin: 5% auto;
-    display: block;
-}
-
 .form {
     margin: 2%;
 }
 
-.title {
-    margin: 5% auto;
-    display: block;
-}
-
 .button {
-    margin: 3%;
+    margin: auto;
+    margin-bottom: 3%;
 }
 
-.buttonModel {
-    margin: 4% auto;
-    display: block;
+.title {
+    margin: auto;
+}
+
+.buttonRight {
+    margin: auto;
+    float: right;
+    margin-bottom: 3%;
+}
+
+.buttonLeft {
+    margin: auto;
+    float: left;
+    margin-bottom: 3%;
+}
+
+.buttonSideBar {
+    float: left;
+}
+
+.grid {
+    padding: 2%;
+}
+
+.links {
+    text-decoration: none;
 }

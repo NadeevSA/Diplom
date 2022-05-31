@@ -3,7 +3,7 @@ package controllers
 import (
 	"engine_app/database/model"
 	"engine_app/filters"
-	"fmt"
+	"engine_app/injection/multistage_delete"
 	"github.com/spf13/viper"
 	"net/http"
 	"strings"
@@ -17,8 +17,12 @@ func (c *ProjectController) AddProject(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var Project model.Project
-	Decode(request, &Project, writer)
-
+	decodeError := Decode(request, &Project)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	if c.AppInjection.UseAuth {
 		signingKey := []byte(viper.GetString("auth.signing_key"))
 		reqToken := request.Header.Get("Authorization")
@@ -41,27 +45,33 @@ func (c *ProjectController) DeleteProject(
 	writer http.ResponseWriter,
 	request *http.Request) {
 
-	var Projects model.Project
-	var deleteIntent filters.IdsFilter
-	Decode(request, &deleteIntent, writer)
-	str := strings.Trim(strings.Replace(fmt.Sprint(deleteIntent.Ids), " ", ",", -1), "[]")
-	query := "delete from project_configs where project_id in ($1)"
-	query = strings.Replace(query, "$1", str, -1)
-	_, err := c.AppInjection.Db.Exec(query)
-	if err != nil {
+	var deleteIntent filters.IdsIntent
+	decodeError := Decode(request, &deleteIntent)
+	if decodeError != nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		writer.Write([]byte(err.Error()))
+		writer.Write([]byte(decodeError.Error()))
 		return
 	}
 
-	c.Delete(&Projects, request, writer)
+	err := multistage_delete.DeleteProjectConnected(deleteIntent, c.AppInjection.Db, c.AppInjection.Provider)
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(err.Error()))
+	} else {
+		writer.WriteHeader(http.StatusOK)
+	}
 }
 
 func (c *ProjectController) PutProject(
 	writer http.ResponseWriter,
 	request *http.Request) {
 	var Project model.Project
-	Decode(request, &Project, writer)
+	decodeError := Decode(request, &Project)
+	if decodeError != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(decodeError.Error()))
+		return
+	}
 	c.Put(&Project, request, writer)
 }
 
