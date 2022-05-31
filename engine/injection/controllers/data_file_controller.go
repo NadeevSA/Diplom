@@ -24,6 +24,11 @@ func (c *DataFileController) AddDataFile(
 	dataFile := model.Data{}
 
 	file, header, _ := request.FormFile("File")
+	if file == nil {
+		writer.Write([]byte("No file"))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	dataFile.Label = request.MultipartForm.Value["Label"][0]
 
 	if c.AppInjection.UseAuth {
@@ -38,6 +43,11 @@ func (c *DataFileController) AddDataFile(
 		userNameFromToken, _ := ParseToken(reqToken, signingKey)
 		if dataFile.Author == "" {
 			dataFile.Author = userNameFromToken
+		}
+		if userNameFromToken == "" {
+			writer.Write([]byte("No user info"))
+			writer.WriteHeader(http.StatusForbidden)
+			return
 		}
 	}
 
