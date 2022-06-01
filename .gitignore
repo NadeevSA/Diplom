@@ -121,3 +121,11 @@ fabric.properties
 /engine/.idea/misc.xml
 /engine/.idea/modules.xml
 /engine/.idea/vcs.xml
+/engine/core/core_tests/projects/app_livenstein/.idea/.gitignore
+/engine/core/core_tests/projects/app_sort/.idea/.gitignore
+/engine/core/core_tests/projects/app_livenstein/.idea/app_livenstein.iml
+/engine/core/core_tests/projects/app_sort/.idea/app_sort.iml
+/engine/core/core_tests/projects/app_livenstein/.idea/modules.xml
+/engine/core/core_tests/projects/app_sort/.idea/modules.xml
+/engine/core/core_tests/projects/app_livenstein/.idea/vcs.xml
+/engine/core/core_tests/projects/app_sort/.idea/vcs.xml

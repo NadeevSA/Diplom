@@ -47,7 +47,7 @@ createData : (Data: Data) => void}) {
       getProjectConfigs()
     }, [])
 
-  const checkIsValid = (str : string) => !/[A-Z !@#\$%\^\&*\)\(+=._-]+./.test(str)
+  const checkIsValid = (str : string) => !/[A-Z !@#\$%\^\&*\)\(+=.-]+./.test(str)
 
     return (
       <Card>

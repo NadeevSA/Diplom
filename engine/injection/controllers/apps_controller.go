@@ -226,7 +226,7 @@ func WriteToWriter(writer *http.ResponseWriter, waiter *types.HijackedResponse) 
 }
 
 func (b *AppsController) handleContainerWorking(name string, writer http.ResponseWriter) {
-	time.Sleep(1 * time.Second)
+	time.Sleep(3 * time.Second)
 	isWorking, err := b.Builder.CheckIfContainerWorking(name)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
