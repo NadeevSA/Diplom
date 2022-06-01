@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"engine_app/database/model"
 	"engine_app/filters"
+	"engine_app/injection/multistage_delete"
 	"fmt"
 	"github.com/spf13/viper"
 	"io"
@@ -69,22 +70,17 @@ func (c *DataFileController) DeleteDataFile(
 	var deleteIntent filters.IdsIntent
 	decodeError := Decode(request, &deleteIntent)
 	if decodeError != nil {
-		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(decodeError.Error()))
-		return
-	}
-	str := strings.Trim(strings.Replace(fmt.Sprint(deleteIntent.Ids), " ", ",", -1), "[]")
-	query := "delete from project_config_data where data_id in ($1)"
-	query = strings.Replace(query, "$1", str, -1)
-	_, err := c.AppInjection.Db.Exec(query)
-	if err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		writer.Write([]byte(err.Error()))
 		return
 	}
-
-	var data model.Data
-	c.Delete(&data, request, writer)
+	err := multistage_delete.DeleteData(deleteIntent, c.AppInjection.Db)
+	if err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
 }
 
 func (c *DataFileController) GetAllDataFile(
