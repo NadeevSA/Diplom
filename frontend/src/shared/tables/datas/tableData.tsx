@@ -22,17 +22,31 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
           align: 'center',
         },
         {
+          title: 'Автор',
+          accessor: 'Author',
+          align: 'center',
+        },
+        {
           title: 'Описание',
           accessor: 'Label',
           align: 'center',
         },
         {
-          title: 'Действие',
-          accessor: 'Delete',
+          title: 'Содержимое',
+          accessor: 'Content',
           align: 'center',
           renderCell: (row) => 
             <div className={style.buttons}>
               <DataContent id={row.ID} name={row.FileName}></DataContent>
+            </div>
+        },
+        {
+          title: 'Удалить',
+          accessor: 'Delete',
+          align: 'center',
+          hidden: true,
+          renderCell: (row) => 
+            <div className={style.buttons}>
               <Button className={style.button} label="Удалить" size="s" view="secondary" onClick={() => {setDeleteId(row.ID)}}/>
             </div>
         }
@@ -62,6 +76,9 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
           if(v.title == "Автор") {
             v.hidden = props.hidden;
           }
+          if(v.title == "Удалить") {
+            v.hidden = !props.hidden;
+          }
         });
         setCol(columns);
         if (!props.hidden) {
@@ -83,8 +100,10 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
         ID: number;
         id: string;
         FileName: string;
+        Author: string,
         Label: string;
         Delete?: typeof Button;
+        Content?: typeof Button;
       }[]
     
       const searchTable = useMemo(() =>{
