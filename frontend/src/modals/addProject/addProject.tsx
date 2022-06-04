@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import style from './addProject.module.css';
 import { Button } from '@consta/uikit/Button';
 import { Layout } from '@consta/uikit/LayoutCanary';
@@ -43,9 +43,10 @@ createData : (Data: Data) => void}) {
           })
     }
     
-    useLayoutEffect(() => {
+    useEffect(() => {
+      debugger
       getProjectConfigs()
-    }, [])
+    }, [isModalOpenData])
 
   const checkIsValid = (str : string) => !/[A-Z !@#\$%\^\&*\)\(+=.-]+./.test(str)
 
@@ -81,7 +82,7 @@ createData : (Data: Data) => void}) {
             <Text className={style.title} weight="black" view="primary" size="2xl">Загрузить проект</Text>
           </Layout>
           <Layout flex={1}>
-          <TextField required  label="Название проекта" width='full' className={style.form} onChange={handleChange} value={value} type="text" placeholder="Название проекта" />
+            <TextField required label="Название проекта" width='full' className={style.form} onChange={handleChange} value={value} type="text" placeholder="Название проекта"/>
           </Layout>
           <Layout flex={1}>
           <TextField
