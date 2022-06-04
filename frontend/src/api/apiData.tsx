@@ -6,6 +6,7 @@ export interface Data {
     id: string,
     Label: string,
     FileName: string,
+    Author: string,
 }
 
 export default class ApiData {
