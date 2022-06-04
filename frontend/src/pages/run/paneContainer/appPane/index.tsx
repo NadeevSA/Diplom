@@ -15,6 +15,7 @@ import ApiProject from '../../../../api/apiProject';
 import authServer from '../../../../serviceAuth/authServer';
 import { PanelHand } from './paneHand';
 import { PanelFile } from './paneFile';
+import { projectConfigs } from '../../../projectConfigs/projectConfigs';
 
 export const AppPane: FC<IPane> = ({
                                        attachUrlFileUrl,
@@ -220,7 +221,7 @@ export const AppPane: FC<IPane> = ({
         if(isUseTimer){
             instance.post (
                 '/builder/attach/data/time',
-                { name: projectContainerReplicaName, data_id: selectedFile.ID.toString(), project_id: selectedProjectConfigId?.toString()},
+                { name: projectContainerReplicaName, data_id: selectedFile.ID.toString(), project_id: selectedProjectConfig?.ProjectId?.toString()},
                 {
                   headers: {
                     'Content-Type': 'application/json',
@@ -333,7 +334,7 @@ export const AppPane: FC<IPane> = ({
                     onClick={setChecked}/>
                 <Switch
                     className={"switcher"}
-                    label={"Посчет времени работы" }
+                    label={"Подсчет времени работы" }
                     view={'primary'}
                     size={'l'}
                     disabled={!isUseFile}
