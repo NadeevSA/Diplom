@@ -28,7 +28,6 @@ export const PanelFile: FC<IPanelFile> = ({output, dataFile, fileContentUrl}) =>
             <div className={"texts"}>
                 <TextField
                     className={"panel_file"}
-                    disabled={true}
                     value={inputFileText}
                     type="textarea"
                     cols={200}

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"engine_app/core"
 	"engine_app/database/model"
 	"engine_app/filters"
 	"github.com/spf13/viper"
@@ -52,6 +53,13 @@ func (c *UserController) AddUser(
 		writer.Write([]byte(decodeError.Error()))
 		return
 	}
+	check := checkUser(user)
+	if check != "" {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(check))
+		return
+	}
+
 	c.Add(&user, request, writer)
 }
 
@@ -72,6 +80,12 @@ func (c *UserController) PutUser(
 		writer.Write([]byte(decodeError.Error()))
 		return
 	}
+	check := checkUser(user)
+	if check != "" {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(check))
+		return
+	}
 	c.Put(&user, request, writer)
 }
 
@@ -87,4 +101,14 @@ func (c *UserController) GetFilteredUser(
 	request *http.Request) {
 	var users []model.User
 	c.GetFilteredBy(&users, request, writer)
+}
+
+func checkUser(user model.User) string {
+	if !core.IfStringLenIsValid(user.Name) {
+		return "name is not valid"
+	}
+	if !core.IfStringLenIsValid(user.Email) {
+		return "name is not valid"
+	}
+	return ""
 }

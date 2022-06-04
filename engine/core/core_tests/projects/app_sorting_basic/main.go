@@ -64,59 +64,21 @@ func main() {
 		humans[i] = human
 	}
 
-	quicksort(humans, 0, len(humans))
+	basicSort(humans, len(humans))
 	for i := len(humans) - 1; i >= 0; i-- {
 		io.WriteString(writer, humans[i].Name+"\n")
 	}
 	writer.Flush()
 }
 
-func median(h1, h2, h3 Human) Human {
-	if Compare(h2, h1) {
-		h1, h2 = h2, h1
-	}
-
-	if Compare(h1, h3) {
-		h3, h1 = h1, h3
-
-		if Compare(h2, h1) {
-			h1, h2 = h2, h1
+func basicSort(humans []Human, l int) {
+	for i := 0; i < l; i++ {
+		for j := i + 1; j < l; j++ {
+			if Compare(humans[i], humans[j]) {
+				t := humans[i]
+				humans[i] = humans[j]
+				humans[j] = t
+			}
 		}
 	}
-	return h1
-}
-
-func quicksort(arr []Human, left, right int) []Human {
-	if left >= right-1 {
-		return arr
-	} else {
-
-		var pivot = median(arr[left], arr[(right+left)/2], arr[right-1])
-		var newLef, newR = partition(arr, left, right, pivot)
-
-		quicksort(arr, left, newLef)
-		quicksort(arr, newR, right)
-		return arr
-	}
-}
-
-func partition(arr []Human, left, right int, pivot Human) (int, int) {
-	for {
-		if left >= right-1 {
-			break
-		}
-
-		for Compare(pivot, arr[left]) {
-			left++
-		}
-
-		for Compare(arr[right-1], pivot) {
-			right--
-		}
-
-		if Compare(arr[left], arr[right-1]) {
-			arr[left], arr[right-1] = arr[right-1], arr[left]
-		}
-	}
-	return left, right - 1
 }

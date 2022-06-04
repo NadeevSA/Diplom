@@ -142,6 +142,8 @@ func (b *AppsController) AttachApp(
 		return
 	}
 	inputBytes := []byte(attachIntent.Input)
+	var str = string(inputBytes)
+	fmt.Println(str)
 	_, err = waiter.Conn.Write(inputBytes)
 	if err != nil {
 		writer.Write([]byte(err.Error()))
@@ -195,7 +197,10 @@ func (b *AppsController) AttachAppData(
 		return
 	}
 	inputBytes := data.File
-	_, err = waiter.Conn.Write(inputBytes)
+	var str = string(inputBytes)
+
+	toInput := core.TransformStringsToFormat(str)
+	_, err = waiter.Conn.Write([]byte(toInput))
 	if err != nil {
 		writer.Write([]byte(err.Error()))
 		writer.WriteHeader(http.StatusBadRequest)
@@ -306,19 +311,27 @@ func (b *AppsController) AttachAppDataTime(
 		return
 	}
 
-	data := model.Data{}
+	var data model.Data
 	stringId := fmt.Sprint(attachIntent.DataId)
 	err = b.Provider.QueryListStatement(&data, filters.FilterBy{
 		Field: "id",
 		Args:  []string{stringId},
 	})
+	if data.File == nil {
+		writer.Write([]byte("Data file does not exist"))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	if err != nil {
 		writer.Write([]byte(err.Error()))
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	inputBytes := data.File
-	_, err = waiter.Conn.Write(inputBytes)
+	var str = string(inputBytes)
+
+	toInput := core.TransformStringsToFormat(str)
+	_, err = waiter.Conn.Write([]byte(toInput))
 	if err != nil {
 		writer.Write([]byte(err.Error()))
 		writer.WriteHeader(http.StatusBadRequest)

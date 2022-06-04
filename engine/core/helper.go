@@ -17,3 +17,14 @@ func IntsToStrings(ints []int) []string {
 	}
 	return strs
 }
+
+func IfStringLenIsValid(str string) bool {
+	if len(str) == 0 || len(str) > 255 {
+		return false
+	}
+	return true
+}
+
+func TransformStringsToFormat(str string) string {
+	return strings.Replace(str, "\r\n", "\n", -1)
+}

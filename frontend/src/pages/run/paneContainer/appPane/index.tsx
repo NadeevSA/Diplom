@@ -15,7 +15,6 @@ import ApiProject from '../../../../api/apiProject';
 import authServer from '../../../../serviceAuth/authServer';
 import { PanelHand } from './paneHand';
 import { PanelFile } from './paneFile';
-import { projectConfigs } from '../../../projectConfigs/projectConfigs';
 
 export const AppPane: FC<IPane> = ({
                                        attachUrlFileUrl,
@@ -32,7 +31,7 @@ export const AppPane: FC<IPane> = ({
     const [outPut, setOutput] = useState<string>(defaultOutput)
     const [isUseFile, setIsUseFile] = useState(false)
     const [isUseTimer, setIsUseTimer] = useState(false)
-    const [isRunning, setIsRunning] = useState(true)
+    const [isRunning, setIsRunning] = useState(false)
     const [status, setStatus] = useState(0);
     const [isWaiting, setWaiting] = useState(false);
     const [input, setInput] = useState<string | null>(null);
@@ -61,14 +60,6 @@ export const AppPane: FC<IPane> = ({
             sessionStorage.removeItem(`${projectContainerReplicaName}_data`)
         }
     }, [isRunning])
-
-    useEffect(() => {
-        if(selectedProjectConfigId == null) return;
-        api<IDataFile[]>(`${dataFileUrl}/filter/project_config?project_config_id=${selectedProjectConfigId}`)
-            .then(dataFiles => {
-                setDataFiles(dataFiles)
-        })
-    }, [selectedProjectConfigId])
     
     useEffect(() => {
         if (config == null) return;
@@ -87,15 +78,20 @@ export const AppPane: FC<IPane> = ({
 
     useEffect(() => {
         if(selectedProjectConfigId == null) return;
+        api<IDataFile[]>(`${dataFileUrl}/filter/project_config?project_config_id=${selectedProjectConfigId}`)
+            .then(dataFiles => {
+                setDataFiles(dataFiles)
+            })
         api<ProjectConfig[]>(`${projectConfigUrl}/filter?field=id&val=${selectedProjectConfigId}`)
             .then(projectsConfigs => {
                 setConfig(projectsConfigs[0])
                 setStatus(projectsConfigs[0].Status)
                 ApiProject.GetProjectById(projectsConfigs[0].ProjectId).then(res => {
                     setAuthor(res.data[0].Author); 
-                    checkAuthor(); 
+                    checkAuthor(res.data[0].Author);
                 })
             })
+        setSelectedFile(undefined)
     }, [selectedProjectConfigId])
 
     const getProjectConfigStatus = () => {
@@ -256,7 +252,10 @@ export const AppPane: FC<IPane> = ({
     }
 
     const getIsRunningApp = () => {
-        if(projectContainerReplicaName == null) return;
+        if(projectContainerReplicaName == null || projectContainerReplicaName == "") {
+            setIsRunning(false)
+            return
+        }
         getIsRunning(isRunningUrl, projectContainerReplicaName)
             .then(res => setIsRunning(res))
     }
@@ -269,9 +268,9 @@ export const AppPane: FC<IPane> = ({
         setIsUseTimer(!isUseTimer)
     }
 
-    function checkAuthor() {
+    function checkAuthor(author: string) {
         authServer.getUserName().then(res => {
-            setAccessBuild(res.data.Email == author);
+            setAccessBuild(res.data.Email === author);
         })
     }
 
@@ -295,7 +294,7 @@ export const AppPane: FC<IPane> = ({
             </div>
         );
     };
-
+    
     const panelButtons = () => {
         return (
             <Card className={"card"}>
@@ -337,7 +336,7 @@ export const AppPane: FC<IPane> = ({
                     label={"Подсчет времени работы" }
                     view={'primary'}
                     size={'l'}
-                    disabled={!isUseFile}
+                    disabled={!isUseFile || authServer.getToken() === ""}
                     checked={isUseTimer}
                     onClick={setCheckedTimer}/>
                 <Button
@@ -345,7 +344,7 @@ export const AppPane: FC<IPane> = ({
                     label={'Собрать'}
                     width="full"
                     view="secondary"
-                    disabled={!selectedProjectConfigId || accessBuild}
+                    disabled={!selectedProjectConfigId || !accessBuild}
                     onClick={buildProject}
                     className={"button"}/>
                 <Button

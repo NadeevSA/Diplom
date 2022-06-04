@@ -23,7 +23,6 @@ func (c *ProjectConfigController) AddProjectConfig(
 
 	err := request.ParseMultipartForm(32 << 20)
 	if err != nil {
-		log.Fatal(err)
 		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
 		return
@@ -46,8 +45,13 @@ func (c *ProjectConfigController) AddProjectConfig(
 		writer.Write([]byte(err.Error()))
 		return
 	}
-
-	dockerConfigId, err := strconv.Atoi(request.MultipartForm.Value["DockerConfigId"][0])
+	dockerConfigs := request.MultipartForm.Value["DockerConfigId"]
+	if len(dockerConfigs) == 0 {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte("dockerConfigs can not be null"))
+		return
+	}
+	dockerConfigId, err := strconv.Atoi(dockerConfigs[0])
 	if err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(err.Error()))
@@ -87,6 +91,12 @@ func (c *ProjectConfigController) AddProjectConfig(
 	projectConfig.ProjectId = projectId
 	projectConfig.PathToEntry = request.MultipartForm.Value["PathToEntry"][0]
 	projectConfig.File = buf.Bytes()
+	check := checkProjectConfig(projectConfig)
+	if check != "" {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(check))
+		return
+	}
 
 	c.Add(&projectConfig, request, writer)
 }
@@ -154,7 +164,12 @@ func (c *ProjectConfigController) PutProjectConfig(
 	projectConfig.RunFile = request.MultipartForm.Value["RunFile"][0]
 	projectConfig.ProjectId = projectId
 	projectConfig.PathToEntry = request.MultipartForm.Value["PathToEntry"][0]
-
+	check := checkProjectConfig(projectConfig)
+	if check != "" {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(check))
+		return
+	}
 	c.Put(&projectConfig, request, writer)
 }
 
@@ -217,4 +232,20 @@ func (c *ProjectConfigController) AddProjectConfigFiles(
 	writer.WriteHeader(200)
 	writer.Write([]byte("file attached"))
 
+}
+
+func checkProjectConfig(projectConfig model.ProjectConfig) string {
+	if !core.IfStringLenIsValid(projectConfig.Name) {
+		return "name is not valid"
+	}
+	if !core.IfStringLenIsValid(projectConfig.PathToEntry) {
+		return "path to entry is not valid"
+	}
+	if !core.IfStringLenIsValid(projectConfig.RunFile) {
+		return "run file is not valid"
+	}
+	if !core.IfStringLenIsValid(projectConfig.BuildCommand) {
+		return "build command is not valid"
+	}
+	return ""
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"engine_app/core"
 	"engine_app/database/model"
 	"engine_app/filters"
 	"engine_app/injection/multistage_delete"
@@ -21,6 +22,12 @@ func (c *ProjectController) AddProject(
 	if decodeError != nil {
 		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(decodeError.Error()))
+		return
+	}
+	check := checkProject(Project)
+	if check != "" {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(check))
 		return
 	}
 	if c.AppInjection.UseAuth {
@@ -67,6 +74,12 @@ func (c *ProjectController) PutProject(
 	request *http.Request) {
 	var Project model.Project
 	decodeError := Decode(request, &Project)
+	check := checkProject(Project)
+	if check != "" {
+		writer.WriteHeader(http.StatusBadRequest)
+		writer.Write([]byte(check))
+		return
+	}
 	if decodeError != nil {
 		writer.WriteHeader(http.StatusBadRequest)
 		writer.Write([]byte(decodeError.Error()))
@@ -87,4 +100,14 @@ func (c *ProjectController) GetFilteredProject(
 	request *http.Request) {
 	var Projects []model.Project
 	c.GetFilteredBy(&Projects, request, writer)
+}
+
+func checkProject(project model.Project) string {
+	if !core.IfStringLenIsValid(project.Name) {
+		return "name is not valid"
+	}
+	if !core.IfStringLenIsValid(project.Description) {
+		return "description is not valid"
+	}
+	return ""
 }
