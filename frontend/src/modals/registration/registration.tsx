@@ -57,7 +57,7 @@ export function ModalRegistration() {
               </GridItem>
               <GridItem className={style.form} rowStart="4" colStart="1" col="2">
               <Text weight="black" view="secondary" size="l">Пароль</Text>
-                <TextField value={password} onChange={handleChangePassword} width='full'  type="text" placeholder="Пароль" />
+                <TextField value={password} onChange={handleChangePassword} width='full'  type="password" placeholder="Пароль" />
               </GridItem>
               <GridItem className={style.button} rowStart="6" colStart="1" col="2">
                 <Button view="secondary" size="l"  label="Зарегистрироваться" onClick={() => {

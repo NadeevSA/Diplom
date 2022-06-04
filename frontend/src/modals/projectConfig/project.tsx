@@ -70,9 +70,6 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
                 })
             return
         }
-        else {
-            setInfoData({status: false, msg: "Вы не ввели все параметры"})
-        }
         
         if (projectPathToEntry && projectCommandBuild && runFile && file && selectedDockerConfig) {
             AddProjectConfig(props.id.toString(), selectedDockerConfig.ID, projectCommandBuild, runFile, projectPathToEntry, file)
@@ -87,6 +84,7 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
                 })
         }
         else {
+            debugger
             setInfoData({status: false, msg: "Вы не ввели все параметры"})
         }
     }
@@ -166,7 +164,7 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
                                required
                                type="text" placeholder="Путь к проекту в папке"/>
                     <Combobox
-                        label={"Конфигурация приложения"}
+                        label={"Конфигурация сборки"}
                         className={style.input_field}
                         required
                         placeholder="Выберите конфигурацию"
