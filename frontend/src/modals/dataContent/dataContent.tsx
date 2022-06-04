@@ -47,7 +47,7 @@ export function DataContent(props: {
                     className={style.form}
                     view="secondary"
                     width="full"
-                    label={"Зкрыть"}
+                    label={"Закрыть"}
                     onClick={() => setIsModalOpen(false)}
                   />
               </GridItem>
