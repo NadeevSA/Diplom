@@ -16,8 +16,7 @@ export function ModalRegistration() {
     const handleChangePassword = ({ value }: { value: string | null }) => setPassword(value);
     const [name, setName] = useState<string | null>("");
     const handleChangeName = ({ value }: { value: string | null }) => setName(value);
-    const [info, setInfo] = useState<string>("");
-    const [infoData, setInfoData] = useState<{status: boolean, msg: string}>({status: true, msg: "Введите свои данные"})
+    const [info, setInfo] = useState<{status: boolean, msg: string}>({status: true, msg: ""});
 
     function validateEmail(email: string) {
       var pattern  = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -36,11 +35,11 @@ export function ModalRegistration() {
             isOpen={isModalOpen}
             hasOverlay
             onClickOutside={() => {
-              setInfo("")
+              setInfo({status : true, msg: ""})
               setIsModalOpen(false)}
             }
             onEsc={() => {
-              setInfo("")
+              setInfo({status : true, msg: ""})
               setIsModalOpen(false)}}
             >
               <Grid cols="2">
@@ -65,37 +64,36 @@ export function ModalRegistration() {
                     if (validateEmail(login)){
                           authServer.register(login, password)?.then(res => {
                             authServer.registerUser(name, login)?.then(res =>{
-                              setInfo("Вы успешно зарегистрировались. Спасибо.")
+                              setInfo({status : true, msg: "Вы успешно зарегистрировались. Спасибо"})
                             }).catch(err => {
                               if(err.response.data == "ERROR: duplicate key value violates unique constraint \"idx_users_email\" (SQLSTATE 23505)"){
-                                setInfo("Такая почта уже зарегистирована")  
+                                setInfo({status : false, msg: "Такая почта уже зарегистирована"})
                               }
                               else {
-                                setInfo("Уппс, что-то пошло не так")  
+                                setInfo({status : false, msg: "Уппс, что-то пошло не так"})
                               }
                           })
                         }).catch(err => {
-                          debugger;
-                          console.log(err.response.data);
-                          setInfo("Уппс, что-то пошло не так")  
+                          setInfo({status : false, msg: "Уппс, что-то пошло не так"})  
                         });
                     }
-                    else{
-                      setInfo("Вы ввели не электронную почту") 
+                    else {
+                      setInfo({status : false, msg: "Вы ввели некорректную почту"})
                     }
                 }
                 else{
-                  setInfo("Вы ввели не все данные")  
+                  setInfo({status : false, msg: "Вы ввели не все данные"})
                 }
                 }}/>
               </GridItem>
               <GridItem rowStart="5" colStart="1" col="2">
                   {
-                    info != "" ?
+                    info?.msg != "" ?
                     <Informer
                       className={style.form}
                       view="bordered"
-                      label={info}
+                      status={info.status ? "success" : "alert"}
+                      label={info.msg}
                     /> : <div></div>
                   }
               </GridItem>
