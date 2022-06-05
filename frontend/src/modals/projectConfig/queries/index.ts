@@ -33,7 +33,6 @@ export async function GetDockerConfigs() {
         'docker_config/all',
         {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
     );
-    console.log("Get", data);
     return data;
 }
 
@@ -42,7 +41,6 @@ export async function GetConfigurationFiltered(filter: string) {
         `project_config/filter?${filter}`,
         {headers: {Authorization : `Bearer ${authServer.getToken()}`}},
     );
-    console.log("Get", data);
     return data;
 }
 
