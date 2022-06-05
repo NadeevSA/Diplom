@@ -51,7 +51,6 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
   ];
 
   const [data, setData] = useState<typeof rowProjects>([]);
-  const [Data, setPredData] = useState<typeof rowProjects>(data);
   const [col, setCol] = useState<TableColumn<typeof rowProjects[number]>[]>(columns);
   const [deleteId, setDeleteId] = useState<number>(0);
   const [search, setSearch] = useState<string | null>(null);
