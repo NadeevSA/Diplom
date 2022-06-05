@@ -269,8 +269,12 @@ export const AppPane: FC<IPane> = ({
     }
 
     function checkAuthor(author: string) {
+        debugger
         authServer.getUserName().then(res => {
+            debugger
             setAccessBuild(res.data.Email === author);
+        }).catch(err => {
+            setAccessBuild(false);
         })
     }
 
