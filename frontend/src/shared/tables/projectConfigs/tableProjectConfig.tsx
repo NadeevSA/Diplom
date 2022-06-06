@@ -122,3 +122,7 @@ export const TableProjectConfigs = () => {
         </div>
       )
 }
+
+function useBreakpoints(arg0: { desktop: number; }): { desktop: any; } {
+  throw new Error("Function not implemented.");
+}

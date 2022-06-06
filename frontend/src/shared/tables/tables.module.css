@@ -10,3 +10,16 @@
 .button {
     margin-left: 5%;
 }
+
+.cardsForMobile {
+    margin: auto;
+    display: block;
+}
+
+.cardForMobile {
+    margin: 3%;
+}
+
+.buttonContent {
+    float: right;
+}

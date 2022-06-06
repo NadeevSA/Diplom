@@ -7,6 +7,8 @@ import ApiProject, { Project } from "../../../api/apiProject";
 import { ProjectPage } from "../../../modals/projectConfig/project";
 import { HeaderSearchBar } from "@consta/uikit/Header";
 import style from '../tables.module.css'
+import { IsMobile } from "../../../App";
+import { Card } from "@consta/uikit/Card";
 
 
 export function TableProject (props: {hidden: boolean, newProject: Project | null | undefined}) {
@@ -112,6 +114,7 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
   const handleChange = ({ value }: { value: string | null}) => setSearch(value);
 
   return (
+    IsMobile() ? 
     <div>
       <HeaderSearchBar
         placeholder="я ищу"
@@ -120,12 +123,44 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
         className={style.searchBar}
         onChange={handleChange}
       />
-    <Table rows={searchTable ?? data} columns={col}
-      borderBetweenColumns
-      stickyHeader
-      isResizable
-      zebraStriped="even"
-      emptyRowsPlaceholder={<Text>Нет проектов</Text>}/>
+      {
+        searchTable ?
+        searchTable.map((item, index) => (
+            <div key={index}>
+             <Card className={style.cardsForMobile}>
+                <Text weight="bold" className={style.cardForMobile}>Название: {item.Name}</Text>
+                <Text className={style.cardForMobile}>Автор: {item.Author}</Text>
+                <Text className={style.cardForMobile}>Описание: {item.Description}</Text>
+              </Card>
+            </div>
+        ))
+        :
+        data.map((item, index) => (
+          <div key={index}>
+           <Card className={style.cardsForMobile}>
+              <Text weight="bold" className={style.cardForMobile}>Название: {item.Name}</Text>
+              <Text className={style.cardForMobile}>Автор: {item.Author}</Text>
+              <Text className={style.cardForMobile}>Описание: {item.Description}</Text>
+            </Card>
+          </div>
+      ))
+      } 
+    </div>
+    :
+    <div>
+      <HeaderSearchBar
+        placeholder="я ищу"
+        label="поиск"
+        value={search}
+        className={style.searchBar}
+        onChange={handleChange}
+      />
+      <Table rows={searchTable ?? data} columns={col}
+        borderBetweenColumns
+        stickyHeader
+        isResizable
+        zebraStriped="even"
+        emptyRowsPlaceholder={<Text>Нет проектов</Text>}/>
     </div>
   )
 }

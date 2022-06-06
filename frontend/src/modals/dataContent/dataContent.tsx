@@ -6,6 +6,7 @@ import style from './dataContent.module.css'
 import { TextField } from "@consta/uikit/TextField";
 import ApiData from "../../api/apiData";
 import { Text } from '@consta/uikit/Text';
+import { IsMobile } from "../../App";
 
 export function DataContent(props: {
     id: number
@@ -13,7 +14,7 @@ export function DataContent(props: {
   }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [content, setContent] = useState<string>("");
-  
+
     useEffect(() => {
       ApiData.getDataContentById(props.id).then(res => {
         setContent(res.data);
@@ -23,7 +24,7 @@ export function DataContent(props: {
     return (
       <div>
           <Button
-            size="s"
+            size={IsMobile() ? "l" : "s"}
             view="secondary"
             label="Содержимое"
             className={style.button}

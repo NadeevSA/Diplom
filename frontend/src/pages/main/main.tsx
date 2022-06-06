@@ -1,21 +1,21 @@
 import style from './main.module.css';
 import { Text } from '@consta/uikit/Text';
 import { Button } from '@consta/uikit/Button';
-import authServer from '../../serviceAuth/authServer';
 import { Grid, GridItem } from '@consta/uikit/Grid';
 import { Card } from '@consta/uikit/Card';
 import { IconStorage } from '@consta/uikit/IconStorage';
 import { IconTest } from '@consta/uikit/IconTest';
 import { Link } from 'react-router-dom';
+import { IsMobile } from '../../App';
 
 export const main = () => {
   return(
-    <Grid gap="l" cols="4" rowGap="5xl" className={style.grid}>
-            <GridItem colStart="2" col="2" rowStart="2">
+    <Grid gap="l" cols={IsMobile() ? "1" : "4"} rowGap="5xl" className={IsMobile() ? style.grid : ''}>
+            <GridItem colStart={IsMobile() ? "1" : "2"} col="2" rowStart="2">
               <Text weight="bold" size="3xl">Система для сборки, хранения и запуска консольных приложений</Text>
             </GridItem>
-            <GridItem colStart="2" rowStart="3">
-              <Card>
+            <GridItem colStart={IsMobile() ? "1" : "2"} rowStart="3">
+              <Card className={IsMobile() ? style.card : ''}>
               <Button
                 onlyIcon
                 iconLeft={IconStorage}
@@ -48,8 +48,8 @@ export const main = () => {
               </Link>
               </Card>
             </GridItem>
-            <GridItem colStart="3" rowStart="3">
-              <Card>
+            <GridItem colStart={IsMobile() ? "1" : "3"} rowStart={IsMobile() ? "4" : "3"}>
+              <Card className={IsMobile() ? style.card : ''}>
               <Button
                 onlyIcon
                 iconLeft={IconTest}

@@ -12,6 +12,10 @@ import authServer from './serviceAuth/authServer';
 import { Redirect } from 'react-router-dom';
 import { projectConfigs } from './pages/projectConfigs/projectConfigs';
 
+export function IsMobile(){
+    return window.screen.width <= 400;
+}
+
 function App() {
   return (
     <div className="App">

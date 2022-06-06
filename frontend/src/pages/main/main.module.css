@@ -6,3 +6,15 @@
 .table {
     max-height: 10px;
 }
+
+.grid {
+    margin: auto;
+    display: block;
+    margin-top: 10%;
+}
+
+.card {
+    margin: auto;
+    display: block;
+    margin-top: 10%;
+}

@@ -7,6 +7,8 @@ import ApiData, { Data } from "../../../api/apiData";
 import { DataContent } from "../../../modals/dataContent/dataContent";
 import { HeaderSearchBar } from "@consta/uikit/Header";
 import style from '../tables.module.css'
+import { IsMobile } from "../../../App";
+import { Card } from "@consta/uikit/Card";
 
 export function TableData(props: {hidden: boolean, newData: Data | null | undefined}) {
     const columns: TableColumn<typeof rowsData[number]>[] = [
@@ -88,7 +90,6 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
         } 
         else {
           authServer.getUserName().then(res => {
-            debugger
             ApiData.getDataByUserEmail(res.data.Email).then(res => {
               setData(res.data);
             })
@@ -118,6 +119,41 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
       const handleChange = ({ value }: { value: string | null}) => setSearch(value);
 
       return (
+        IsMobile() ? 
+        <div>
+          <HeaderSearchBar
+            placeholder="я ищу"
+            label="поиск"
+            value={search}
+            className={style.searchBar}
+            onChange={handleChange}
+          />
+          {
+        searchTable ?
+        searchTable.map((item, index) => (
+            <div key={index}>
+             <Card className={style.cardsForMobile}>
+                <Text weight="bold" className={style.cardForMobile}>Имя файла: {item.FileName}</Text>
+                <Text className={style.cardForMobile}>Автор: {item.Author}</Text>
+                <Text className={style.cardForMobile}>Описание: {item.Label}</Text>
+                <DataContent id={item.ID} name={item.FileName}></DataContent>
+              </Card>
+            </div>
+        ))
+        :
+        data.map((item, index) => (
+            <div key={index}>
+            <Card className={style.cardsForMobile}>
+                <Text weight="bold" className={style.cardForMobile}>Имя файла: {item.FileName}</Text>
+                <Text className={style.cardForMobile}>Автор: {item.Author}</Text>
+                <Text className={style.cardForMobile}>Описание: {item.Label}</Text>
+                <DataContent id={item.ID} name={item.FileName}></DataContent>
+              </Card>
+            </div>
+        ))
+        } 
+        </div>
+        :
         <div>
           <HeaderSearchBar
             placeholder="я ищу"

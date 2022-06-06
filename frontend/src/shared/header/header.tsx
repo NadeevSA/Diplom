@@ -4,6 +4,7 @@ import authServer from '../../serviceAuth/authServer';
 import { User } from '@consta/uikit/User';
 import { ModalLogin } from '../../modals/login/login';
 import { SideBar } from './sideBar';
+import { IsMobile } from '../../App';
 
 export const CustomHeader = () => {
   const [UserName, setUserName] = React.useState<string>("");
@@ -30,7 +31,7 @@ export const CustomHeader = () => {
             name={UserName}
             info={UserEmail}
             view="ghost"
-            size="l"
+            size={IsMobile() ? "s" : "l"}
           /> :
           <ModalLogin userName={setUserName} userEmail={setUserEmail}></ModalLogin>
         }
