@@ -3,3 +3,12 @@
    margin: auto;
    display: block;
 }
+
+.mobileButton {
+   margin-left: 10%;
+}
+
+.mobileDirButton {
+   margin: auto;
+   display: block;
+}

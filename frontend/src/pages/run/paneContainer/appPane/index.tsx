@@ -15,6 +15,8 @@ import ApiProject from '../../../../api/apiProject';
 import authServer from '../../../../serviceAuth/authServer';
 import { PanelHand } from './paneHand';
 import { PanelFile } from './paneFile';
+import { IsMobile } from '../../../../App';
+import { ChoiceGroup } from '@consta/uikit/ChoiceGroup';
 
 export const AppPane: FC<IPane> = ({
                                        attachUrlFileUrl,
@@ -46,6 +48,9 @@ export const AppPane: FC<IPane> = ({
     const [statusInformer, setStatusInformer] = useState<boolean>(true);
     const [author, setAuthor] = useState<string>("");                            
     const [accessBuild, setAccessBuild] = useState<boolean>(true);  
+    type Item = string;
+    const items: Item[] = ['Настройки', 'Область просмотра'];
+    const [value, setValue] = useState<Item | null>(items[0]);
 
     useLayoutEffect(() => {
         getProjectConfigStatus()
@@ -390,6 +395,31 @@ export const AppPane: FC<IPane> = ({
     };
 
     return (
+        IsMobile() ?
+        <div>
+            <ChoiceGroup
+                value={value}
+                onChange={({ value }) => setValue(value)}
+                items={items}
+                getLabel={(item) => item}
+                multiple={false}
+                size="l"
+                name="Choice"
+                view="secondary"
+                truncate
+            />
+            {
+                value === "Настройки" ?
+                <div>
+                    <Card>{panelButtons()}</Card>
+                </div>
+                :
+                <div>
+                    {isWaiting ? waiting() : <Card>{panelInfo()}</Card>}
+                </div>
+            }
+        </div>
+        :
         <Grid gap="xl" cols="4">
             <GridItem><Card>{panelButtons()}</Card></GridItem>
             <GridItem colStart="2" col="3">{isWaiting ? waiting() : <Card>{panelInfo()}</Card>}</GridItem>

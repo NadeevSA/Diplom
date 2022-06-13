@@ -17,6 +17,7 @@ import {
 import {Combobox} from "@consta/uikit/Combobox";
 import ApiProjectConfig from '../../api/apiProjectConfig';
 import { Informer } from '@consta/uikit/Informer';
+import { IsMobile } from '../../App';
 
 export function ProjectPage(props: { name: string, id: number, onDelete: (id: number) => void}) {
     const [selectedDockerConfig, setSelectedDockerConfig] = useState<IDockerConfiguration|null>()
@@ -117,18 +118,17 @@ export function ProjectPage(props: { name: string, id: number, onDelete: (id: nu
         <div>
             <div className={style.buttons}>
                 
-                <div className={style.button}>
+                <div className={IsMobile() ? style.mobileButton : style.button}>
                     <Button
-                        size="s"
+                        size={IsMobile() ? "l" : "s"}
                         view="secondary"
                         label="Конфигурация"
                         onClick={() => onSetModelOpen()}/>
                 </div>
-
+        
                 <div className={style.button}>
                     <Button
-                        className={style.button}
-                        size="s"
+                        size={IsMobile() ? "l" : "s"}
                         view="secondary"
                         label="Удалить"
                         onClick={() => onDeleteProject()}

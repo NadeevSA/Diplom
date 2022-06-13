@@ -11,6 +11,7 @@ import { IsMobile } from "../../App";
 export function DataContent(props: {
     id: number
     name: string
+    directory?: boolean
   }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [content, setContent] = useState<string>("");
@@ -27,7 +28,7 @@ export function DataContent(props: {
             size={IsMobile() ? "l" : "s"}
             view="secondary"
             label="Содержимое"
-            className={style.button}
+            className={IsMobile() ? style.mobileButton : style.button}
             onClick={() => setIsModalOpen(true)}
           />
         <Modal

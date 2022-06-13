@@ -1,5 +1,6 @@
 .searchBar {
     margin: 1%;
+    width: 100%;
 }
 
 .buttons {
@@ -22,4 +23,24 @@
 
 .buttonContent {
     float: right;
+}
+
+.buttonRight {
+    float: right;
+    margin: auto;
+    display: block;
+}
+
+.buttonLeft {
+    float: right;
+    margin: auto;
+    display: block;
+}
+
+.buttons {
+    flex-direction: row;
+}
+
+.button {
+    margin-left: 15%;
 }

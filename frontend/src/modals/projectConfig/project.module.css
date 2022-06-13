@@ -22,7 +22,13 @@
 }
 
 .button {
-    padding-left: 0.5rem;
+    float: right;
+    margin-left: 4%;
+}
+
+.mobileButton {
+    float: right;
+    margin-left: 7%;
 }
 
 .info {

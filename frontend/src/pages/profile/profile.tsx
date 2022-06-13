@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import style from './profile.module.css';
 import {Card} from '@consta/uikit/Card';
 import {Grid, GridItem} from '@consta/uikit/Grid';
@@ -9,6 +9,8 @@ import { Project } from '../../api/apiProject';
 import { TableData } from '../../shared/tables/datas/tableData';
 import { Data } from '../../api/apiData';
 import {TableProject} from "../../shared/tables/Projects/tableProject";
+import { IsMobile } from '../../App';
+import { ChoiceGroup } from '@consta/uikit/ChoiceGroup';
 
 function Info() {
     const [userName, setUserName] = useState<string | null>("");
@@ -26,8 +28,12 @@ function Info() {
 }
 
 export const Profile = () => {
+    type Item = string;
+    const items: Item[] = ['Функции', 'Проекты', 'Данные'];
+
     const [newProject, setNewProject] = useState<Project | null>();
     const [newData, setNewData] = useState<Data | null>();
+    const [value, setValue] = useState<Item | null>(items[0]);
 
     function createData(data : Data){
         setNewData(data);
@@ -55,6 +61,46 @@ export const Profile = () => {
     }
 
     return (
+        IsMobile() ?
+        <div>
+            <ChoiceGroup
+                value={value}
+                onChange={({ value }) => setValue(value)}
+                items={items}
+                getLabel={(item) => item}
+                multiple={false}
+                size="l"
+                view="secondary"
+                name="Choice"
+                truncate
+            />
+            {
+            value === "Функции" ?
+            <div>
+                    <Info></Info>
+                    <ModelAddProjectData createProject={createProject} createData={createData}/>
+            </div>
+            :
+            value === "Проекты" ?
+                <div>
+                    <Projects/>
+                </div>
+                :
+                <div>
+                    {
+                        value === "Данные" ?
+                        <div>
+                            <Datas></Datas>
+                        </div>
+                        :
+                        <div>
+
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        :
         <Grid gap="l" cols="5" className={style.grid}>
             <GridItem><Info/></GridItem>
             <GridItem rowStart="2"><ModelAddProjectData createProject={createProject} createData={createData}/></GridItem>

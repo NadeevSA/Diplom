@@ -131,8 +131,11 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
                 <Text weight="bold" className={style.cardForMobile}>Название: {item.Name}</Text>
                 <Text className={style.cardForMobile}>Автор: {item.Author}</Text>
                 <Text className={style.cardForMobile}>Описание: {item.Description}</Text>
+                {
+                 props.hidden == true && <ProjectPage name={item.Name} id={item.ID} onDelete={setDeleteId}/>
+                }
               </Card>
-            </div>
+            </div>  
         ))
         :
         data.map((item, index) => (
@@ -141,6 +144,9 @@ export function TableProject (props: {hidden: boolean, newProject: Project | nul
               <Text weight="bold" className={style.cardForMobile}>Название: {item.Name}</Text>
               <Text className={style.cardForMobile}>Автор: {item.Author}</Text>
               <Text className={style.cardForMobile}>Описание: {item.Description}</Text>
+              {
+                 props.hidden == true && <ProjectPage name={item.Name} id={item.ID} onDelete={setDeleteId}/>
+              }
             </Card>
           </div>
       ))

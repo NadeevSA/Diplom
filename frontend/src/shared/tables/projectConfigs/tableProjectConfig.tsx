@@ -5,6 +5,8 @@ import { Text } from '@consta/uikit/Text';
 import ApiProjectConfig from "../../../api/apiProjectConfig";
 import { HeaderSearchBar } from "@consta/uikit/Header";
 import style from '../tables.module.css'
+import { IsMobile } from "../../../App";
+import { Card } from "@consta/uikit/Card";
 
 export const TableProjectConfigs = () => {
     const columns: TableColumn<typeof rowsProjectConfig[number]>[] = [
@@ -105,6 +107,43 @@ export const TableProjectConfigs = () => {
       const handleChange = ({ value }: { value: string | null}) => setSearch(value);
 
       return (
+        IsMobile() ?
+        <div>
+            <HeaderSearchBar
+            placeholder="я ищу"
+            label="поиск"
+            value={search}
+            className={style.searchBar}
+            onChange={handleChange}
+            />
+            {
+            searchTable ?
+            searchTable.map((item, index) => (
+                <div key={index}>
+                <Card className={style.cardsForMobile}>
+                    <Text weight="bold" className={style.cardForMobile}>Название: {item.Name}</Text>
+                    <Text className={style.cardForMobile}>Команда для сборки: {item.BuildCommand}</Text>
+                    <Text className={style.cardForMobile}>Запускаемый файл: {item.ProjectFile}</Text>
+                    <Text className={style.cardForMobile}>Название архива: {item.RunFile}</Text>
+                    <Button label="Скачать" view="secondary" size="l" onClick={() => {download(item.ID)}}/>
+                  </Card>
+                </div>  
+            ))
+            :
+            data.map((item, index) => (
+              <div key={index}>
+              <Card className={style.cardsForMobile}>
+                    <Text weight="bold" className={style.cardForMobile}>Название: {item.Name}</Text>
+                    <Text className={style.cardForMobile}>Команда для сборки: {item.BuildCommand}</Text>
+                    <Text className={style.cardForMobile}>Запускаемый файл: {item.ProjectFile}</Text>
+                    <Text className={style.cardForMobile}>Название архива: {item.RunFile}</Text>
+                    <Button label="Скачать" view="secondary" size="l" onClick={() => {download(item.ID)}}/>
+                </Card>
+              </div>
+          ))
+          }
+        </div>
+        :
         <div>
           <HeaderSearchBar
             placeholder="я ищу"
@@ -121,8 +160,4 @@ export const TableProjectConfigs = () => {
             emptyRowsPlaceholder={<Text>Нет данных</Text>}/>
         </div>
       )
-}
-
-function useBreakpoints(arg0: { desktop: number; }): { desktop: any; } {
-  throw new Error("Function not implemented.");
 }

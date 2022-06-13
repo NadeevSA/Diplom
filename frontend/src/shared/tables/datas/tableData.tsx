@@ -136,7 +136,10 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
                 <Text weight="bold" className={style.cardForMobile}>Имя файла: {item.FileName}</Text>
                 <Text className={style.cardForMobile}>Автор: {item.Author}</Text>
                 <Text className={style.cardForMobile}>Описание: {item.Label}</Text>
-                <DataContent id={item.ID} name={item.FileName}></DataContent>
+                <div className={style.buttons}>
+                  <DataContent id={item.ID} name={item.FileName}></DataContent>
+                </div>
+                <Button className={style.buttons} label="Удалить" size="l" view="secondary" onClick={() => {setDeleteId(item.ID)}}/>
               </Card>
             </div>
         ))
@@ -147,7 +150,13 @@ export function TableData(props: {hidden: boolean, newData: Data | null | undefi
                 <Text weight="bold" className={style.cardForMobile}>Имя файла: {item.FileName}</Text>
                 <Text className={style.cardForMobile}>Автор: {item.Author}</Text>
                 <Text className={style.cardForMobile}>Описание: {item.Label}</Text>
-                <DataContent id={item.ID} name={item.FileName}></DataContent>
+                <div className={props.hidden == true ? style.buttons: ""}>
+                  <DataContent id={item.ID} name={item.FileName}></DataContent>
+                  {
+                  props.hidden == true &&
+                  <Button className={style.button} label="Удалить" size="l" view="secondary" onClick={() => {setDeleteId(item.ID)}}/>
+                  }
+                </div>
               </Card>
             </div>
         ))

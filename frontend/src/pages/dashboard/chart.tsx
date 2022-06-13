@@ -10,6 +10,8 @@ import { Text } from '@consta/uikit/Text';
 import style from './dashboard.module.css'
 import { Informer } from '@consta/uikit/Informer';
 import ApiTimeProjectData, { TimeProjectData } from "../../api/apiTimeProjectData";
+import { IsMobile } from "../../App";
+import { ChoiceGroup } from '@consta/uikit/ChoiceGroup';
 
 export function Chart() {
     const [value, setValue] = useState<TimeProjectData[]>([]);
@@ -22,8 +24,11 @@ export function Chart() {
     const [selectData, setSelectData] = useState<Data[] | null>()
     const [DataId, setDataId] = useState<number[]>([])
 
+    type Item = string;
+    const items: Item[] = ['Настройки', 'График'];
+    const [valueMobile, setValueMobile] = useState<Item | null>(items[0]);
+
     useEffect(() => {
-      debugger;
       getProjects();
       getDatas();
     }, [])
@@ -121,6 +126,52 @@ export function Chart() {
 
     function OutChart() {
       return (
+        IsMobile() ? 
+        <div>
+            <ChoiceGroup
+                value={valueMobile}
+                onChange={({ value }) => setValueMobile(value)}
+                items={items}
+                getLabel={(item) => item}
+                multiple={false}
+                size="l"
+                view="secondary"
+                name="Choice"
+                truncate
+            />
+            {
+              valueMobile === "Настройки" ?
+              <div>
+                  <Filter></Filter>
+                  <Button 
+                    className={style.clearButton}
+                    label="Сбросить"
+                    view="secondary"
+                    onClick={() => {
+                      setProjectId([]);
+                      setSelectProject(null);
+                      setDataId([]);
+                      setSelectData(null);
+                    }}
+                  />
+                  <Informer 
+                    status="system" 
+                    view="bordered" 
+                    label="По оси X расположены названия проектов\данных, в зависимости от вашего выбора.
+                    По оси Y время работы программы в секундах." />
+              </div>
+              :
+              <div>
+                  <Column
+                    data={value}
+                    xField="DataName"
+                    yField="Duration"
+                    seriesField="ViewId"
+                    isGroup/>
+              </div>
+            }
+        </div>
+        :
         <Card>
           <Grid gap="xl" cols="4">
             <GridItem colStart="1" col="1" row="1">
